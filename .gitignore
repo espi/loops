@@ -1,0 +1,8 @@
+# Scaffolded loop working dirs live here but are not part of the control plane.
+# Loops run against other repos; keep their transient state out of git.
+/loops/
+!/loops/.gitkeep
+
+# Local env / secrets
+*.local
+.env

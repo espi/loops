@@ -1,0 +1,132 @@
+# Loops: the primer
+
+> The canonical briefing for this repo. Last substantive update: 2026-06-09.
+> Companion: [`sources.md`](sources.md) (every claim's source + confidence),
+> [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
+
+## 1. What a loop actually is
+
+A **loop** is a small program *you* write that drives a coding agent: it
+prompts the agent, reads what it produced, decides whether the goal is met,
+and if not, prompts again with updated context — repeating until a verifiable
+stop condition is hit.
+
+The shift in one sentence: **you stop being the thing inside the loop typing
+prompts and become the author of the loop. The model becomes a subroutine.**
+
+A chatbot is one LLM call; an agent is an LLM calling tools in a loop until the
+job is done. What makes it a *loop* (vs. one-off prompting) is the **"done?"
+decision** at the end of each pass — continue or stop based on observed output,
+not stopping after one generation. Put differently: a loop is *cron plus a
+decision-maker in the body* — the model, not a hardcoded branch, picks the next
+action each tick.
+
+## 2. The lineage (place any claim on this ladder)
+
+Most online arguments are people pointing at different rungs and talking past
+each other.
+
+| Stage | What | When | Key point |
+|---|---|---|---|
+| **ReAct** | Academic reason→act→observe loop. One model, one loop, human watching. | Oct 2022 (arXiv:2210.03629, Princeton + Google) | Established the "think → act → observe → repeat" cycle every later agent instantiates. |
+| **AutoGPT** | Goal-driven, self-prompting. | Mar 2023 | Famous for **spinning forever** — judged "am I done?" in natural language, which defaulted to "more work needed." No reliable stop condition = infinite loops + runaway bills. This failure defines everything after it. |
+| **The ralph loop** | A bash one-liner piping a fixed prompt file into the agent repeatedly. | Jul 2025 (Geoffrey Huntley) | Innovation isn't the loop — it's **context discipline**: each iteration runs in a *fresh* context that reloads a fixed set of anchor files and uses **the filesystem on disk as memory** instead of growing the conversation. |
+| **`/goal`** | Productized ralph: runs until a small **validator model** confirms done. | Apr–May 2026 (Codex first, then Claude Code) | The fix for AutoGPT's original sin — a separate, fresh model judges the stop condition instead of the worker grading its own homework. |
+| **Orchestration loops** | Loops supervising *other* loops — concurrently, on a schedule, with durable state. | now (2026) | What Steinberger/Cherny mean. New vs. ralph: the loop (not the task) is the unit of work; loops dispatch/supervise sub-loops; scheduling replaces human kickoff; state is git-backed so it survives a crash. |
+
+**The ralph one-liner:**
+```bash
+while :; do cat PROMPT.md | claude ; done
+```
+The trick: the prompt stays the same while everything *around* it changes —
+the codebase, test results, git history, a progress file. That external state
+is what turns repetition into iteration.
+
+**Myth to drop:** the "$297 programming language" story conflates two things.
+The $297 was a Y-Combinator hackathon team shipping six repos overnight.
+Huntley's actual language, **CURSED**, came from running Claude in a ralph loop
+for ~3 months, with no single published cost figure.
+
+## 3. The key voices
+
+- **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
+  *"you shouldn't be prompting coding agents anymore. You should be designing
+  loops that prompt your agents."* Companion point: **wrap repeated or hard
+  tasks into reusable skills.**
+- **Boris Cherny** — created Claude Code (Sept 2024); now reportedly ~4% of all
+  public GitHub commits. *"I don't prompt Claude anymore... My job is to write
+  loops."* Landed **259 PRs in 30 days, every line written by Claude Code**
+  (Dec 2025). Some days manages "thousands, or tens of thousands" of agents via
+  subagents. His load-bearing advice: auto-permission mode, orchestrate many
+  agents, use `/goal` or `/loop` to keep going, run in the cloud, and — *"the
+  most important thing"* — **give the agent a way to verify its own work
+  end-to-end.**
+- **Steve Yegge's "Gas Town"** (open source, Jan 2026) — canonical orchestration
+  loop: 20–30 Claude Code instances, a **Mayor** coordinator, background
+  **patrol** loops (the "Deacon" watchdog tier), and **git-worktree-backed
+  state that survives crashes** so any agent can resume another's work.
+
+## 4. How loops work in Claude Code
+
+- **`/loop`** — bundled skill (v2.1.72+). `/loop 5m check the deploy` (fixed),
+  `/loop check the deploy` (self-paced 1 min–1 hr), or bare `/loop`
+  (PR-tending maintenance). **Cron under the hood**, but **session-scoped**: it
+  only fires while Claude Code runs and is idle, and **does not run with the
+  laptop closed.** Recurring tasks expire after 7 days. Stop with `Esc`.
+- **`/goal`** (v2.1.139+) — sets a completion condition; works across turns
+  until met. A **separate fresh model (defaults to Haiku)** returns yes/no after
+  each turn; it's a session-scoped Stop hook. The validator **doesn't call
+  tools**, so conditions must be provable from what the agent surfaces (e.g.,
+  "all tests in test/auth pass and lint is clean").
+- **`ralph-wiggum` plugin** — Anthropic's official in-session ralph via a Stop
+  hook: `/ralph-loop "<task>" --completion-promise "COMPLETE" --max-iterations 50`.
+- **Cloud / "close your laptop"** — Claude Code on the web (`--remote`) runs in
+  ephemeral isolated VMs behind a network proxy/allowlist. **Routines** are the
+  cloud scheduling that survives the laptop being closed (min interval ~1 hr).
+- **Subagents** (the Task tool) spawn child agents with their own context that
+  report back; **Agent Teams** (experimental) add a shared task list + messaging.
+- **Skills** — a `SKILL.md` (frontmatter + instructions) Claude invokes
+  automatically or via `/name`. The "skills not prompts" durable asset:
+  version-controlled, testable, loaded on demand. `/loop` itself is one.
+
+## 5. The two things the hype skips
+
+**A) Verification is the whole game.** A loop is only as good as its ability to
+check its own work; an open loop with no feedback is a machine for generating
+confident mistakes. Give every loop one deterministic check (`npm test`,
+`pytest`, `tsc --noEmit`, a linter) and run it *inside* the loop. Anthropic's
+name for the pattern: **evaluator-optimizer** (one model generates, another
+evaluates and feeds back). Tools like **roborev** operationalize this per-commit.
+
+**B) The cost moved from tokens to loop management.** Once the model writes code
+for almost nothing, the expensive part is *running the loop* — every turn
+re-bills the full accumulated context (a session can grow from 5K to 200K
+tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
+- **Uber capped engineers at $1,500/month per tool** after its CTO said it
+  burned the annual AI budget in ~4 months.
+- Self-reported horror stories: a multi-agent system that **looped 11 days and
+  ran up $47K**; overnight Claude Code runs hitting thousands of dollars.
+- **Gartner** puts agentic AI at the "Peak of Inflated Expectations" (~17% of
+  orgs have deployed agents) and predicts **>40% of agentic AI projects
+  canceled by end of 2027**.
+
+## 6. The three hard stops (non-negotiable)
+
+Every serious loop converges on these. Anthropic's Agent SDK ships #1 and #3 as
+first-class params (`max_turns`, `max_budget_usd`).
+
+1. **Max iteration count** — "prevent runaway sessions."
+2. **No-progress / stall detection** — kill the loop if it repeats an action
+   without advancing (usually a hook you write; libraries like AgentGuard offer
+   `LoopGuard`).
+3. **Token/dollar budget ceiling** — a hard *enforcement* stop, not an alert.
+   The billing layer has soft alerts but won't auto-disable, so the ceiling
+   lives in your harness.
+
+## 7. The one-paragraph answer
+
+Stop being the thing in the loop. Write the loop once, give it **skills** worth
+calling and a **verification** step so it can check itself, **cap it**
+(iterations + dollars + stall detection) so it provably halts, and let it run
+on a schedule while you go decide *what* to build. Steinberger and Cherny are
+describing the same animal from two sides.

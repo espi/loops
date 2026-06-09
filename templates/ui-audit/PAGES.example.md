@@ -1,8 +1,10 @@
 <!--
   Page checklist — the loop's scope and its natural stop condition.
-  Fill this with every route to audit. The loop processes each row once (plus
-  re-verify), so a complete, finite list here is what bounds the run. Rename to
-  PAGES.md in your project. Status starts `todo`; the loop updates it.
+  You don't have to fill this by hand: run PREFLIGHT.md once and the session
+  discovers routes (from the router, nav, sitemap, e2e tests, or a link-crawl)
+  and writes this file — then you eyeball it before launching. The loop processes
+  each row once (plus re-verify), so a complete, finite list bounds the run.
+  Status starts `todo`; the loop updates it.
 -->
 
 # Pages to audit

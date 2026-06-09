@@ -20,10 +20,18 @@ You work ONLY on the branch `claude/ui-fixes-[DATE]`. Never touch `main`.
 
 - `PAGES.md` — the checklist: routes, the test account(s) for each, preconditions,
   and a status column you update (`todo` / `pass` / `fixed` / `blocked`).
-- `FINDINGS.md` — the UX report you append to (subjective issues + what you changed).
+- `STANDARDS.md` — the enforceable UX rules distilled from `docs/`, each citing its
+  source. This is your **oracle for UX decisions** — you judge against it, not taste.
+- `FINDINGS.md` — the UX report you append to (issues + what you changed + rule cited).
 - `PROGRESS.md` — running log: what you did last iteration, check results, blockers.
 
 Do NOT rely on memory of previous iterations. The files on disk are the source of truth.
+
+# Before the first iteration (bootstrap)
+
+If `PAGES.md` or `STANDARDS.md` is missing or empty, run `PREFLIGHT.md` first
+(discover routes → `PAGES.md`; distill `docs/` → `STANDARDS.md`), then proceed.
+Prefer running PREFLIGHT as a separate reviewed pass before launching this loop.
 
 # Per-iteration procedure
 
@@ -53,14 +61,28 @@ Do NOT rely on memory of previous iterations. The files on disk are the source o
      fix that breaks the suite.
    - Commit atomically: `fix(ui): <page> — <what>`. One bug per commit.
 
-5. **For each subjective UX issue (discoverability, dead-end, weak/incorrect CTA,
-   confusing copy/empty/error states) — judgment lane:**
-   - Append to `FINDINGS.md`: page, issue type, severity, a screenshot path, your
-     reasoning, and the proposed change.
-   - Implement the fix, but commit it SEPARATELY and clearly labeled:
-     `ux(judgment): <page> — <what> (review)`. Keep these commits small and
-     one-issue-each so they can be accepted or reverted individually in the morning.
-   - Re-run the regression suite after each; revert + log if it breaks.
+5. **For each UX issue (discoverability, dead-end, weak/incorrect CTA, confusing
+   copy/empty/error states) — judge it against `STANDARDS.md`:**
+
+   a. **It violates a documented standard** → standard lane. The standard is your
+      oracle, so this is a grounded fix:
+      - Implement the change so the page conforms to the cited rule.
+      - Append to `FINDINGS.md`: page, the **rule + its doc citation**, severity,
+        screenshot, what changed.
+      - Re-run the regression suite; revert + log if it breaks.
+      - Commit separately: `ux(standard): <page> — <rule> [docs: <ref>]`.
+
+   b. **No documented standard covers it** (pure judgment) → judgment lane. There
+      is no oracle here, so this is the lowest-confidence, most-revertible change:
+      - Implement the fix (per the auto-fix mandate), keeping it minimal.
+      - Append to `FINDINGS.md` flagged `needs-human`: page, observation, severity,
+        screenshot, your reasoning, and what you changed.
+      - Re-run the regression suite; revert + log if it breaks.
+      - Commit separately: `ux(judgment): <page> — <what> (no doc backing, review)`.
+
+   Keep all commits small and one-issue-each so they review/revert individually.
+   (To make lane (b) report-only instead of auto-fix, change "Implement the fix"
+   to "make NO code change" — this is the one safe place to do that.)
 
 6. Update `PAGES.md` status and `PROGRESS.md`. Move to the next page.
 
@@ -78,7 +100,8 @@ When all of that holds, write `<promise>COMPLETE</promise>` and stop.
 - **No-progress**: if 3 consecutive iterations produce no commit and no status
   change, STOP — write the blockers to `PROGRESS.md` under "BLOCKED" and end.
 - Never loop forever, never expand scope beyond `PAGES.md`, never merge to `main`.
-- If a fix needs a product/design decision you can't verify objectively, do NOT
-  guess in the objective lane — log it to `FINDINGS.md` as `needs-human` and move on.
+- Never let a UX opinion leak into the objective `fix(ui):` lane — objective
+  commits are only for re-verified deterministic bugs. UX changes go in
+  `ux(standard):` (doc-backed) or `ux(judgment):` (flagged, no backing).
 - Cost: this runs unattended. Stay efficient; one page per iteration; stop at the
   caps set in RUN.md.

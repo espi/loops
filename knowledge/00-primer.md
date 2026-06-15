@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-06-09.
+> The canonical briefing for this repo. Last substantive update: 2026-06-15.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -60,11 +60,15 @@ for ~3 months, with no single published cost figure.
   subagents. His load-bearing advice: auto-permission mode, orchestrate many
   agents, use `/goal` or `/loop` to keep going, run in the cloud, and — *"the
   most important thing"* — **give the agent a way to verify its own work
-  end-to-end.**
+  end-to-end.** By June 2026 he added: *"I haven't written a line of code by
+  hand in... eight months now"* and, on Routines: *"I'm not doing the prompting
+  — I create the routines that do the prompting."*
 - **Steve Yegge's "Gas Town"** (open source, Jan 2026) — canonical orchestration
   loop: 20–30 Claude Code instances, a **Mayor** coordinator, background
   **patrol** loops (the "Deacon" watchdog tier), and **git-worktree-backed
-  state that survives crashes** so any agent can resume another's work.
+  state that survives crashes** so any agent can resume another's work. Evolved
+  into **Gas City** (Apr 25, 2026): Gas Town rewritten as an SDK
+  (`claude-gastown`/MEOW stack) for building arbitrary agent orchestrators.
 
 ## 4. How loops work in Claude Code
 
@@ -87,15 +91,30 @@ for ~3 months, with no single published cost figure.
   preview) are the cloud scheduling that survives the laptop being closed (min
   interval ~1 hr).
 - **Subagents** (the Task tool) spawn child agents with their own context that
-  report back; **Agent Teams** (experimental) add a shared task list + messaging.
+  report back. **As of v2.1.172 (June 10, 2026), sub-agents can themselves spawn
+  sub-agents up to 5 levels deep** — the first structural change to the
+  orchestration model since Dynamic Workflows. Each frame carries its own system
+  prompt and model; cost compounds geometrically with depth. **Agent Teams**
+  (experimental) add a shared task list + messaging.
 - **Dynamic Workflows** (`/workflows`, research preview) — Claude writes an
   orchestration script that fans one task across many parallel subagents in the
   background, with caps **baked into the runtime**: 16 concurrent agents, **1,000
   agents/workflow**, a per-run token budget, and worktree isolation. The native
   form of the orchestration-loop stage — guardrails enforced by the runtime, not
-  just your harness.
+  just your harness. Trigger keyword: **`ultracode`** (renamed from `workflow` in
+  v2.1.160, June 2, 2026).
 - **Observability** — `/usage` breaks spend down by skill / subagent / plugin /
-  MCP, which is how you find what a loop is actually costing.
+  MCP, which is how you find what a loop is actually costing. V2.1.174 added a
+  per-skill/agent/plugin/MCP attribution breakdown (cache misses, long context,
+  24h/7d) to the VS Code Account dialog.
+- **Model availability** — Claude Fable 5 (`claude-fable-5`; 1M context, $10/$50
+  per MTok I/O) launched in Claude Code v2.1.170 on June 9, 2026, then was
+  **suspended globally June 12–13, 2026** following a US government
+  export-control directive. All other models (Opus 4.8, Sonnet, Haiku) unaffected.
+- **Diagnostic flags** — `--safe-mode` / `CLAUDE_CODE_SAFE_MODE=1` (v2.1.169+)
+  disables all customizations (skills, hooks, MCP, plugins, themes) for debugging
+  without affecting auth. `fallbackModel` setting (v2.1.166+) chains up to three
+  fallback models tried in order on overload or error.
 - **Skills** — a `SKILL.md` (frontmatter + instructions) Claude invokes
   automatically or via `/name`. The "skills not prompts" durable asset:
   version-controlled, testable, loaded on demand. `/loop` itself is one.
@@ -107,7 +126,13 @@ check its own work; an open loop with no feedback is a machine for generating
 confident mistakes. Give every loop one deterministic check (`npm test`,
 `pytest`, `tsc --noEmit`, a linter) and run it *inside* the loop. Anthropic's
 name for the pattern: **evaluator-optimizer** (one model generates, another
-evaluates and feeds back). Tools like **roborev** operationalize this per-commit.
+evaluates and feeds back). Tools like **roborev** (v0.58.0, June 11, 2026;
+now includes aggregate review cost tracking and Kata integration) operationalize
+this per-commit. Anthropic's own **`security-guidance` plugin** (shipped Claude
+Code Week 22) embeds a three-tier check directly inside the coding session: fast
+pattern scan per edit → model review per turn → deeper agentic review on commit
+or push. Osmani's corollary (June 9, 2026): *"verification, not generation, is
+the next development bottleneck."*
 
 **B) The cost moved from tokens to loop management.** Once the model writes code
 for almost nothing, the expensive part is *running the loop* — every turn
@@ -123,14 +148,18 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   orgs have deployed agents) and predicts **>40% of agentic AI projects
   canceled by end of 2027**.
 
-**Pricing shift to watch:** effective **~June 15 2026**, Anthropic reportedly
-moves *programmatic* entry points — Agent SDK, `claude -p`, Claude Code GitHub
-Actions, subscription-authed third-party tools — off the subscription bucket onto
-a **separate metered credit pool billed at API list prices** (interactive use
-stays on subscription limits). Since unattended ralph/SDK loops run through
-exactly those entry points, this directly re-prices them. *(Medium confidence —
-secondary sources incl. Axios; confirm against a primary Anthropic notice before
-relying on it. See sources.md "to re-verify".)*
+**Pricing shift (effective June 15, 2026):** Anthropic moved *programmatic* entry
+points — Agent SDK, `claude -p`, Claude Code GitHub Actions, subscription-authed
+third-party tools — off the subscription bucket onto a **separate metered credit
+pool billed at API list prices** (interactive terminal/IDE use stays on
+subscription limits). Credit pool amounts: Pro ~$20/mo, Max 5× ~$100/mo, Max 20×
+~$200/mo, Team/Enterprise ~$100–$200/seat. **When the pool is exhausted, requests
+stop** unless the user enables overflow ("usage credits") — making the pool a
+de-facto hard cap for unattended loops. Since unattended ralph/SDK loops run
+through exactly these entry points, this directly re-prices them. *(High
+confidence — Anthropic Help Center `support.claude.com/articles/15036540`
+confirmed; announcement email May 13, 2026. Primary URL 403'd to automated fetch
+but confirmed in search index and consistent across 15+ independent outlets.)*
 
 ## 6. The three hard stops (non-negotiable)
 

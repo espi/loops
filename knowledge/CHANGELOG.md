@@ -71,6 +71,15 @@ versions, ecosystem, key voices, guardrails & cost, verification & skills.
   (@wesmckinn). Re-verify before citing.
 - **Fable 5 suspension**: no primary Anthropic URL confirmed.
 
+### Post-PR corrections (Jun 15, human-verified)
+
+- **Roborev creator**: confirmed **Wes McKinney** (@wesmckinn). Previous
+  attribution to Dan Kornas (a content creator) was wrong. Corrected in
+  sources.md; re-verify entry updated.
+- **Fable 5 suspension**: primary Anthropic notice confirmed at
+  `anthropic.com/news/fable-mythos-access` (403'd to automated fetch; URL
+  verified by user). Suspension confidence upgraded to **High**.
+
 ### Not promoted (evidence insufficient)
 
 - Stack Overflow for Agents (Jun 10 beta) — Medium, too peripheral to core loop

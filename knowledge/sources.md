@@ -84,10 +84,11 @@ Verified as of 2026-06-15. Re-check before relying on version numbers or dates.
 - **Claude Fable 5** (`claude-fable-5`) — launched Jun 9, 2026 (v2.1.170). 1M
   context, 128k output, $10/$50 per MTok I/O. Suspended globally Jun 12–13, 2026
   following US government export-control directive. Claude Mythos 5 also suspended.
-  All other models unaffected. — **High** (primary platform docs for launch);
-  **Medium** (multiple secondaries for suspension; no primary Anthropic statement URL read).
+  All other models unaffected. — **High** (both launch and suspension confirmed
+  via primary Anthropic sources; suspension notice 403'd to automated fetch but
+  URL confirmed by user).
   https://platform.claude.com/docs/en/about-claude/models/introducing-claude-fable-5-and-claude-mythos-5 ·
-  https://www.marktechpost.com/2026/06/13/anthropic-disables-claude-fable-5-and-mythos-5-after-us-government-order/
+  https://www.anthropic.com/news/fable-mythos-access
 - **`security-guidance` plugin** (Anthropic, Week 22, May 29, 2026) — 3-tier
   review-in-the-loop: fast pattern scan per edit, model review per turn, deeper
   agentic review on commit/push. **High** (official Week 22 docs).
@@ -100,9 +101,8 @@ Verified as of 2026-06-15. Re-check before relying on version numbers or dates.
 - Agent Skills overview — **High**.
   https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview ·
   https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
-- roborev (continuous per-commit review) — **High** (GitHub releases read
-  directly). Creator attribution: KB originally said Dan Kornas; new research
-  attributes it to Wes McKinney (@wesmckinn) — see re-verify list.
+- roborev (continuous per-commit review, **Wes McKinney** (@wesmckinn)) — **High**
+  (GitHub releases read directly).
   v0.57.1 (Jun 9, 2026): Windows archive fixes, daemon route, TUI performance.
   v0.58.0 (Jun 11, 2026): Kata integration, branch filtering for hooks, queue
   pause/resume, **aggregate review cost tracking**, generated public daemon client.
@@ -160,9 +160,8 @@ Verified as of 2026-06-15. Re-check before relying on version numbers or dates.
   talk/tweets; the public README is more modest. Re-check as it matures.
 - Steinberger / Osmani "Loop Engineering" verbatim — primary X/Substack URLs
   403'd; quotes are snippet-sourced.
-- **Roborev creator**: KB previously said Dan Kornas; June 2026 research
-  attributes creation to Wes McKinney (@wesmckinn, author of Pandas). Re-verify
-  against a primary roborev source (README / About page) before citing a creator.
-- **Fable 5 / Mythos 5 suspension**: Multiple secondary sources consistent on the
-  US government export-control directive; no primary Anthropic statement URL was
-  directly accessible. Verify via anthropic.com/news or status.anthropic.com.
+- **Roborev creator confirmed**: Wes McKinney (@wesmckinn, author of Pandas).
+  Previous KB said Dan Kornas (a content creator, not the author). Corrected.
+- **Fable 5 / Mythos 5 suspension confirmed**: Primary Anthropic notice at
+  https://www.anthropic.com/news/fable-mythos-access (verified by user; 403'd
+  to automated fetch). Promoted to High.

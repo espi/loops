@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-06-15.
+> The canonical briefing for this repo. Last substantive update: 2026-06-22.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -94,8 +94,12 @@ for ~3 months, with no single published cost figure.
   report back. **As of v2.1.172 (June 10, 2026), sub-agents can themselves spawn
   sub-agents up to 5 levels deep** — the first structural change to the
   orchestration model since Dynamic Workflows. Each frame carries its own system
-  prompt and model; cost compounds geometrically with depth. **Agent Teams**
-  (experimental) add a shared task list + messaging.
+  prompt and model; cost compounds geometrically with depth. **As of v2.1.181
+  (June 17, 2026), foreground subagents are also capped at 5 levels** — closing
+  a gap where foreground chains were previously uncapped. **Agent Teams**
+  (experimental, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`): as of v2.1.178
+  (June 15, 2026), every session has one implicit team; `TeamCreate`/`TeamDelete`
+  removed. Spawn teammates via `Agent(name:...)`.
 - **Dynamic Workflows** (`/workflows`, research preview) — Claude writes an
   orchestration script that fans one task across many parallel subagents in the
   background, with caps **baked into the runtime**: 16 concurrent agents, **1,000
@@ -107,17 +111,34 @@ for ~3 months, with no single published cost figure.
   MCP, which is how you find what a loop is actually costing. V2.1.174 added a
   per-skill/agent/plugin/MCP attribution breakdown (cache misses, long context,
   24h/7d) to the VS Code Account dialog.
-- **Model availability** — Claude Fable 5 (`claude-fable-5`; 1M context, $10/$50
-  per MTok I/O) launched in Claude Code v2.1.170 on June 9, 2026, then was
-  **suspended globally June 12–13, 2026** following a US government
-  export-control directive. All other models (Opus 4.8, Sonnet, Haiku) unaffected.
+- **Model availability** — **Claude Fable 5** (`claude-fable-5`; 1M context,
+  128k output, $10/$50 per MTok I/O) launched June 9, 2026 (v2.1.170), was
+  briefly suspended June 12–13 following a US government export-control
+  directive, and is **back on the platform** as of June 22, 2026. **Claude
+  Mythos 5** (`claude-mythos-5`) — limited availability via Project Glasswing
+  since June 9; same pricing and context. **Claude Opus 4.1 is deprecated**
+  (retiring August 5, 2026). All other models (Opus 4.8, Sonnet, Haiku)
+  unaffected.
 - **Diagnostic flags** — `--safe-mode` / `CLAUDE_CODE_SAFE_MODE=1` (v2.1.169+)
   disables all customizations (skills, hooks, MCP, plugins, themes) for debugging
   without affecting auth. `fallbackModel` setting (v2.1.166+) chains up to three
-  fallback models tried in order on overload or error.
+  fallback models tried in order on overload or error. `/config key=value`
+  (v2.1.181+) sets any config key from the prompt in any mode.
 - **Skills** — a `SKILL.md` (frontmatter + instructions) Claude invokes
   automatically or via `/name`. The "skills not prompts" durable asset:
   version-controlled, testable, loaded on demand. `/loop` itself is one.
+  As of v2.1.178, skills in **nested `.claude/skills/` directories** load
+  automatically; on name clash, both appear as `<dir>:<name>`.
+- **`Tool(param:value)` permission rule syntax** (v2.1.178+) — match a tool's
+  input parameters in permission rules using `*` wildcards: `Agent(model:opus)`
+  blocks Opus subagents; `Bash(cmd:rm*)` restricts shell calls. Useful for
+  fine-grained guardrail hooks in loop harnesses.
+- **Auto mode safety hardening** (v2.1.183, June 19, 2026) — destructive git
+  commands (`git reset --hard`, `git checkout -- .`, `git clean -fd`,
+  `git stash drop`, `git commit --amend` on commits not made by the agent this
+  session) and IaC destroys (`terraform`/`pulumi`/`cdk destroy`) are now blocked
+  by default in auto mode unless explicitly requested. Directly relevant to
+  loops that run git or infrastructure operations autonomously.
 
 ## 5. The two things the hype skips
 
@@ -132,7 +153,12 @@ this per-commit. Anthropic's own **`security-guidance` plugin** (shipped Claude
 Code Week 22) embeds a three-tier check directly inside the coding session: fast
 pattern scan per edit → model review per turn → deeper agentic review on commit
 or push. Osmani's corollary (June 9, 2026): *"verification, not generation, is
-the next development bottleneck."*
+the next development bottleneck."* His follow-up essay "Agentic Code Review"
+(June 16, 2026) quantified the gap across four independent 2026 datasets: AI
+adoption **quadruples code volume** while delivering only **~12% real
+productivity gain**; defect rates up from **9% to 54%**; code review times up
+**441%**; zero-review merges up **31%**. Key finding: *"the hard part of
+engineering moved from writing code to deciding whether to trust it."*
 
 **B) The cost moved from tokens to loop management.** Once the model writes code
 for almost nothing, the expensive part is *running the loop* — every turn
@@ -147,19 +173,25 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
 - **Gartner** puts agentic AI at the "Peak of Inflated Expectations" (~17% of
   orgs have deployed agents) and predicts **>40% of agentic AI projects
   canceled by end of 2027**.
+- **Microsoft** cancelled most internal Claude Code licenses in its Experiences
+  & Devices division, effective June 30, 2026, after per-engineer costs reached
+  $500–$2,000/month. Engineers redirected to GitHub Copilot CLI. *(Medium —
+  multiple tech outlets.)*
 
-**Pricing shift (effective June 15, 2026):** Anthropic moved *programmatic* entry
-points — Agent SDK, `claude -p`, Claude Code GitHub Actions, subscription-authed
-third-party tools — off the subscription bucket onto a **separate metered credit
-pool billed at API list prices** (interactive terminal/IDE use stays on
-subscription limits). Credit pool amounts: Pro ~$20/mo, Max 5× ~$100/mo, Max 20×
-~$200/mo, Team/Enterprise ~$100–$200/seat. **When the pool is exhausted, requests
-stop** unless the user enables overflow ("usage credits") — making the pool a
-de-facto hard cap for unattended loops. Since unattended ralph/SDK loops run
-through exactly these entry points, this directly re-prices them. *(High
-confidence — Anthropic Help Center `support.claude.com/articles/15036540`
-confirmed; announcement email May 13, 2026. Primary URL 403'd to automated fetch
-but confirmed in search index and consistent across 15+ independent outlets.)*
+**Pricing shift (announced May 2026; paused June 15, 2026):** Anthropic announced
+it would move *programmatic* entry points — Agent SDK, `claude -p`, Claude Code
+GitHub Actions, subscription-authed third-party tools — off the subscription
+bucket onto a **separate metered credit pool billed at API list prices**
+(Pro ~$20/mo, Max 5× ~$100/mo, Max 20× ~$200/mo, Team/Enterprise ~$100–$200/seat).
+On June 15, 2026 — the scheduled effective date — **Anthropic reversed course**:
+Agent SDK billing remains on existing subscription limits until further notice;
+advance notice will be given before any revised plan launches. The original plan
+would have meant 12–175× effective price increases for heavy programmatic users.
+The credit-pool architecture (and its hard-stop-on-exhaustion mechanic when the
+pool is exhausted and overflow disabled) is the structure to track when the change
+eventually lands. *(Pause: High — multiple outlets consistent. Original plan:
+High — Anthropic Help Center `support.claude.com/articles/15036540` confirmed,
+15+ independent outlets.)*
 
 ## 6. The three hard stops (non-negotiable)
 

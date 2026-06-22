@@ -3,6 +3,85 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-06-22 — Seven-day follow-up pass
+
+Research pass covering June 15–22, 2026. Five parallel agents across: tooling &
+versions, ecosystem, key voices, guardrails & cost, verification & skills.
+Primary source for Claude Code: changelog read directly at code.claude.com.
+
+### Critical correction
+
+- **Anthropic billing split PAUSED** (June 15, 2026): The primer previously said
+  the billing split was "effective June 15, 2026." Anthropic reversed course on
+  the effective date itself — billing for Agent SDK, `claude -p`, and GitHub
+  Actions remains on existing subscription limits until further notice. The
+  credit-pool architecture (hard stop on exhaustion) remains the structure to
+  watch. **High** (multiple independent outlets). Primer corrected; sources.md
+  updated.
+
+### New facts added
+
+- **Foreground subagents now also capped at 5 levels** (v2.1.181, Jun 17, 2026):
+  Previously only background chains were depth-limited. Foreground chains now
+  also respect the 5-level cap. **High** (official changelog).
+
+- **Agent Teams now implicit** (v2.1.178, Jun 15, 2026): `TeamCreate`/`TeamDelete`
+  tools removed; every session with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` now
+  has one implicit team. Spawn teammates via `Agent(name:...)`. **High**.
+
+- **`Tool(param:value)` permission rule syntax** (v2.1.178, Jun 15, 2026): match
+  a tool's input parameters with `*` wildcards in permission rules — e.g.,
+  `Agent(model:opus)` to block Opus subagents. **High**.
+
+- **Nested `.claude/skills/` directories** now load automatically (v2.1.178).
+  Name clashes appear as `<dir>:<name>`. **High**.
+
+- **`/config key=value`** prompt syntax (v2.1.181) sets any config key inline in
+  any mode. **High**.
+
+- **Auto mode safety hardening** (v2.1.183, Jun 19, 2026): destructive git
+  commands (`git reset --hard`, `git checkout -- .`, `git clean -fd`,
+  `git stash drop`, `git commit --amend` on non-agent commits) and IaC destroy
+  commands are blocked by default unless explicitly requested. **High**.
+
+- **Claude Fable 5 reinstatement**: suspension (Jun 12–13) was short-lived;
+  platform docs confirm Fable 5 available as of Jun 22. **Claude Mythos 5**
+  available via Project Glasswing (limited). **Claude Opus 4.1 deprecated**,
+  retiring August 5, 2026. **High** (platform docs read directly).
+
+- **Osmani "Agentic Code Review"** (June 16, 2026): four-dataset empirical
+  analysis — AI adoption quadruples code volume but ~12% real productivity gain;
+  defect rates 9%→54%; review times +441%; zero-review merges +31%. Directly
+  quantifies the verification bottleneck thesis. **Medium** (primary URLs 403'd;
+  consistent across multiple aggregators).
+
+- **Microsoft dropping Claude Code** (Experiences & Devices division, effective
+  June 30, 2026): per-engineer costs $500–$2,000/month drove the cancellation;
+  engineers redirected to Copilot CLI. **Medium** (multiple tech outlets).
+
+- **Databricks Unity AI Gateway hard spend caps** (announced Jun 15–18, 2026
+  Data+AI Summit): hard enforcement stops requests at budget limit, not just
+  alerts; granular by user/team/tool. **Medium-High**.
+
+### Confidence upgrades
+
+- **Fable 5 / Mythos 5 suspension** removed from "to re-verify" — resolved.
+- **Billing split**: "to re-verify" entry updated to reflect pause; watch for
+  revised plan announcement.
+
+### Not promoted (evidence insufficient or out of scope)
+
+- Yegge "The Flat Curve Society" (~Jun 19) — about model capability plateau,
+  not loop patterns. Added to sources.md as context; not in primer.
+- Loop Engineering Orange Book (alchaincyf, Jun 15 GitHub) — community guide,
+  not primary source; noted in sources.md only.
+- LangChain "Art of Loop Engineering" (Jun 16) — Medium confidence, no primary
+  fetch; ecosystem signal only.
+- arXiv skill-evaluation papers (Jun 6–9 submission) — academic, not yet
+  operational; added to sources.md under Verification.
+- SDK TaskUpdatedMessage typed events (0.2.101) — too implementation-specific
+  for primer; noted in changelog entry only.
+
 ## 2026-06-15 — Six-day follow-up pass
 
 Research pass covering June 9–15, 2026. Five parallel agents across: tooling &

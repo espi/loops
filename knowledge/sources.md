@@ -21,13 +21,18 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   https://ghuntley.com/ralph/ ·
   https://github.com/ghuntley/how-to-ralph-wiggum ·
   CURSED: https://ghuntley.com/cursed/
-- `/goal` in Codex (Apr 30 2026) — **High**.
-  https://simonwillison.net/2026/Apr/30/codex-goals/
+- `/goal` in Codex (Apr 30 2026; GA May 21 2026) — **High** (Codex shipping the
+  same validator-model stop-condition pattern is cross-industry confirmation that
+  the "fresh model judges done" fix is the durable answer to AutoGPT's open loop).
+  https://simonwillison.net/2026/Apr/30/codex-goals/ ·
+  https://github.com/openai/codex/releases
 
 ## Key voices
 
 - Steinberger "design loops that prompt your agents" — **High** (verbatim).
   https://x.com/steipete/status/2063697162748260627 · blog https://steipete.me/
+  Note: Steinberger joined OpenAI in February 2026; the loops/skills advocacy
+  predates that role. — **Medium** (secondary).
 - Boris Cherny "my job is to write loops" — **High**.
   https://workos.com/blog/boris-cherny-claude-code-acquired-interview-takeaways ·
   talk https://www.youtube.com/watch?v=RkQQ7WEor7w
@@ -125,11 +130,22 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
 - Agent Skills overview — **High**.
   https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview ·
   https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
+- **Agent Skills open standard** (Dec 18, 2025): Anthropic open-sourced the spec,
+  governance donated to the Agentic AI Foundation (Linux Foundation); adopters
+  include Codex CLI, GitHub Copilot, Cursor, VS Code — a skill built for Claude
+  Code is portable across platforms. Custom commands (`.claude/commands/`) merged
+  into skills; `run: subagent` frontmatter added. — **Medium** (primary Anthropic
+  blog 403'd; multiple secondaries consistent; primary docs High).
+  https://siliconangle.com/2025/12/18/anthropic-makes-agent-skills-open-standard/ ·
+  https://code.claude.com/docs/en/skills
 - roborev (continuous per-commit review, **Wes McKinney** (@wesmckinn)) — **High**
   (GitHub releases read directly).
   v0.57.1 (Jun 9, 2026): Windows archive fixes, daemon route, TUI performance.
   v0.58.0 (Jun 11, 2026): Kata integration, branch filtering for hooks, queue
   pause/resume, **aggregate review cost tracking**, generated public daemon client.
+  Now ships an installable `$roborev-review` Agent Skill (`roborev skills install`)
+  with a `--panel N` flag that fans a commit review to N independent reviewer
+  subagents whose verdicts are synthesized before surfacing.
   https://github.com/roborev-dev/roborev/releases · https://www.roborev.io/
 
 ## Guardrails & cost
@@ -169,6 +185,34 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   alerts); granular controls by user/team/tool/use-case. — **Medium-High**
   (Databricks blog confirmed via search; direct fetch 403'd).
   https://www.databricks.com/blog/ai-governance-data-ai-summit-2026-whats-new-unity-ai-gateway
+- GitHub Copilot token-based billing (eff. Jun 1, 2026): reported costs jumping
+  from $29/mo to $750/mo for heavy agentic use patterns. — **High** (GitHub
+  official blog + TechCrunch).
+  https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/ ·
+  https://techcrunch.com/2026/05/30/what-a-joke-github-copilots-new-token-based-billing-spurs-consternation-among-devs/
+- Goldman Sachs "Decoding the Agentic Economy" (May 8, 2026): projects 24× token
+  demand increase by 2030 as agentic workflows dominate. — **High** (Goldman
+  Sachs primary).
+  https://www.goldmansachs.com/insights/articles/ai-agents-forecast-to-boost-tech-cash-flow-as-usage-soars
+- TechCrunch runaway-cost roundup (Jun 5, 2026): $6,000 overnight run, $2,847
+  four-hour runaway, $4,200 long-weekend refactor — self-reported anecdotes. —
+  **Medium** (TechCrunch primary; individual figures self-reported).
+  https://techcrunch.com/2026/06/05/the-token-bill-comes-due-inside-the-industry-scramble-to-manage-ais-runaway-costs/
+- Anthropic Rate Limits API (Apr 25, 2026): programmatic read access to org/
+  workspace rate limits; enables gateways and spend-alert integrations — a hook
+  for building the §6 budget ceiling. — **High** (primary Anthropic docs).
+  https://platform.claude.com/docs/en/manage-claude/rate-limits-api
+- Anthropic Claude Code Analytics Admin API (Mar 2026): per-user estimated costs,
+  productivity metrics, multi-model cost breakdowns. — **High** (primary docs).
+  https://docs.anthropic.com/en/api/claude-code-analytics-api
+- Gartner governance press release (May 26, 2026): 40% of enterprises will
+  demote/decommission production agents by end of 2027 due to governance gaps
+  found post-deployment; "FinOps for agentic AI" added to the Hype Cycle;
+  guardian agents (agents monitoring other agents for scope drift/hallucination)
+  projected at 10–15% of the agentic-AI market by 2030. — **High** (Gartner
+  newsroom canonical URL; direct fetch 403'd, confirmed across multiple
+  independent secondaries).
+  https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure
 
 ## Ecosystem (newer than the seed)
 

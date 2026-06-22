@@ -3,6 +3,39 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-06-22 — PR triage: salvage from the orphaned 06-09 second pass
+
+Resolved two open PRs so the repo best represents the research they held.
+
+- **PR #3** (2026-06-22 pass) **merged** — current and built on `main`; carries
+  the critical billing-split-paused correction.
+- **PR #1** ("second update pass", opened 2026-06-09 from a stale base) **closed
+  without merging** — superseded by the later 06-15 pass (PR #2, merged) and the
+  06-22 pass. Merging it would have regressed dates and reintroduced two claims
+  later corrected: the billing split as "confirmed/effective Jun 15" (actually
+  *paused*) and roborev's author as "Dan Kornas" (actually **Wes McKinney**).
+
+Before closing PR #1, the unique, still-valid research it contained — absent
+from both later passes — was salvaged into the KB:
+
+- **Cost/guardrails** (sources.md §Guardrails & cost + primer §5B): GitHub
+  Copilot token billing ($29→$750, Jun 1); Goldman Sachs 24× token demand by
+  2030; TechCrunch runaway roundup ($6K/$2,847/$4,200, Jun 5); Anthropic **Rate
+  Limits API** (Apr 25) and **Claude Code Analytics Admin API** (Mar 2026) as
+  programmatic spend-enforcement hooks (also added to primer §6); Gartner
+  governance press release (40% demote/decommission by 2027, "FinOps for agentic
+  AI", guardian agents 10–15% by 2030).
+- **Verification & skills**: the **Agent Skills open standard** (Dec 18, 2025,
+  Linux Foundation / AAIF; cross-platform adopters; commands merged into skills)
+  — primer §4 + sources.md; roborev `$roborev-review` installable skill and
+  `--panel N` multi-reviewer fan-out added to the existing roborev entry.
+- **Ecosystem / voices**: Codex `/goal` GA (May 21) noted as cross-industry
+  confirmation of the validator-model pattern; Steinberger joined OpenAI (Feb
+  2026) context note.
+
+Deliberately *not* salvaged: anything already in `main`, and PR #1's two
+later-corrected claims above.
+
 ## 2026-06-22 — Seven-day follow-up pass
 
 Research pass covering June 15–22, 2026. Five parallel agents across: tooling &

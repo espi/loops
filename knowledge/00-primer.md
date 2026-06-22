@@ -128,7 +128,11 @@ for ~3 months, with no single published cost figure.
   automatically or via `/name`. The "skills not prompts" durable asset:
   version-controlled, testable, loaded on demand. `/loop` itself is one.
   As of v2.1.178, skills in **nested `.claude/skills/` directories** load
-  automatically; on name clash, both appear as `<dir>:<name>`.
+  automatically; on name clash, both appear as `<dir>:<name>`. Since Dec 2025
+  the **Agent Skills spec is an open standard** (Anthropic-authored, now under
+  the Agentic AI Foundation / Linux Foundation), adopted by Codex CLI, Copilot,
+  Cursor, and VS Code — a skill written here is portable across those tools;
+  custom commands (`.claude/commands/`) have been folded into skills.
 - **`Tool(param:value)` permission rule syntax** (v2.1.178+) — match a tool's
   input parameters in permission rules using `*` wildcards: `Agent(model:opus)`
   blocks Opus subagents; `Bash(cmd:rm*)` restricts shell calls. Useful for
@@ -177,6 +181,17 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   & Devices division, effective June 30, 2026, after per-engineer costs reached
   $500–$2,000/month. Engineers redirected to GitHub Copilot CLI. *(Medium —
   multiple tech outlets.)*
+- The re-pricing is industry-wide: **GitHub Copilot** moved to token-based
+  billing June 1, 2026 (reported $29→$750/mo for heavy agentic use), and
+  **Goldman Sachs** projects token demand rising **24× by 2030**. A June 5 2026
+  TechCrunch roundup logged a **$6,000 overnight run**, a **$2,847 four-hour**
+  runaway, and a **$4,200 long-weekend** refactor — the same failure mode at
+  smaller scale than the $47K/$500M headlines. *(High / Medium per source.)*
+- Beyond the cancellation stat, **Gartner** predicts 40% of enterprises will
+  **demote or decommission** production agents by end of 2027 over governance
+  gaps, names **"FinOps for agentic AI"** as an emerging discipline, and expects
+  **guardian agents** (agents watching agents for scope drift) to be 10–15% of
+  the market by 2030. *(High.)*
 
 **Pricing shift (announced May 2026; paused June 15, 2026):** Anthropic announced
 it would move *programmatic* entry points — Agent SDK, `claude -p`, Claude Code
@@ -204,7 +219,11 @@ first-class params (`max_turns`, `max_budget_usd`).
    `LoopGuard`).
 3. **Token/dollar budget ceiling** — a hard *enforcement* stop, not an alert.
    The billing layer has soft alerts but won't auto-disable, so the ceiling
-   lives in your harness.
+   lives in your harness. For programmatic enforcement, Anthropic's **Rate
+   Limits API** (Apr 25, 2026) and **Claude Code Analytics Admin API** (Mar
+   2026) expose org/workspace limits and per-user estimated cost, so a gateway
+   can read spend and cut the loop off; third-party gateways (e.g. Databricks
+   Unity AI Gateway) now hard-stop requests at a budget rather than just alert.
 
 ## 7. The one-paragraph answer
 

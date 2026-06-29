@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-06-22.
+> The canonical briefing for this repo. Last substantive update: 2026-06-29.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -62,7 +62,13 @@ for ~3 months, with no single published cost figure.
   most important thing"* — **give the agent a way to verify its own work
   end-to-end.** By June 2026 he added: *"I haven't written a line of code by
   hand in... eight months now"* and, on Routines: *"I'm not doing the prompting
-  — I create the routines that do the prompting."*
+  — I create the routines that do the prompting."* At Meta @Scale (June 22,
+  2026) he framed the next transition: *"Two years ago, we wrote source code
+  by hand. We started to transition so agents write the code. And now we're
+  transitioning to the point where agents are prompting agents that then write
+  the code"* — *"as big a step as source code → agents."* His production
+  example: architecture-improvement and abstraction-deduplication agents
+  running as **permanent background loops** that submit PRs continuously.
 - **Steve Yegge's "Gas Town"** (open source, Jan 2026) — canonical orchestration
   loop: 20–30 Claude Code instances, a **Mayor** coordinator, background
   **patrol** loops (the "Deacon" watchdog tier), and **git-worktree-backed
@@ -123,7 +129,15 @@ for ~3 months, with no single published cost figure.
   disables all customizations (skills, hooks, MCP, plugins, themes) for debugging
   without affecting auth. `fallbackModel` setting (v2.1.166+) chains up to three
   fallback models tried in order on overload or error. `/config key=value`
-  (v2.1.181+) sets any config key from the prompt in any mode.
+  (v2.1.181+) sets any config key from the prompt in any mode. **`/rewind`**
+  (v2.1.191, June 24, 2026) resumes a conversation from the state before the
+  last `/clear` — useful when a loop clears context mid-run and you need to
+  recover.
+- **Auto-mode observability** (v2.1.193, June 25, 2026) — `autoMode.classifyAllShell`
+  setting routes all Bash/PowerShell commands through the auto-mode classifier,
+  not just agent-approved ones. Auto-mode denial reasons now appear in the
+  transcript, denial toast, and `/permissions` UI — directly useful for
+  diagnosing why a loop stalls.
 - **Skills** — a `SKILL.md` (frontmatter + instructions) Claude invokes
   automatically or via `/name`. The "skills not prompts" durable asset:
   version-controlled, testable, loaded on demand. `/loop` itself is one.
@@ -131,18 +145,28 @@ for ~3 months, with no single published cost figure.
   automatically; on name clash, both appear as `<dir>:<name>`. Since Dec 2025
   the **Agent Skills spec is an open standard** (Anthropic-authored, now under
   the Agentic AI Foundation / Linux Foundation), adopted by Codex CLI, Copilot,
-  Cursor, and VS Code — a skill written here is portable across those tools;
-  custom commands (`.claude/commands/`) have been folded into skills.
+  Cursor, VS Code, and ~40 additional products as of June 2026 — a skill
+  written here is portable across those tools; custom commands
+  (`.claude/commands/`) have been folded into skills.
 - **`Tool(param:value)` permission rule syntax** (v2.1.178+) — match a tool's
   input parameters in permission rules using `*` wildcards: `Agent(model:opus)`
-  blocks Opus subagents; `Bash(cmd:rm*)` restricts shell calls. Useful for
-  fine-grained guardrail hooks in loop harnesses.
+  blocks Opus subagents; `Bash(cmd:rm*)` restricts shell calls. **Tool-name
+  glob patterns** in deny/ask rules also supported (e.g., `mcp__*` blocks all
+  MCP tools); allow rules accept globs only after a literal `mcp__<server>__`
+  prefix. Useful for fine-grained guardrail hooks in loop harnesses.
 - **Auto mode safety hardening** (v2.1.183, June 19, 2026) — destructive git
   commands (`git reset --hard`, `git checkout -- .`, `git clean -fd`,
   `git stash drop`, `git commit --amend` on commits not made by the agent this
   session) and IaC destroys (`terraform`/`pulumi`/`cdk destroy`) are now blocked
   by default in auto mode unless explicitly requested. Directly relevant to
   loops that run git or infrastructure operations autonomously.
+- **Hook matcher fix for hyphenated MCP names** (v2.1.195, June 26, 2026) —
+  hook `if` matchers with hyphenated MCP server names (e.g., `mcp__brave-search`)
+  were previously substring-matching unrelated tools; now exact-match only.
+  Affects targeted guardrail hooks that restrict specific MCP servers.
+- **Claude Code Artifacts** (beta, June 18, 2026; Team/Enterprise) — sessions
+  can produce an interactive single-page HTML artifact (≤16 MiB rendered) from
+  the work done; a new output type alongside files and PRs.
 
 ## 5. The two things the hype skips
 
@@ -151,18 +175,26 @@ check its own work; an open loop with no feedback is a machine for generating
 confident mistakes. Give every loop one deterministic check (`npm test`,
 `pytest`, `tsc --noEmit`, a linter) and run it *inside* the loop. Anthropic's
 name for the pattern: **evaluator-optimizer** (one model generates, another
-evaluates and feeds back). Tools like **roborev** (v0.58.0, June 11, 2026;
-now includes aggregate review cost tracking and Kata integration) operationalize
-this per-commit. Anthropic's own **`security-guidance` plugin** (shipped Claude
-Code Week 22) embeds a three-tier check directly inside the coding session: fast
-pattern scan per edit → model review per turn → deeper agentic review on commit
-or push. Osmani's corollary (June 9, 2026): *"verification, not generation, is
-the next development bottleneck."* His follow-up essay "Agentic Code Review"
-(June 16, 2026) quantified the gap across four independent 2026 datasets: AI
-adoption **quadruples code volume** while delivering only **~12% real
-productivity gain**; defect rates up from **9% to 54%**; code review times up
-**441%**; zero-review merges up **31%**. Key finding: *"the hard part of
-engineering moved from writing code to deciding whether to trust it."*
+evaluates and feeds back). Addy Osmani's canonical loop-turn anatomy (O'Reilly
+Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
+**verification** → **persistence** → **scheduling**; verification is the pivot
+that distinguishes a loop from a one-shot generation. Tools like **roborev**
+(v0.58.0, June 11, 2026; now includes aggregate review cost tracking and Kata
+integration) operationalize this per-commit. Anthropic's own **`security-guidance`
+plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
+inside the coding session: fast pattern scan per edit → model review per turn →
+deeper agentic review on commit or push. Osmani's corollary (June 9, 2026):
+*"verification, not generation, is the next development bottleneck."* His
+follow-up essay "Agentic Code Review" (June 16, 2026) quantified the gap across
+four independent 2026 datasets: AI adoption **quadruples code volume** while
+delivering only **~12% real productivity gain**; defect rates up from **9% to
+54%**; code review times up **441%**; zero-review merges up **31%**. Key
+finding: *"the hard part of engineering moved from writing code to deciding
+whether to trust it."* **Skills supply-chain risk**: a Snyk audit of 3,984+
+public Agent Skills (ToxicSkills report, June 23, 2026) found prompt injection
+vulnerabilities in **36%** and critical issues (malware distribution, exposed
+secrets) in **13.4%** — treat untrusted public skills as untrusted dependencies
+and audit before importing into a loop harness.
 
 **B) The cost moved from tokens to loop management.** Once the model writes code
 for almost nothing, the expensive part is *running the loop* — every turn

@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
+Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -70,6 +70,24 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   search sets; Medium 403'd; quotes from search extracts).
   https://steve-yegge.medium.com/the-flat-curve-society-36c8b01eb33b ·
   https://x.com/Steve_Yegge/status/2067816148775956952
+- Boris Cherny at Meta @Scale (June 22, 2026): "Two years ago, we wrote source
+  code by hand. We started to transition so agents write the code. And now
+  we're transitioning to the point where agents are prompting agents that then
+  write the code." Loops are "as big a step as source code → agents." Production
+  example: architecture and deduplication agents running as permanent background
+  loops submitting PRs. — **High** (TechCrunch direct conference reporting).
+  https://techcrunch.com/2026/06/22/the-ai-world-is-getting-loopy/
+- Osmani "Loop Engineering" (O'Reilly Radar + Substack, June 22, 2026): formal
+  definition of loop engineering for a mainstream audience; five moves of a
+  loop turn: discovery / handoff / verification / persistence / scheduling. —
+  **High** (primary sources directly accessible).
+  https://oreillyradar.substack.com/p/loop-engineering ·
+  https://addyo.substack.com/p/loop-engineering
+- The Register, "loop engineering, latest AI buzzword, still needs humans in
+  the loop" (June 24, 2026): editorial critique; notes automated graders can
+  confirm link resolution but not framing correctness. — **High** (professional
+  journalism). Peripheral to primer but useful counter-context.
+  https://www.theregister.com/ai-and-ml/2026/06/24/loop-engineering-latest-ai-buzzword-still-needs-humans-in-the-loop/5261735
 
 ## Claude Code mechanics (official docs — High)
 
@@ -91,8 +109,9 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   https://code.claude.com/docs/en/workflows · https://code.claude.com/docs/en/whats-new/2026-w22
 - `/usage` spend breakdown by skill/subagent/plugin/MCP. **High** (docs).
   https://code.claude.com/docs/en/whats-new
-- **Claude Code changelog** (primary; v2.1.170–185, Jun 9–20, 2026) — **High**.
-  https://code.claude.com/docs/en/changelog
+- **Claude Code changelog** (primary; v2.1.170–195, Jun 9–26, 2026) — **High**.
+  https://code.claude.com/docs/en/changelog ·
+  https://github.com/anthropics/claude-code/releases
   Key loop-relevant changes: v2.1.172 — 5-level nested sub-agents; v2.1.174 —
   usage attribution breakdown in VS Code Account dialog; v2.1.176 — hook `if`
   path-pattern fix; v2.1.178 (Jun 15) — agent teams implicit, `Tool(param:value)`
@@ -100,7 +119,22 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   foreground subagents also capped at 5 levels, `/config key=value`,
   `CLAUDE_CLIENT_PRESENCE_FILE`; v2.1.183 (Jun 19) — auto mode blocks destructive
   git/IaC commands, `attribution.sessionUrl`; v2.1.185 (Jun 20) — stream-stall
-  threshold raised to 20s.
+  threshold raised to 20s; **v2.1.191 (Jun 24)** — `/rewind` command, ~37% CPU
+  reduction in streaming via coalescing, MCP OAuth headless improvement, sandbox
+  network host memory; **v2.1.193 (Jun 25)** — `autoMode.classifyAllShell`
+  setting, denial reasons in transcript/UI, bash `!`-autocomplete,
+  `claude_code.assistant_response` OpenTelemetry event; **v2.1.195 (Jun 26)** —
+  hook matcher fix for hyphenated MCP names (now exact-match),
+  `CLAUDE_CODE_DISABLE_MOUSE_CLICKS`, voice dictation fixes.
+- **Claude Code Artifacts** (beta, June 18, 2026) — interactive single-page
+  HTML artifacts ≤16 MiB generated from session work; Team/Enterprise only.
+  **High** (official Anthropic blog).
+  https://claude.com/blog/artifacts-in-claude-code
+- **Permission tool-name globs** (deny/ask rules, documented Jun 2026) —
+  `mcp__*` in a deny rule blocks all MCP tools; allow rules accept globs only
+  after a literal `mcp__<server>__` prefix; unanchored allow globs rejected with
+  a warning. **High** (official permissions docs).
+  https://code.claude.com/docs/en/permissions
 - **`--safe-mode`** / `CLAUDE_CODE_SAFE_MODE=1` (v2.1.169+) — **High** (changelog).
   Disables all customizations for debugging (auth and model still work).
 - **`fallbackModel` setting** (v2.1.166+) — chains up to 3 fallback models on
@@ -147,6 +181,18 @@ Verified as of 2026-06-22. Re-check before relying on version numbers or dates.
   with a `--panel N` flag that fans a commit review to N independent reviewer
   subagents whose verdicts are synthesized before surfacing.
   https://github.com/roborev-dev/roborev/releases · https://www.roborev.io/
+
+- **Snyk ToxicSkills** (June 23, 2026): Audit of 3,984+ public Agent Skills
+  (ClaWHub marketplace) — prompt injection vulnerabilities in **36%** of skills;
+  **13.4%** contain critical-level issues (malware distribution, exposed secrets,
+  prompt injection attacks). Treat public skills as untrusted dependencies.
+  **High** (Snyk primary report).
+  https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/
+- **Praxen** (open-source, June 24, 2026): AI agent behavior verification tool
+  using role-based authorization model; assigns agents authorized roles and
+  verifies controls hold them to spec. Maturity unassessed — too new for primer.
+  **High** (Help Net Security + open-source repo).
+  https://www.helpnetsecurity.com/2026/06/24/praxen-open-source-ai-agent-behavior-verification/
 
 ## Guardrails & cost
 

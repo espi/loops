@@ -3,6 +3,85 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-06-29 — Seven-day follow-up pass
+
+Research pass covering June 22–29, 2026. Five parallel agents across: tooling &
+versions, ecosystem, key voices, guardrails & cost, verification & skills.
+Primary sources: official GitHub releases (v2.1.191/193/195), Anthropic blog,
+TechCrunch, O'Reilly Radar, Snyk.
+
+### New facts added
+
+- **Claude Code v2.1.191 (June 24)**: `/rewind` command resumes a conversation
+  from the state before the last `/clear`. CPU usage during streaming cut ~37%
+  via text-update coalescing to 100ms. MCP OAuth in headless environments skips
+  the browser popup and presents a paste-the-URL prompt directly. Sandbox
+  network host approvals now remembered for the session. **High** (official
+  GitHub releases).
+
+- **Claude Code v2.1.193 (June 25)**: `autoMode.classifyAllShell` setting
+  routes all Bash/PowerShell commands through the auto-mode classifier (not
+  just those the agent auto-approved). Auto-mode denial reasons now appear in
+  the transcript, denial toast, and `/permissions` UI — directly useful for
+  diagnosing loops that stall on auto-mode blocks. Live file-path autocomplete
+  in bash mode (`!`-triggered). `claude_code.assistant_response` OpenTelemetry
+  log event with redaction controls added. **High** (official GitHub releases).
+
+- **Claude Code v2.1.195 (June 26)**: Hook matcher fix for hyphenated MCP
+  server names (e.g., `mcp__brave-search`) — previously could accidentally
+  substring-match sibling tools; now exact-match only. `CLAUDE_CODE_DISABLE_MOUSE_CLICKS`
+  env var disables mouse interactions while keeping scroll. Voice dictation
+  fixes for languages without spaces (Japanese, Chinese, Thai) and macOS
+  silence-capture bug after input device changes. **High** (official GitHub
+  releases).
+
+- **Permission tool-name globs in deny/ask rules**: Official docs now cover
+  tool-name glob patterns in deny and ask rules — `mcp__*` blocks all MCP
+  tools; `Agent(model:opus)` and `Bash(run_in_background:true)` use the
+  existing `Tool(param:value)` syntax. Allow rules accept globs only after a
+  literal `mcp__<server>__` prefix; unanchored allow globs are rejected with
+  a warning. **High** (official permissions docs).
+
+- **Claude Code Artifacts beta (June 18, 2026)** — missed from previous KB
+  pass: Claude Code can now produce interactive single-page HTML artifacts
+  (≤16 MiB rendered) from session work. Available to Team and Enterprise
+  subscribers. **High** (official Anthropic blog).
+
+- **Boris Cherny at Meta @Scale (June 22, 2026)**: First major conference
+  appearance positioning loops as a fundamental platform transition: *"Two
+  years ago, we wrote source code by hand. We started to transition so agents
+  write the code. And now we're transitioning to the point where agents are
+  prompting agents that then write the code."* And: *"As big as the step from
+  source code to agents was, loops are just as important and as big a step."*
+  Production example given: architecture-improvement and abstraction-deduplication
+  agents running as **permanent background loops** that submit PRs continuously
+  without a completion condition. **High** (TechCrunch direct reporting).
+
+- **Addy Osmani "Loop Engineering" on O'Reilly Radar (June 22, 2026)**:
+  Formal crystallization of the term for a mainstream technical audience. His
+  definition of a loop turn as five moves: **discovery** (find the work),
+  **handoff** (pass context to the agent), **verification** (confirm done),
+  **persistence** (write back to durable state), and **scheduling** (decide
+  when to run again). **High** (O'Reilly Radar primary; Osmani Substack
+  mirror).
+
+- **Snyk ToxicSkills report (June 23, 2026)**: Audit of 3,984+ public Agent
+  Skills found prompt injection vulnerabilities in **36%** and critical-level
+  issues (malware distribution, exposed secrets) in **13.4%**. Directly
+  relevant to loops that import third-party skills from public registries.
+  **High** (Snyk primary report).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- Praxen open-source agent behavior verification tool (June 24) — too new to
+  assess maturity; added to sources.md under Verification.
+- Anthropic-Alibaba allegation (June 24, Bloomberg) — governance context, not
+  loop engineering patterns.
+- The Register "loop engineering still needs humans in the loop" (June 24) —
+  editorial; no new technical claim.
+- Gas Town v1.2.1 / gastownhall GitHub org — version date uncertain relative
+  to June 22 baseline; not promoted.
+
 ## 2026-06-22 — PR triage: salvage from the orphaned 06-09 second pass
 
 Resolved two open PRs so the repo best represents the research they held.

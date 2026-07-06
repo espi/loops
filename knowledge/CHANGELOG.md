@@ -3,6 +3,83 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-06 — Seven-day follow-up pass
+
+Research pass covering June 29–July 6, 2026. Five parallel agents across:
+tooling & versions, ecosystem, key voices, guardrails & cost, verification &
+skills. Primary sources: official Claude Code changelog (v2.1.197–201),
+roborev GitHub releases; several claims Medium-confidence due to 403s on
+primary blogs (Anthropic, Substack, Gartner) — corroborated via secondaries.
+
+### New facts added
+
+- **Claude Sonnet 5 becomes Claude Code's default model** (v2.1.197, June 30,
+  2026): native 1M-token context, promotional pricing $2/$10 per MTok
+  input/output through August 31, 2026. **High** (official changelog).
+
+- **Claude Code v2.1.198 (July 1)**: subagents now run in the background by
+  default; background agents launched via `claude agents` auto-commit, push,
+  and open a draft PR on finishing worktree work instead of stopping to ask
+  first; Explore agent inherits the session's model (capped at Opus) instead
+  of always using Haiku; `/agents` wizard removed; Claude in Chrome reaches
+  GA; `/dataviz` skill added. **High** (official changelog). Flagged in the
+  primer as a real autonomy increase worth weighing against this repo's
+  confirm-before-hard-to-reverse-actions default.
+
+- **Claude Code v2.1.199 (July 2)**: subagents cut off by rate limits or
+  server errors now return partial work instead of silently misreporting
+  success — closes a gap where a loop harness could log a false "done" on a
+  truncated subagent run. `CLAUDE_CODE_RETRY_WATCHDOG` raises the default
+  retry count to 300 and removes the previous 15-retry cap on
+  `CLAUDE_CODE_MAX_RETRIES`. Stacked slash-skill invocations now load up to 5
+  leading skills. **High** (official changelog).
+
+- **Claude Code v2.1.200 (July 3)**: `AskUserQuestion` dialogs no longer
+  auto-continue by default (opt-in idle timeout via `/config`) — a loop can no
+  longer silently sail past a question it raised. Default permission mode
+  renamed "Manual" (previously `default`). **High** (official changelog).
+
+- **Dynamic Workflows reported at Pro-plan GA** (~July 2, 2026): off by default
+  on Pro (enable via `/config`), on by default for Max/Team, off by default
+  for Enterprise (admin-enabled). **Medium** (consistent secondaries; no
+  primary changelog line identified — flagged to re-verify).
+
+- **Anthropic Claude Enterprise spend controls** (July 2, 2026): model-level
+  entitlements, spend-threshold alerts at 75%/90% of an org's limit, per-user/
+  per-group cost analytics dashboard, Admin API endpoints for cost-control
+  scripting. First Anthropic-native building block toward a product-level
+  budget ceiling, complementing the harness-level ceiling in primer §6.
+  **Medium-High** (Anthropic's own blog, corroborated by two secondaries;
+  primary blog fetch 403'd).
+
+- **Gartner: $234B of enterprise app spend "at risk" from agentic AI by 2030**
+  (July 1, 2026 press release) — ~20% of enterprise app SaaS spend exposed to
+  "agentic arbitrage." **Medium** (title/date confirmed via search; primary
+  newsroom page 403'd).
+
+- **roborev v0.61.0–v0.61.2** (June 30–July 4, 2026): export support for
+  completed reviews, a "lookahead" review type for detecting time-series bias,
+  Factory Droid hook/skill support, per-analysis agent configuration,
+  configurable post-commit hook timeouts, incremental export cursors. **High**
+  (GitHub releases read directly).
+
+- **Addy Osmani "Agentic Autonomy Levels"** (July 3, 2026): follow-on to
+  "Agentic Code Review" — autonomy granted to an agent should be earned by
+  accumulated verification evidence, not asserted by a task label. **Medium**
+  (search-snippet corroborated; primary Substack fetch blocked).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- AI Engineer World's Fair 2026 (Jun 29–Jul 2) sessions by Steve Yegge and
+  reportedly Addy Osmani — no verbatim quotes recovered, aggregator-sourced
+  only; added to sources.md re-verify list.
+- Cobus Greyling "HarnessX" essay (reported Jul 2026) — existence corroborated
+  by search but not directly fetched; added to sources.md re-verify list.
+- Gas City v1.3.3 hotfix and LangGraph 1.2.7 — routine maintenance releases,
+  not new orchestration techniques.
+- No update found to the paused Agent SDK billing split; no new runaway-cost
+  incidents or Copilot pricing changes this window.
+
 ## 2026-06-29 — Seven-day follow-up pass
 
 Research pass covering June 22–29, 2026. Five parallel agents across: tooling &

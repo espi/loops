@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-06-29.
+> The canonical briefing for this repo. Last substantive update: 2026-07-06.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -105,26 +105,44 @@ for ~3 months, with no single published cost figure.
   a gap where foreground chains were previously uncapped. **Agent Teams**
   (experimental, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`): as of v2.1.178
   (June 15, 2026), every session has one implicit team; `TeamCreate`/`TeamDelete`
-  removed. Spawn teammates via `Agent(name:...)`.
-- **Dynamic Workflows** (`/workflows`, research preview) — Claude writes an
+  removed. Spawn teammates via `Agent(name:...)`. **v2.1.198 (July 1, 2026)**:
+  subagents run **in the background by default**; background agents launched via
+  `claude agents` now **auto-commit, push, and open a draft PR** on finishing
+  work in a worktree instead of stopping to ask first — a real autonomy increase
+  to weigh against this repo's "confirm before hard-to-reverse actions" default;
+  the built-in Explore agent now inherits the session's model (capped at Opus)
+  instead of always running on Haiku; the `/agents` wizard was removed (manage
+  subagents by asking Claude or editing `.claude/agents/` directly). **v2.1.199
+  (July 2, 2026)**: subagents cut off by rate limits or server errors now
+  **return partial work instead of silently misreporting success** — closes a
+  gap where a loop harness could have logged a false "done" on a truncated
+  subagent run; `CLAUDE_CODE_RETRY_WATCHDOG` raises the default retry count to
+  300 and removes the previous 15-retry cap on `CLAUDE_CODE_MAX_RETRIES`.
+- **Dynamic Workflows** (`/workflows`) — Claude writes an
   orchestration script that fans one task across many parallel subagents in the
   background, with caps **baked into the runtime**: 16 concurrent agents, **1,000
   agents/workflow**, a per-run token budget, and worktree isolation. The native
   form of the orchestration-loop stage — guardrails enforced by the runtime, not
   just your harness. Trigger keyword: **`ultracode`** (renamed from `workflow` in
-  v2.1.160, June 2, 2026).
+  v2.1.160, June 2, 2026). Reported to have reached **Pro-plan general
+  availability around July 2, 2026** — off by default on Pro (enable via
+  `/config`), on by default for Max/Team, off by default for Enterprise
+  (admin-enabled) — **Medium confidence**: consistent across secondary outlets
+  but no primary changelog line found; re-verify before treating as settled.
 - **Observability** — `/usage` breaks spend down by skill / subagent / plugin /
   MCP, which is how you find what a loop is actually costing. V2.1.174 added a
   per-skill/agent/plugin/MCP attribution breakdown (cache misses, long context,
   24h/7d) to the VS Code Account dialog.
-- **Model availability** — **Claude Fable 5** (`claude-fable-5`; 1M context,
-  128k output, $10/$50 per MTok I/O) launched June 9, 2026 (v2.1.170), was
-  briefly suspended June 12–13 following a US government export-control
-  directive, and is **back on the platform** as of June 22, 2026. **Claude
-  Mythos 5** (`claude-mythos-5`) — limited availability via Project Glasswing
-  since June 9; same pricing and context. **Claude Opus 4.1 is deprecated**
-  (retiring August 5, 2026). All other models (Opus 4.8, Sonnet, Haiku)
-  unaffected.
+- **Model availability** — **Claude Sonnet 5** (`claude-sonnet-5`) became Claude
+  Code's **default model** in v2.1.197 (June 30, 2026) — native 1M-token
+  context, promotional pricing $2/$10 per MTok input/output through August 31,
+  2026. **Claude Fable 5** (`claude-fable-5`; 1M context, 128k output, $10/$50
+  per MTok I/O) launched June 9, 2026 (v2.1.170), was briefly suspended June
+  12–13 following a US government export-control directive, and is **back on
+  the platform** as of June 22, 2026. **Claude Mythos 5** (`claude-mythos-5`)
+  — limited availability via Project Glasswing since June 9; same pricing and
+  context. **Claude Opus 4.1 is deprecated** (retiring August 5, 2026). All
+  other models (Opus 4.8, Haiku) unaffected.
 - **Diagnostic flags** — `--safe-mode` / `CLAUDE_CODE_SAFE_MODE=1` (v2.1.169+)
   disables all customizations (skills, hooks, MCP, plugins, themes) for debugging
   without affecting auth. `fallbackModel` setting (v2.1.166+) chains up to three
@@ -164,6 +182,12 @@ for ~3 months, with no single published cost figure.
   hook `if` matchers with hyphenated MCP server names (e.g., `mcp__brave-search`)
   were previously substring-matching unrelated tools; now exact-match only.
   Affects targeted guardrail hooks that restrict specific MCP servers.
+- **`AskUserQuestion` no longer auto-continues** (v2.1.200, July 3, 2026) —
+  question dialogs used to time out and auto-proceed; that's now opt-in via an
+  idle-timeout setting in `/config`, so a loop can no longer silently sail past
+  a question it raised. Same release renamed the default permission mode to
+  **"Manual"** (previously `default`) across CLI/VS Code/JetBrains; the old
+  value is still accepted.
 - **Claude Code Artifacts** (beta, June 18, 2026; Team/Enterprise) — sessions
   can produce an interactive single-page HTML artifact (≤16 MiB rendered) from
   the work done; a new output type alongside files and PRs.
@@ -179,13 +203,21 @@ evaluates and feeds back). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(v0.58.0, June 11, 2026; now includes aggregate review cost tracking and Kata
-integration) operationalize this per-commit. Anthropic's own **`security-guidance`
+(v0.61.0–v0.61.2, June 30–July 4, 2026; added export support for completed
+reviews, a "lookahead" review type for detecting time-series bias, Factory
+Droid hook/skill support, and per-analysis agent configuration, on top of the
+aggregate review cost tracking and Kata integration from June) operationalize
+this per-commit. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
 deeper agentic review on commit or push. Osmani's corollary (June 9, 2026):
 *"verification, not generation, is the next development bottleneck."* His
-follow-up essay "Agentic Code Review" (June 16, 2026) quantified the gap across
+follow-up essay "Agentic Autonomy Levels" (July 3, 2026) extends the thesis one
+step further: the autonomy granted to an agent should be **earned by
+accumulated verification evidence, not asserted by a task label** — a direct
+argument for this repo's per-loop verification-step requirement over
+self-declared "done." (**Medium** — search-snippet corroborated, primary
+Substack fetch blocked.) His earlier "Agentic Code Review" (June 16, 2026) quantified the gap across
 four independent 2026 datasets: AI adoption **quadruples code volume** while
 delivering only **~12% real productivity gain**; defect rates up from **9% to
 54%**; code review times up **441%**; zero-review merges up **31%**. Key
@@ -223,7 +255,23 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   **demote or decommission** production agents by end of 2027 over governance
   gaps, names **"FinOps for agentic AI"** as an emerging discipline, and expects
   **guardian agents** (agents watching agents for scope drift) to be 10–15% of
-  the market by 2030. *(High.)*
+  the market by 2030. *(High.)* A follow-up Gartner release (July 1, 2026) puts
+  a number on the flip side of the same trend: up to **$234B of enterprise
+  application software spend "at risk"** from agentic AI by 2030 (~20% of
+  enterprise app SaaS spend) as agents complete cross-system tasks without a
+  human touching the underlying app. *(Medium — title/date confirmed, primary
+  newsroom page fetch blocked.)*
+- **Anthropic shipped Claude Enterprise spend controls** (July 2, 2026): per-model
+  entitlements, spend-threshold alerts firing at 75%/90% of an org's limit, a
+  per-user/per-group cost analytics dashboard, and Admin API endpoints for
+  scripting cost-control workflows (auto-flagging users near their limit,
+  reviewing increase requests). This is the first Anthropic-native building
+  block toward the §6 budget-ceiling hard stop that ships as a *product feature*
+  rather than something you have to wire up yourself via the Rate Limits API —
+  though it's an alerting/entitlement layer, not confirmed to hard-stop a
+  request the way a harness-level ceiling does. *(Medium-High — Anthropic's own
+  blog post, corroborated by two independent secondaries; direct fetch of the
+  primary blog was blocked.)*
 
 **Pricing shift (announced May 2026; paused June 15, 2026):** Anthropic announced
 it would move *programmatic* entry points — Agent SDK, `claude -p`, Claude Code

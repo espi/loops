@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
+Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -109,7 +109,7 @@ Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
   https://code.claude.com/docs/en/workflows · https://code.claude.com/docs/en/whats-new/2026-w22
 - `/usage` spend breakdown by skill/subagent/plugin/MCP. **High** (docs).
   https://code.claude.com/docs/en/whats-new
-- **Claude Code changelog** (primary; v2.1.170–195, Jun 9–26, 2026) — **High**.
+- **Claude Code changelog** (primary; v2.1.170–201, Jun 9–Jul 3, 2026) — **High**.
   https://code.claude.com/docs/en/changelog ·
   https://github.com/anthropics/claude-code/releases
   Key loop-relevant changes: v2.1.172 — 5-level nested sub-agents; v2.1.174 —
@@ -119,13 +119,32 @@ Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
   foreground subagents also capped at 5 levels, `/config key=value`,
   `CLAUDE_CLIENT_PRESENCE_FILE`; v2.1.183 (Jun 19) — auto mode blocks destructive
   git/IaC commands, `attribution.sessionUrl`; v2.1.185 (Jun 20) — stream-stall
-  threshold raised to 20s; **v2.1.191 (Jun 24)** — `/rewind` command, ~37% CPU
+  threshold raised to 20s; v2.1.191 (Jun 24) — `/rewind` command, ~37% CPU
   reduction in streaming via coalescing, MCP OAuth headless improvement, sandbox
-  network host memory; **v2.1.193 (Jun 25)** — `autoMode.classifyAllShell`
+  network host memory; v2.1.193 (Jun 25) — `autoMode.classifyAllShell`
   setting, denial reasons in transcript/UI, bash `!`-autocomplete,
-  `claude_code.assistant_response` OpenTelemetry event; **v2.1.195 (Jun 26)** —
+  `claude_code.assistant_response` OpenTelemetry event; v2.1.195 (Jun 26) —
   hook matcher fix for hyphenated MCP names (now exact-match),
-  `CLAUDE_CODE_DISABLE_MOUSE_CLICKS`, voice dictation fixes.
+  `CLAUDE_CODE_DISABLE_MOUSE_CLICKS`, voice dictation fixes; **v2.1.197 (Jun
+  30)** — Claude Sonnet 5 becomes Claude Code's default model (native 1M
+  context, promo pricing $2/$10 per MTok through Aug 31, 2026); **v2.1.198
+  (Jul 1)** — subagents background-by-default, background agents auto-commit/
+  push and open a draft PR on finishing worktree work, Explore agent inherits
+  session model capped at Opus (was fixed Haiku), `/agents` wizard removed,
+  Claude in Chrome reaches GA, `/dataviz` skill added; **v2.1.199 (Jul 2)** —
+  subagents cut off by rate limits/errors return partial work instead of
+  silently misreporting success, stacked slash-skills load up to 5 leading
+  skills, `CLAUDE_CODE_RETRY_WATCHDOG` raises default retries to 300 and
+  removes the 15-retry cap on `CLAUDE_CODE_MAX_RETRIES`; **v2.1.200 (Jul 3)**
+  — `AskUserQuestion` no longer auto-continues by default, default permission
+  mode renamed "Manual"; **v2.1.201 (Jul 3)** — Sonnet 5 sessions drop the
+  mid-conversation system role for harness reminders.
+- **Dynamic Workflows Pro-plan GA** (~Jul 2, 2026) — reported off-by-default on
+  Pro (enable via `/config`), on-by-default for Max/Team, off-by-default for
+  Enterprise (admin-enabled). **Medium** — consistent across techtimes.com,
+  ainave.com, InfoQ secondaries; no primary changelog line identified, docs page
+  itself undated for this rollout. Re-verify against a primary source.
+  https://www.techtimes.com/articles/319532/20260702/
 - **Claude Code Artifacts** (beta, June 18, 2026) — interactive single-page
   HTML artifacts ≤16 MiB generated from session work; Team/Enterprise only.
   **High** (official Anthropic blog).
@@ -180,7 +199,20 @@ Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
   Now ships an installable `$roborev-review` Agent Skill (`roborev skills install`)
   with a `--panel N` flag that fans a commit review to N independent reviewer
   subagents whose verdicts are synthesized before surfacing.
+  v0.61.0 (Jun 30, 2026): export support for completed reviews, a "lookahead"
+  review type for detecting time-series bias, Factory Droid hook/skill support,
+  per-analysis agent configuration, configurable post-commit hook timeouts.
+  v0.61.1 (Jul 3, 2026): incremental review export cursors, published docs
+  Markdown sources, expanded refine docs for Agent Hook automation.
+  v0.61.2 (Jul 4, 2026): wall-clock elapsed-time display in TUI queue panels,
+  trimmed prompt text from metadata-only job listings.
   https://github.com/roborev-dev/roborev/releases · https://www.roborev.io/
+- Addy Osmani "Agentic Autonomy Levels" (Substack, Jul 3, 2026) — follow-on to
+  "Agentic Code Review": autonomy granted to an agent should be earned by
+  accumulated verification evidence, not asserted by a task label; names
+  "autonomy as status" as an anti-pattern. — **Medium** (search-snippet
+  corroborated; primary Substack fetch blocked/paywall-adjacent).
+  https://addyo.substack.com/p/agentic-autonomy-levels
 
 - **Snyk ToxicSkills** (June 23, 2026): Audit of 3,984+ public Agent Skills
   (ClaWHub marketplace) — prompt injection vulnerabilities in **36%** of skills;
@@ -196,6 +228,23 @@ Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
 
 ## Guardrails & cost
 
+- **Anthropic Claude Enterprise spend controls** (Jul 2, 2026): model-level
+  entitlements, spend-threshold alerts at 75%/90% of an org's limit, per-user/
+  per-group cost analytics dashboard, Admin API endpoints for scripting
+  cost-control workflows (auto-flagging users near limits, reviewing increase
+  requests). First Anthropic-native building block toward a product-level
+  budget ceiling, complementing the harness-level ceiling in primer §6. —
+  **Medium-High** (Anthropic's own blog corroborated by two independent
+  secondaries; primary blog direct-fetch 403'd).
+  https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend ·
+  https://www.techtimes.com/articles/319687/20260704/claude-enterprise-spend-controls-arrive-agentic-ai-bills-blow-past-budgets.htm ·
+  https://campustechnology.com/articles/2026/07/02/anthropic-expands-enterprise-deployment-options-for-claude-desktop.aspx
+- **Gartner: $234B enterprise app spend "at risk" from agentic AI by 2030**
+  (Jul 1, 2026 press release) — ~20% of enterprise application SaaS spend
+  exposed to "agentic arbitrage" as agents complete cross-system tasks without
+  a human touching the underlying app. — **Medium** (title/date confirmed via
+  search; primary Gartner newsroom page 403'd).
+  https://www.gartner.com/en/newsroom/press-releases/2026-07-01-gartner-says-us-dollars-234-billion-in-enterprise-application-software-spend-is-at-risk-from-agentic-artificial-intelligence
 - Anthropic Agent SDK guardrail params — **High**.
   https://code.claude.com/docs/en/agent-sdk/agent-loop
 - AgentGuard (budget/loop/timeout guards) — **High** (README read).
@@ -325,3 +374,19 @@ Verified as of 2026-06-29. Re-check before relying on version numbers or dates.
 - **Fable 5 / Mythos 5 suspension resolved**: suspension (Jun 12–13) was
   short-lived; platform docs show both models available as of Jun 22. Opus 4.1
   deprecation (retiring Aug 5, 2026) confirmed via docs.
+- **Dynamic Workflows Pro-plan GA** (~Jul 2, 2026) — secondary-source only, no
+  primary changelog line found; re-verify against code.claude.com/docs/en/changelog
+  or the whats-new digest once a Week 27 entry publishes.
+- **AI Engineer World's Fair 2026** (Jun 29–Jul 2, San Francisco) sessions by
+  Steve Yegge ("Harness Engineering" fireside w/ Guy Podjarny) and reportedly
+  Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
+  no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
+  re-verify if a transcript or recording surfaces.
+- **Cobus Greyling** ("HarnessX: When the Harness Starts Learning From Its Own
+  Runs", Medium, reported Jul 2026) proposing harnesses as versioned artifacts
+  that learn from execution traces — **Low-Medium**, existence corroborated by
+  search but article not directly fetched, exact date unconfirmed. Not promoted;
+  re-verify before citing.
+- **Gas City v1.3.3 hotfix** (Jul 2, 2026) and **LangGraph 1.2.7** (Jun 30,
+  2026) — routine maintenance releases, not new orchestration techniques; not
+  promoted to primer.

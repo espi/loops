@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
+Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -70,6 +70,26 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   search sets; Medium 403'd; quotes from search extracts).
   https://steve-yegge.medium.com/the-flat-curve-society-36c8b01eb33b ·
   https://x.com/Steve_Yegge/status/2067816148775956952
+- Boris Cherny "Steps of AI Adoption" (~Jul 16–17, 2026) — five-level maturity
+  framework (Gated → Assisted → Parallel → Supervised autonomy → AI-native);
+  quote on 10x'ing output while orgs lag. — **High** (verbatim X post confirmed;
+  secondary explainer consistent).
+  https://x.com/bcherny/status/2077929379661844559 ·
+  https://www.explainx.ai/blog/boris-cherny-steps-ai-adoption-claude-code-july-2026
+- Addy Osmani "Own the Outer Loop" (Jul 9, 2026) — follow-on to "Loop
+  Engineering"; inner loop (agent) vs. outer loop (engineer accountability);
+  three over-delegation costs (cognitive surrender, cognitive debt,
+  orchestration tax); cites Sonar 2026 State of Code (42% AI-generated/assisted
+  code) and GitLab June 2026 AI-accountability research. — **Medium-High**
+  (consistent detailed secondaries; primary Substack/blog 403'd).
+  https://addyo.substack.com/p/own-the-outer-loop ·
+  https://addyosmani.com/blog/own-the-outer-loop/ ·
+  https://daily.dev/posts/own-the-outer-loop-yabisltr3
+- Peter Steinberger tweet (Jul 18, 2026): "Are we still talking loops or did we
+  shift to graphs yet?" — teaser, possibly signaling a "graph engineering"
+  framing shift; not independently corroborated as a real trend yet (see
+  re-verify list). — **Medium** (search-snippet sourced; direct fetch 403'd).
+  https://x.com/steipete/status/2078277297791189132
 - Boris Cherny at Meta @Scale (June 22, 2026): "Two years ago, we wrote source
   code by hand. We started to transition so agents write the code. And now
   we're transitioning to the point where agents are prompting agents that then
@@ -109,9 +129,25 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   https://code.claude.com/docs/en/workflows · https://code.claude.com/docs/en/whats-new/2026-w22
 - `/usage` spend breakdown by skill/subagent/plugin/MCP. **High** (docs).
   https://code.claude.com/docs/en/whats-new
-- **Claude Code changelog** (primary; v2.1.170–201, Jun 9–Jul 3, 2026) — **High**.
+- **Claude Code changelog** (primary; v2.1.170–215, Jun 9–Jul 19, 2026) — **High**.
   https://code.claude.com/docs/en/changelog ·
   https://github.com/anthropics/claude-code/releases
+  July window (v2.1.202–215) key changes: v2.1.202 (Jul 6) — Dynamic Workflows
+  "size" config knob, `workflow.run_id`/`workflow.name` OTel attributes;
+  v2.1.205 (Jul 8) — `/doctor` becomes full setup checkup, `/checkup` alias;
+  v2.1.207 (Jul 11) — Opus 4.8 default on Bedrock/Vertex/Foundry, auto mode
+  opt-in removed on those platforms; v2.1.208 (Jul 14) — `--ax-screen-reader`
+  accessibility mode, `vimInsertModeRemaps`, `CLAUDE_CODE_PROCESS_WRAPPER`;
+  v2.1.211 (Jul 15) — `--forward-subagent-text`; v2.1.212 (Jul 17) — WebSearch
+  cap (200/session), subagent-spawn cap (200/session, `/clear`-reset), MCP
+  calls >2min auto-background, `/fork`→background session (`/subtask` takes
+  over old in-session behavior), Task tool `mode` param deprecated (subagents
+  inherit parent permission mode); v2.1.214 (Jul 18) — `EndConversation` tool,
+  ~58 security fixes (Windows PowerShell 5.1 permission bypass, Bash
+  permission-analyzer bypasses); v2.1.215 (Jul 19) — `/verify` and
+  `/code-review` no longer auto-invoked, require explicit call.
+  Opus 4.8 release date (May 28, 2026, not new this window): **Medium**
+  (anthropic.com/news, not re-fetched this pass) — https://www.anthropic.com/news/claude-opus-4-8
   Key loop-relevant changes: v2.1.172 — 5-level nested sub-agents; v2.1.174 —
   usage attribution breakdown in VS Code Account dialog; v2.1.176 — hook `if`
   path-pattern fix; v2.1.178 (Jun 15) — agent teams implicit, `Tool(param:value)`
@@ -175,6 +211,15 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   review-in-the-loop: fast pattern scan per edit, model review per turn, deeper
   agentic review on commit/push. **High** (official Week 22 docs).
   https://code.claude.com/docs/en/whats-new/2026-w22
+- **Anthropic "Getting started with loops"** (`claude.com/blog/getting-started-with-loops`,
+  reportedly Jul 7, 2026) — official taxonomy of four loop types: turn-based
+  (manual), goal-based (`/goal`), time-based (`/loop`), and a new **`/schedule`**
+  primitive for event/schedule-triggered loops running until disabled. **Medium**
+  — primary blog 403'd; identical detail across mer.vin, explainx.ai,
+  the-ai-corner.com secondaries. Re-verify directly before treating `/schedule`
+  as confirmed.
+  https://claude.com/blog/getting-started-with-loops ·
+  https://mer.vin/2026/07/claude-code-loops-guide-turn-based-goal-time-and-proactive-agent-patterns/
 
 ## Verification & skills
 
@@ -206,7 +251,39 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   Markdown sources, expanded refine docs for Agent Hook automation.
   v0.61.2 (Jul 4, 2026): wall-clock elapsed-time display in TUI queue panels,
   trimmed prompt text from metadata-only job listings.
+  v0.62.0 (Jul 11, 2026): new cancellation command; **now requires explicit
+  user request before Codex/Claude Code can invoke roborev skills** (tightens
+  auto-invocation — parallels Claude Code's own v2.1.215 move away from
+  self-triggered review skills); honors env-var config paths; documents Gemini
+  ACP settings; prevents workflow model leakage into agents.
+  v0.62.1 (Jul 14, 2026): persistent CI panel metrics + new export command;
+  stable JSON contract for version info; Codex agent hook can invoke
+  `roborev-fix` skill; blocks incompatible model pairings.
+  v0.63.0 (Jul 16, 2026): CI quiet-hours throttling (with bypass for certain
+  workloads); machine-readable launch receipts on `roborev run` for
+  automation; tightened skill triggers to prevent unintended activation.
   https://github.com/roborev-dev/roborev/releases · https://www.roborev.io/
+  (v0.62.x–v0.63.0: **High** primary GitHub releases read directly; not
+  independently cross-checked against roborev.io/changelog, which 403'd.)
+- **Microsoft Agent Skills for .NET reaches stable/GA** (July 7, 2026) — exited
+  experimental preview in Microsoft Agent Framework; `[Experimental]` attribute
+  removed. Same SKILL.md-based open format as Anthropic's Agent Skills
+  standard, now with a first-party .NET implementation. **High** (Microsoft
+  dev blog, corroborated).
+  https://devblogs.microsoft.com/agent-framework/agent-skills-for-net-is-now-released/ ·
+  https://www.dotnetramblings.com/post/07_07_2026/07_07_2026_19/
+- "EvoAgentBench: Benchmarking Agent Self-Evolution via Ability Transfer" —
+  arXiv:2607.05202, ~Jul 6, 2026. Extracts trace-grounded "Abilities" from
+  agent executions into domain-specific Ability Graphs; shows curated ability
+  content transfers across model families. Extends the skill-evolution academic
+  line below. **Medium** (arXiv fetch 403'd; date inferred from ID + search
+  snippet). https://arxiv.org/abs/2607.05202
+- **SkillCheck** (getskillcheck.com) — third-party Agent Skills validator;
+  v3.26/v3.27 (Jul 2026) added reference-aware composability/observability
+  checks and "anti-slop" cluster-mining checks (AI-vocabulary escalation,
+  cliché detection) against the Agent Skills open standard. **Medium**
+  (search-summary sourced only, not directly fetched; too new/thin to promote
+  to primer). https://www.getskillcheck.com/
 - Addy Osmani "Agentic Autonomy Levels" (Substack, Jul 3, 2026) — follow-on to
   "Agentic Code Review": autonomy granted to an agent should be earned by
   accumulated verification evidence, not asserted by a task label; names
@@ -228,6 +305,31 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
 
 ## Guardrails & cost
 
+- **Ramp AI Token Spend Management** (Jul 16, 2026): cross-provider
+  (OpenAI/Anthropic/Gemini) token/subscription cost dashboard, weekly usage
+  briefings, invoice reconciliation, real-time overrun alerts; reports 20.7×
+  growth in AI token spend across Ramp's customer base since June 2025. New
+  entrant in the budget-observability-tool category. **High** (PR Newswire,
+  SiliconANGLE, Ramp's own blog, consistent).
+  https://www.prnewswire.com/news-releases/ramp-launches-ai-token-spend-controls-302827389.html ·
+  https://siliconangle.com/2026/07/16/ramp-targets-ais-fastest-growing-cost-expanded-token-spend-tracking/ ·
+  https://ramp.com/blog/ai-token-spend-launch
+- **OpenAI "Managing AI investments in the agentic era"** (Jul 14, 2026):
+  enterprise cost-governance guidance — token-price drops don't equal cheaper
+  outcomes; five steps (usage visibility, outcome-based model evaluation,
+  governance of agentic/connector access, funding compounding workflows,
+  matching capacity to proven demand). Competitor/industry context, not an
+  Anthropic or Claude Code change. **High** (primary OpenAI page read).
+  https://openai.com/index/managing-ai-investments-in-agentic-era/
+- **Anthropic Agent SDK billing split — still paused, no revised plan found**
+  as of Jul 20, 2026. No primary Anthropic announcement located in the Jul
+  6–20 window revising the pause from June 15. One AI-generated search summary
+  claimed the split "went live July 10, 2026" — this is **unverified and
+  likely erroneous**: it appears only in synthesized search output, contradicts
+  multiple independent June reports that it remains paused pending a revised
+  plan, and no dated primary or secondary article confirms it. **Do not treat
+  as fact.** Status: paused-with-no-revision-announced remains **Medium**
+  confidence (absence of evidence, not evidence of absence).
 - **Anthropic Claude Enterprise spend controls** (Jul 2, 2026): model-level
   entitlements, spend-threshold alerts at 75%/90% of an org's limit, per-user/
   per-group cost analytics dashboard, Admin API endpoints for scripting
@@ -390,3 +492,22 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
 - **Gas City v1.3.3 hotfix** (Jul 2, 2026) and **LangGraph 1.2.7** (Jun 30,
   2026) — routine maintenance releases, not new orchestration techniques; not
   promoted to primer.
+- **Anthropic "Getting started with loops" blog post** (~Jul 7, 2026,
+  introducing `/schedule`) — Medium, primary blog 403'd across two research
+  passes; re-verify by direct fetch before treating `/schedule` as a confirmed
+  command distinct from `/loop`/Routines.
+- **"Graph engineering" as a successor term to "loop engineering"** — surfaced
+  from a single thin secondary (datasciencedojo.com, ~Jul 18) plus a
+  Steinberger tweet ("did we shift to graphs yet?") gesturing the same
+  direction. Two independent hints, neither confirmed as an established term.
+  **Low.** Re-check in the next pass — if a primary essay appears, this could
+  become a real lineage-ladder addition.
+- **Gas City "Formulas 2.0"** (~early Jul 2026: convoys/drain primitives,
+  Mayor as configurable skill, JSON CLI output) — **Medium**, identical detail
+  across two searches but primary blog.gascity.com 403'd both times.
+- **roborev.io/changelog** consistently 403's to automated fetch even as the
+  GitHub releases page is readable — cross-check the two if a claim ever
+  depends on changelog prose rather than release notes.
+- **EvoAgentBench** (arXiv:2607.05202) and **SkillCheck** (getskillcheck.com)
+  — too new/thin to promote to primer this pass; tracked above under
+  Verification & skills.

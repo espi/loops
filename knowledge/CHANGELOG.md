@@ -48,6 +48,23 @@ reviewing the three items that pass flagged as needing verification.
   confirmed non-useful), and the now-superseded "Formulas 2.0" naming.
   `update-knowledge`'s new step 6 makes this pruning a standing part of every
   pass, not a one-off cleanup.
+- **Skill step 1 fixed to check for an already-open PR first**: this pass's
+  own conflict with the still-open 2026-07-13 PR happened because step 1 only
+  read merged-file state, never GitHub's open-PR list. Step 1 now says to
+  check for an open unmerged `update-knowledge` PR before starting new
+  research, and to resume/extend it (or at least flag the coming conflict)
+  rather than run a whole pass blind to it.
+- **Routine prompt de-staled**: `runbooks/staying-current.md`'s "paste
+  verbatim" Routine prompt was a frozen copy of the old 5-step procedure —
+  it's literally the exact text that fired this session, and it doesn't
+  mention either new step above. A Routine's prompt is a one-time snapshot,
+  not a live pointer to `SKILL.md`, so it silently drifts every time the
+  skill changes. Rewrote the prompt to tell the Routine to read the skill
+  file fresh each run instead of embedding a paraphrase of its steps — fixes
+  the immediate staleness and prevents it recurring. **If you have an
+  existing Routine configured, its stored prompt needs manually updating to
+  the new version** — this can't be done by an agent session, only via
+  `/schedule update` (interactive CLI) or the claude.ai/code/routines web UI.
 - **Repo mission amendment**: `CLAUDE.md` and `README.md` reframed from
   "my personal loop tooling" to an explicit **central, up-to-date practice
   hub** — the ambition is that any AI agent or human landing here cold can

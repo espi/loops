@@ -12,8 +12,8 @@ From a Claude Code session in this repo:
 ```
 
 It runs a fan-out research pass, diffs findings against `knowledge/`, and — if
-anything material changed — opens a PR on a `knowledge/update-YYYY-MM-DD` branch
-for you to review and merge. If nothing changed, it reports a no-op.
+anything material changed — opens a PR on a `claude/knowledge-update-YYYY-MM-DD`
+branch for you to review and merge. If nothing changed, it reports a no-op.
 
 ## Scheduled (recommended) — cloud Routine
 
@@ -45,8 +45,29 @@ Routines can't be created from inside a Claude Code *web* session (the
 | **Repository** | `espi/loops` |
 | **Trigger** | Schedule → Weekly (e.g. Monday 08:00 local) |
 | **Environment / network** | Needs web research. **Trusted** (default) lets `WebSearch` work but blocks `WebFetch` to arbitrary domains; set **Full** (or **Custom** allowing `code.claude.com`, `platform.claude.com`, `github.com`, `simonwillison.net`, `anthropic.com`) so it can read primary docs. |
-| **Branch pushes** | Leave default (`claude/`-prefixed only) — this forces a PR instead of touching `main`. |
+| **Branch pushes** | Leave default (`claude/`-prefixed only) — this forces a PR instead of touching `main`. The skill opens its PR from a `claude/knowledge-update-*` branch, so it stays inside this restriction; **do not** enable "Allow unrestricted branch pushes" (that would remove the floor). |
+| **Env vars** | `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12` (hard-caps the ~5-agent fan-out against runaway recursion); optionally `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=100`. |
 | **Connectors** | None required; remove extras. The PR is opened as your GitHub identity. |
+
+### Budget & caps
+
+`update-knowledge` is a scheduled **one-shot** (one trigger → one pass → one PR
+→ exit), so its "three hard stops" are structural, not a running counter — but
+they only hold if the Routine is configured to let them:
+
+- **Iteration:** the weekly schedule bounds how often it fires; the skill never
+  re-invokes itself; `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (above) hard-caps
+  the fan-out. Keep the schedule **weekly**, not hourly.
+- **Budget:** the account subscription usage limit + the per-account daily
+  routine-run cap *reject* runs when exhausted — a real ceiling **only if
+  metered overage / usage credits is OFF** for the account (otherwise spend
+  silently spills onto metered billing instead of stopping). Keep overage off,
+  or set a spend alert, so this routine can't quietly run up cost. A true
+  *per-run dollar* ceiling isn't available for cloud Routines — that needs the
+  Agent SDK's `max_budget_usd`; the account-limit + subagent-cap + one-pass
+  structure is the realistic envelope here.
+- **Stall:** N/A for a one-shot — it terminates on the no-op path when nothing
+  material changed.
 
 ### Prompt (paste verbatim)
 
@@ -107,10 +128,10 @@ by `.github/workflows/self-edit-guard.yml`. To make that a *hard* merge gate
 rather than a red X you have to notice, add `self-edit-guard` as a **required
 status check** in `main`'s branch-protection rules.
 
-> **Branch-prefix caveat.** Step 8 of the skill opens the PR from a
-> `knowledge/update-YYYY-MM-DD` branch, while a Routine created via the table
-> above restricts pushes to `claude/`-prefixed branches. The "human merges
-> every PR" floor only holds if the Routine's push policy actually permits the
-> branch the skill pushes. Reconcile the two (rename the skill's branch, or
-> widen the Routine's allowed prefixes) before relying on the push restriction
-> as a control.
+> **Branch prefix — reconciled.** Step 8 of the skill opens the PR from a
+> `claude/knowledge-update-YYYY-MM-DD` branch, which sits inside the Routine's
+> default `claude/`-only push restriction — so the "human merges every PR"
+> floor holds without enabling unrestricted pushes. Keep it that way: if you
+> ever rename the skill's branch, keep the `claude/` prefix, or the routine
+> will lose the ability to push (or you'll be tempted to disable the
+> restriction, which removes the floor).

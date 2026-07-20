@@ -40,15 +40,25 @@ enforced, not broad + trusted.
   knowledge diff; the runbook reviewer checklist now points at the `self-edit:`
   commit specifically. CLAUDE.md gained a standing convention for the envelope.
 
-### Open questions surfaced for the human (see PR)
-- The skill pushes `knowledge/update-*` branches while the Routine restricts
-  pushes to `claude/`-prefixed — reconcile so the push restriction actually
-  covers the skill's branch.
-- Make `self-edit-guard` a **required** status check in branch protection to
-  turn the red X into a hard merge gate.
-- `update-knowledge`'s own three hard stops are currently prose ("natural stop,
-  one pass") — worth confirming the Routine-level mechanical caps (max turns,
-  budget) exist, since a self-editing loop leans harder on them.
+### Follow-ups (folded into the same PR)
+- **Branch-prefix mismatch — fixed.** Step 8 now opens the PR from a
+  `claude/knowledge-update-YYYY-MM-DD` branch (was `knowledge/update-*`), so it
+  stays inside the Routine's default `claude/`-only push restriction — the
+  "never touches main" floor holds without disabling that restriction. Also
+  matches the repo's earlier branch history.
+- **Hard stops made explicit — done.** The skill's "Guardrails for this skill"
+  section now maps each of the three stops to a real backstop for a scheduled
+  one-shot (iteration = one trigger/pass + no self-reinvoke +
+  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`; budget = subscription/daily-run cap,
+  real only with metered overage off; stall = N/A, no-op exit), and the runbook
+  gained a "Budget & caps" section with the concrete env-var / overage config.
+
+### Still needs a human (settings-only, can't be done in a PR)
+- Make `self-edit-guard` a **required** status check in `main`'s
+  branch-protection rules to turn the red X into a hard merge gate.
+- Set the Routine's env vars (`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12`) and
+  keep metered overage OFF (or set a spend alert) per the runbook's
+  "Budget & caps."
 
 ## 2026-07-20 — Human verification round, archive introduced, process amendments
 

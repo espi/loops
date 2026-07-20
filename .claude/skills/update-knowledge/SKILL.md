@@ -183,8 +183,10 @@ is open (step 1), extend its branch rather than fork.
 <!-- self-edit:protected:end:gate -->
 
 ### 8. Open a PR (do not push to main)
-Create a branch `knowledge/update-YYYY-MM-DD`, commit the changes with a clear
-message, and open a PR. The PR body **must lead** with a
+Create a branch `claude/knowledge-update-YYYY-MM-DD` (the `claude/` prefix keeps
+it inside the Routine's default push restriction, so the routine physically
+can't touch main — see `runbooks/staying-current.md`), commit the changes with a
+clear message, and open a PR. The PR body **must lead** with a
 `## Routine self-improvements` section (before the knowledge summary, so a
 self-edit is never buried under a large knowledge diff):
 
@@ -208,8 +210,22 @@ when nothing else changed.
 
 <!-- self-edit:protected:start:guardrails -->
 ## Guardrails for this skill
-- This is itself a loop: it has a natural stop (one research pass → one PR or a
-  no-op). Do not re-run yourself in a tight loop; scheduling is the Routine's job.
+This routine is a **scheduled one-shot**, not a runaway `while`-loop: one cron
+trigger → one fan-out pass → one PR → exit. The three hard stops map to real
+backstops, not just this prose — keep them true:
+
+- **Iteration** — one trigger, one pass; the skill never re-invokes itself, and
+  step 1 (extend an open PR instead of forking) is a de-facto no-duplicate-work
+  guard. The native `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` cap hard-bounds the
+  fan-out; keep it set (≈12) in the Routine env so the "~5 agents, no recursion"
+  below can't run away. Don't re-run yourself in a tight loop; scheduling is the
+  Routine's job.
+- **Budget** — the account subscription usage limit + the Routine daily-run cap
+  *reject* runs when exhausted, which is the real ceiling **only if metered
+  overage is off** (else spend spills silently). See
+  `runbooks/staying-current.md` → "Budget & caps."
+- **Stall** — N/A for a one-shot; termination is the no-op exit ("no material
+  changes → make no commit").
 - Keep the research bounded — ~5 parallel agents, one pass. Don't fan out
   recursively.
 - **Self-improvement is fenced (step 7).** At most one auto-applied `self-edit:`

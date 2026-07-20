@@ -22,6 +22,19 @@ Read `knowledge/00-primer.md`, `knowledge/sources.md`, and the latest entry in
 `knowledge/CHANGELOG.md`. Note the date of the last pass — you only care about
 what changed since then.
 
+**Before starting new research, check whether a prior `update-knowledge` PR is
+already open and unmerged** (via the GitHub MCP tools, or `gh pr list` if
+available — search for open PRs touching `knowledge/`). An open PR from a
+previous pass means the merged-file baseline you just read is stale relative
+to work already in flight. If one exists:
+- Prefer resuming/extending that PR's branch over opening a new one, or
+- If you do start a new pass anyway (e.g. it's materially overdue), expect a
+  merge conflict when that PR eventually lands, and say so explicitly in your
+  own PR description rather than being surprised by it later.
+This step exists because a pass once ran a full 14-day research window
+unaware a 7-day PR was already open, causing exactly that conflict — see the
+2026-07-20 CHANGELOG entry for the full story.
+
 ### 2. Re-check the standing re-verify backlog
 `sources.md`'s "Known caveats / things to re-verify" section is a **live
 backlog**, not a historical record. Before fanning out new research:

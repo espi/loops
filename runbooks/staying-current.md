@@ -51,20 +51,28 @@ Routines can't be created from inside a Claude Code *web* session (the
 ### Prompt (paste verbatim)
 
 Routines run autonomously with no approval prompts, so the prompt must be
-self-contained:
+self-contained — but it should point at the skill file rather than embed a
+frozen copy of its steps. **This bit us once already**: an earlier version of
+this prompt spelled out the procedure inline, the skill later gained two new
+steps (re-checking the standing re-verify backlog, archiving resolved
+caveats), and the Routine kept firing the stale embedded steps because a
+Routine's prompt is a snapshot pasted in at creation time, not a live pointer
+to `SKILL.md`. Point at the file, don't paraphrase it:
 
 ```
-Run the /update-knowledge skill for this repository (the loops control plane), following its procedure exactly:
-
-1. Read knowledge/00-primer.md, knowledge/sources.md, and the latest knowledge/CHANGELOG.md entry to establish the baseline date. You only care about what changed since then.
-2. Fan out about 5 parallel research agents (ONE pass, no recursion) across: Claude Code tooling & versions; ecosystem & orchestration techniques; key voices; guardrails & cost; verification & skills. Each returns claims with source URL + confidence.
-3. Only promote a claim to High confidence if a primary source was read directly or it appears verbatim across independent sources. Put anything you cannot verify into the "to re-verify" list in sources.md, not the primer.
-4. Diff findings against the knowledge base. For genuinely new or changed facts, update 00-primer.md and sources.md, and prepend a dated entry to CHANGELOG.md (newest first, above the marker line). Do not churn wording for its own sake.
-5. If there are material changes: commit them to a new claude/knowledge-update-<YYYY-MM-DD> branch and open a pull request summarizing what is new, changed, deprecated, and what needs human verification. Do NOT merge.
-6. If nothing material changed since the baseline date: make no commit and end the run, reporting "no material changes since <date>".
-
-Never merge to the default branch.
+Run the /update-knowledge skill for this repository (the loops control plane).
+Read .claude/skills/update-knowledge/SKILL.md fresh from the cloned repo and
+follow its procedure exactly, in full, including every numbered step — do not
+rely on a remembered or prior summary of its steps, since the skill is a
+living document and may have changed since you last ran it. Before starting
+new research, check whether a prior update-knowledge PR is already open and
+unmerged, per the skill's step 1. Never merge to the default branch.
 ```
+
+If you already have a Routine set up with the old embedded-steps prompt,
+replace it with the version above (`/schedule update` from an interactive CLI
+session, or edit it at claude.ai/code/routines) so future runs pick up skill
+changes automatically instead of needing the Routine edited every time.
 
 > Why a Routine and not `/loop`? `/loop` is session-scoped — it stops when the
 > terminal closes. Routines persist in the cloud. See `knowledge/00-primer.md` §4.

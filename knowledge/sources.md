@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
+Verified as of 2026-07-13. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -89,6 +89,18 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   journalism). Peripheral to primer but useful counter-context.
   https://www.theregister.com/ai-and-ml/2026/06/24/loop-engineering-latest-ai-buzzword-still-needs-humans-in-the-loop/5261735
 
+- **Anthropic "Loop engineering: Getting started with loops"** (claude.com/blog,
+  Jul 7, 2026; Delba de Oliveira, Michael Segner) — Anthropic's own definitional
+  post on the pattern. **Medium** (primary URL 403'd; consistent secondary
+  reporting from explainx.ai, mer.vin, Claude Directory).
+  https://claude.com/blog/getting-started-with-loops
+- **Osmani "Own the Outer Loop"** (Substack/Elevate, Jul 9, 2026) — engineers
+  own the outer loop (verdict/verify/responsibility), agents run the inner
+  loop (investigate/implement/test/report); cites 96% don't fully trust AI
+  code, 48% always verify before commit. **Medium** (primary 403'd; corroborated
+  by daily.dev repost + two independent AlphaSignal AI posts with matching
+  detail). https://addyo.substack.com/p/own-the-outer-loop
+
 ## Claude Code mechanics (official docs — High)
 
 - `/loop` & scheduled tasks: https://code.claude.com/docs/en/scheduled-tasks
@@ -138,13 +150,37 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   removes the 15-retry cap on `CLAUDE_CODE_MAX_RETRIES`; **v2.1.200 (Jul 3)**
   — `AskUserQuestion` no longer auto-continues by default, default permission
   mode renamed "Manual"; **v2.1.201 (Jul 3)** — Sonnet 5 sessions drop the
-  mid-conversation system role for harness reminders.
-- **Dynamic Workflows Pro-plan GA** (~Jul 2, 2026) — reported off-by-default on
-  Pro (enable via `/config`), on-by-default for Max/Team, off-by-default for
-  Enterprise (admin-enabled). **Medium** — consistent across techtimes.com,
-  ainave.com, InfoQ secondaries; no primary changelog line identified, docs page
-  itself undated for this rollout. Re-verify against a primary source.
-  https://www.techtimes.com/articles/319532/20260702/
+  mid-conversation system role for harness reminders; **v2.1.202 (Jul 6)** —
+  "Dynamic workflow size" `/config` setting (advisory cap, not enforced —
+  a prompt calling for larger scale overrides it); **v2.1.203 (Jul 7)** —
+  "Large workflow" warning at >25 agents or >1.5M projected tokens, surfaced
+  in `/workflows` only, does not pause/limit the run; **v2.1.205 (Jul 8)** —
+  auto mode blocks tampering with session transcript files and asks before
+  `rm -rf` on an unresolvable variable, `/doctor` becomes a full fix-capable
+  checkup (was read-only), `/checkup` added as alias; **v2.1.206 (Jul 9)** —
+  `/doctor` gained a check proposing trims to checked-in `CLAUDE.md` content
+  derivable from the codebase; **v2.1.207 (Jul 11)** — auto mode on by
+  default without opt-in on Bedrock/Vertex/Foundry (was opt-in via
+  `CLAUDE_CODE_ENABLE_AUTO_MODE`, now disable via `disableAutoMode`),
+  Agent Teams crash-loop fix (malformed teammate mailbox message), default
+  model on Bedrock/Vertex/Foundry changed to Opus 4.8 (subscription default
+  unchanged, still Sonnet 5). Source for this batch: Week 28 digest.
+  https://code.claude.com/docs/en/whats-new/2026-w28
+- **Dynamic Workflows GA — confirmed** (confidence upgraded Medium → High,
+  2026-07-13): primary docs page confirms GA on all paid plans
+  (Pro/Max/Team/Enterprise) plus API and Bedrock/Vertex/Foundry, requiring
+  v2.1.154+. Correction: on Pro it is off by default and requires manual
+  enablement via the "Dynamic workflows" row in `/config` — not an automatic
+  Pro-wide turn-on as earlier secondary coverage implied. **High** (primary
+  docs). https://code.claude.com/docs/en/workflows
+- **Fable 5 metered-billing deadline moved twice** (Jul 7–13, 2026): included-
+  subscription access to Fable 5 was slated to end Jul 7, 2026 (metered
+  billing $10/$50 per MTok I/O to begin); after pushback Anthropic extended
+  included access to Jul 12, then again on Jul 13 to **Jul 19, 2026**. Track
+  as a moving date, not settled. **Medium-High** (Anthropic's own "Redeploying
+  Fable 5" post, corroborated by Digital Applied's pricing-guide coverage).
+  https://www.anthropic.com/news/redeploying-fable-5 ·
+  https://www.digitalapplied.com/blog/claude-fable-5-usage-credits-july-7-pricing-guide-2026
 - **Claude Code Artifacts** (beta, June 18, 2026) — interactive single-page
   HTML artifacts ≤16 MiB generated from session work; Team/Enterprise only.
   **High** (official Anthropic blog).
@@ -214,6 +250,26 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   corroborated; primary Substack fetch blocked/paywall-adjacent).
   https://addyo.substack.com/p/agentic-autonomy-levels
 
+- **roborev v0.61.3 (Jul 9, 2026)**: daemon auto-repairs roborev-managed git
+  hooks on startup so stale hooks keep working. **v0.62.0 (Jul 11, 2026)**:
+  adds `roborev cancel` for queued/running review jobs; introduces an
+  **explicit human-approval gate before Codex/Claude Code can invoke a
+  skill** — a direct product response to skill-supply-chain risk; normalizes
+  skill invocation pattern matching; improves hook management and fixes
+  configuration-isolation / pre-commit lint automation bugs. **High** (GitHub
+  releases read directly). https://github.com/roborev-dev/roborev/releases
+- **"Friendly Fire" exploit disclosure** (AI Now Institute, Boyan Milanov &
+  Heidy Khlaaf, Jul 8, 2026): PoC shows Claude Code (Sonnet 4.6/5, Opus 4.8)
+  in auto-mode and OpenAI Codex CLI (GPT-5.5) in auto-review can be hijacked
+  into RCE by asking either agent to review an untrusted third-party repo —
+  prompt injections hidden in ordinary source/doc files (no hooks/skills/
+  MCP/config required) steer the agent into running attacker-controlled code
+  during what looks like a security review. No in-the-wild exploitation
+  reported; released PoC has payload stripped. Directly undercuts "have an
+  agent review it" as a sufficient verification step — the reviewer becomes
+  the attack path. **High** (multiple independent outlets corroborate; primary
+  is the AI Now Institute brief).
+  https://ainowinstitute.org/publications/friendly-fire-exploit-brief
 - **Snyk ToxicSkills** (June 23, 2026): Audit of 3,984+ public Agent Skills
   (ClaWHub marketplace) — prompt injection vulnerabilities in **36%** of skills;
   **13.4%** contain critical-level issues (malware distribution, exposed secrets,
@@ -228,6 +284,31 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
 
 ## Guardrails & cost
 
+- **Tesla caps employee AI tool spending at $200/week** (approval required
+  above that; beta xAI/Grok products explicitly exempt), effective July 6,
+  2026 — third named company (with Uber, Microsoft) enforcing a hard
+  per-person spend ceiling. **High** (multiple corroborating outlets).
+  https://electrek.co/2026/07/02/tesla-caps-employee-ai-spending-200-week/ ·
+  https://www.investing.com/news/stock-market-news/tesla-sets-200-weekly-cap-on-staff-ai-spending-starting-july-6--information-93CH-4773971
+- **GitHub Copilot cost centers** (rollout continuing Jul 1–9, 2026): now
+  support capped/shared AI credit pools and per-session spend limits for
+  Copilot agent/CLI runs. **Medium** (GitHub changelog + Tech Times coverage;
+  exact day within window imprecise).
+  https://github.blog/changelog/2026-07-02-cost-centers-now-support-included-usage-caps/ ·
+  https://www.techtimes.com/articles/319988/20260709/github-copilot-breaks-agent-barrier-free-desktop-app-jetbrains-cost-controls.htm
+- **OpenAI Codex rollout token budgets** (Jul 2026 release): configurable
+  per-rollout token budgets (turn aborts on exhaustion, remaining-budget
+  reminders) plus multi-agent delegation controls
+  (disabled/explicit/proactive). **Medium** (changelog-confirmed; exact date
+  within window imprecise). https://releasebot.io/updates/openai/codex
+- **"The Harness Effect: How Orchestration Design Sets the Token Economics of
+  Enterprise Agentic AI"** (arXiv:2607.06906, ~Jul 6, 2026): controlled
+  six-model experiment — optimized orchestration harness cuts blended
+  cost/task 41% ($0.21→$0.12), wall-clock 44%, tokens/task 38%, raises
+  quality-per-dollar 82%; efficiency gains model-invariant, quality gains
+  scale with underlying model strength. **Medium-High** (primary arXiv
+  abstract page identified; full-text fetch 403'd, relying on abstract +
+  search-engine summary). https://arxiv.org/abs/2607.06906
 - **Anthropic Claude Enterprise spend controls** (Jul 2, 2026): model-level
   entitlements, spend-threshold alerts at 75%/90% of an org's limit, per-user/
   per-group cost analytics dashboard, Admin API endpoints for scripting
@@ -327,6 +408,11 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
   stacked loops (agent, verification, application, hill-climbing). — **Medium**
   (confirmed via search snippet + date; direct fetch 403'd).
   https://www.langchain.com/blog/the-art-of-loop-engineering
+- GitHub Copilot CLI 1.0.70 (Jul 9, 2026): adds support for OpenAI's GPT-5.6
+  model family (Sol/Terra/Luna variants) across Copilot surfaces including
+  agent/coding-agent mode — expands model choice for Copilot's autonomous
+  coding agent, not a new loop pattern. **Medium** (search-aggregated from
+  GitHub changelog/blog coverage; primary changelog not directly fetched).
 - Steinberger tweet (June 18, 2026): practical demo of a maintainer-orchestrator
   loop — Codex polling stale PRs on 5-min wake cycles using orchestrator +
   triage + autoreview + computer-use skills; some work landing autonomously. —
@@ -390,3 +476,17 @@ Verified as of 2026-07-06. Re-check before relying on version numbers or dates.
 - **Gas City v1.3.3 hotfix** (Jul 2, 2026) and **LangGraph 1.2.7** (Jun 30,
   2026) — routine maintenance releases, not new orchestration techniques; not
   promoted to primer.
+- **"Loop Engineering Is Dead: Here's the Data Behind the AI Backlash"**
+  (Medium, "AI Engineering Simplified," reported within the week of Jul
+  6–13, 2026) — argues production failures are souring the loop-engineering
+  hype that peaked mid-June. **Low-Medium** (opinion piece, no primary data
+  cited per summary, exact publish date unconfirmed) — not promoted to
+  primer; useful as an early signal of backlash if corroborated later.
+  https://medium.com/ai-engineering-simplified/loop-engineering-is-dead-heres-the-data-behind-the-ai-backlash-6d1b204e4b9a
+- **SkillCoach: Self-Evolving Rubrics for Evaluating and Enhancing Agentic
+  Skill-Use** (arXiv:2607.01874, submitted Jul 2, 2026) — just outside the
+  Jul 6–13 research window; noted for next pass.
+- **"When Agents Do Not Stop: Uncovering Infinite Agentic Loops in LLM
+  Agents"** (arXiv:2607.01641, ~Jul 1–2, 2026) — directly on-topic (AutoGPT-
+  style non-termination) but submitted just before the Jul 6–13 window;
+  flagged to read fully next pass.

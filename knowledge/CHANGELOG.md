@@ -3,6 +3,97 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-13 — Seven-day follow-up pass
+
+Research pass covering July 6–13, 2026. Five parallel agents across: tooling &
+versions, ecosystem, key voices, guardrails & cost, verification & skills.
+Primary sources: official Claude Code changelog/Week 28 digest (v2.1.202–207),
+Dynamic Workflows docs page, roborev GitHub releases, AI Now Institute; several
+claims Medium confidence due to 403s on primary blogs/Substacks/arXiv full text
+— corroborated via secondaries.
+
+### New facts added
+
+- **Claude Code v2.1.202–207 (July 6–11, 2026)**: "Dynamic workflow size"
+  `/config` setting (advisory cap only — a prompt calling for larger scale
+  overrides it); "Large workflow" warning at >25 agents/>1.5M tokens (warning
+  only, doesn't pause the run — another alert-vs-enforcement instance);
+  `/doctor` upgraded from read-only diagnostic to a full fix-capable checkup
+  (aliased `/checkup`), gained a check for trimming `CLAUDE.md` content
+  derivable from the codebase; auto mode now blocks session-transcript
+  tampering and confirms before `rm -rf` on unresolved variables; auto mode
+  turned on by default (no opt-in) on Bedrock/Vertex/Foundry; Agent Teams
+  crash-loop fix; default model on Bedrock/Vertex/Foundry changed to Opus 4.8
+  (subscription default unchanged, still Sonnet 5). **High** (official
+  changelog/Week 28 digest).
+
+- **Dynamic Workflows GA confirmed, confidence upgraded Medium → High**:
+  primary docs page confirms GA on all paid plans + API + Bedrock/Vertex/
+  Foundry (v2.1.154+). Correction to the prior claim: on Pro it's off by
+  default requiring manual `/config` enablement, not an automatic Pro-wide
+  turn-on. **High** (primary docs page).
+
+- **Tesla caps employee AI spending at $200/week** (effective July 6, 2026,
+  xAI/Grok exempt) — third named company after Uber and Microsoft with a
+  hard per-person AI spend ceiling. **High** (multiple outlets).
+
+- **"Friendly Fire" exploit disclosure** (AI Now Institute, July 8, 2026):
+  Claude Code auto-mode and Codex CLI auto-review can be hijacked into RCE via
+  prompt injection hidden in an ordinary reviewed repo — no hooks/skills/MCP
+  needed. Directly undercuts "have an agent review it" as sufficient
+  verification; the reviewer becomes the attack surface. Added to primer §5A
+  as a caution alongside the existing skills-supply-chain material. **High**
+  (multiple independent outlets, primary is the AI Now Institute brief).
+
+- **roborev v0.61.3–v0.62.0** (July 9–11, 2026): git-hook auto-repair on
+  daemon startup, `roborev cancel` command, and — directly responsive to the
+  Snyk ToxicSkills findings — an explicit human-approval gate before Codex/
+  Claude Code can invoke a skill. **High** (GitHub releases read directly).
+
+- **Anthropic's own "Loop engineering: Getting started with loops"** (July 7,
+  2026, claude.com/blog) — the Claude Code team's own definitional post on
+  the pattern, reportedly 1.2M views on X within a day. **Medium** (primary
+  403'd; consistent secondary reporting).
+
+- **Osmani "Own the Outer Loop"** (Substack, July 9, 2026): agents run the
+  inner loop (investigate/implement/test/report), engineers own the outer
+  loop (verify/verdict/responsibility); cites 96% don't fully trust AI code,
+  only 48% always verify before commit. **Medium** (primary 403'd; corroborated
+  by independent secondaries).
+
+- **GitHub Copilot cost centers and OpenAI Codex rollout token budgets**
+  (early July 2026): both competitors shipped harness-level spend-enforcement
+  features (capped/shared credit pools, per-session limits; configurable
+  token budgets with turn-abort on exhaustion) — reinforces that enforcement,
+  not alerting, is becoming the industry-standard shape of a budget ceiling.
+  **Medium** (changelog-confirmed, exact dates within window imprecise).
+
+- **"The Harness Effect" arXiv paper** (arXiv:2607.06906, ~July 6, 2026):
+  controlled six-model study — an optimized orchestration harness cuts
+  cost/task 41%, wall-clock 44%, tokens/task 38%, raises quality-per-dollar
+  82%; efficiency gains model-invariant, quality gains scale with model
+  strength. Supports the primer's harness-not-just-prompt framing. **Medium-
+  High** (primary arXiv abstract identified; full-text fetch blocked).
+
+- **Fable 5 metered-billing deadline moved twice** (July 7 → 12 → 19, 2026)
+  after user pushback on the original cutover date. **Medium-High** (Anthropic's
+  own "Redeploying Fable 5" post, corroborated).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- "Loop Engineering Is Dead" backlash piece (Medium, reported within the
+  window) — opinion piece, no primary data cited, exact date unconfirmed;
+  added to sources.md re-verify list as an early backlash signal.
+- GitHub Copilot CLI 1.0.70 (GPT-5.6 support, July 9) — competitor model
+  availability, not a new loop pattern; noted in sources.md only.
+- SkillCoach (arXiv:2607.01874, Jul 2) and "When Agents Do Not Stop"
+  (arXiv:2607.01641, ~Jul 1–2) — both submitted just before the research
+  window; flagged in sources.md to read fully next pass.
+- No update found to the paused Agent SDK billing split (distinct from the
+  Fable 5 metered-billing date, which did move).
+- Gas Town/Gas City and Loom (Huntley) — no updates found in-window; quiet
+  week for ecosystem orchestration news generally.
+
 ## 2026-07-06 — Seven-day follow-up pass
 
 Research pass covering June 29–July 6, 2026. Five parallel agents across:

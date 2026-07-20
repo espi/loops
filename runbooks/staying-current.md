@@ -82,9 +82,35 @@ changes automatically instead of needing the Routine edited every time.
 - Check that new High-confidence claims actually cite a primary source.
 - Anything marked Low / "to re-verify" stays out of the primer until confirmed.
 - Merge moves the knowledge base forward; the `CHANGELOG.md` entry is the record.
+- **Read the "Routine self-improvements" section first** (it leads the PR body).
+  If it lists any *Applied (auto-gated)* self-edit, open that `self-edit:`
+  commit in full and confirm the change is non-semantic, in-scope (only the
+  `update-knowledge` `SKILL.md`), and *not* justified by a web source — the
+  same things `self-edit-guard` checks mechanically, but with your eyes on the
+  actual diff. Treat any change to that `SKILL.md` **not** in a labelled
+  `self-edit:` commit, or a red `self-edit-guard` check, as a stop-and-look.
+  Each applied edit is its own commit with a `git revert` written down — drop
+  it wholesale if you don't want it, without unpicking the knowledge changes.
 
 ## Self-guardrails
 
 `update-knowledge` is itself a loop with a natural stop: one pass → one PR (or a
 no-op). It does not re-run itself; the Routine owns the cadence. It never merges
 to main automatically.
+
+It may also **improve its own skill file** inside the PR it opens — but only
+through the fenced gate in `.claude/skills/update-knowledge/SKILL.md` step 7
+(default-deny; one ≤10-line non-semantic repo-internal fix per pass, confined
+to that file, never web-sourced, never touching the guardrails/verification/
+frontmatter/gate). Scope, protected regions, and the cap are machine-enforced
+by `.github/workflows/self-edit-guard.yml`. To make that a *hard* merge gate
+rather than a red X you have to notice, add `self-edit-guard` as a **required
+status check** in `main`'s branch-protection rules.
+
+> **Branch-prefix caveat.** Step 8 of the skill opens the PR from a
+> `knowledge/update-YYYY-MM-DD` branch, while a Routine created via the table
+> above restricts pushes to `claude/`-prefixed branches. The "human merges
+> every PR" floor only holds if the Routine's push policy actually permits the
+> branch the skill pushes. Reconcile the two (rename the skill's branch, or
+> widen the Routine's allowed prefixes) before relying on the push restriction
+> as a control.

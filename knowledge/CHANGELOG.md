@@ -3,6 +3,149 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-20 — Human verification round, archive introduced, process amendments
+
+Same-day follow-up to the reconciled pass below, prompted by a human
+reviewing the three items that pass flagged as needing verification.
+
+### Human verifications
+
+- **`/schedule` is real** — confirmed directly against
+  `code.claude.com/docs/en/routines#schedule`. Correction to the earlier
+  Medium-confidence secondary-sourced framing: it is **not** a fourth loop
+  type distinct from Routines — it's the CLI alias (also `/routines`) for
+  creating a Routine. Also newly documented: a Routine now supports three
+  trigger types (Schedule, API via a `/fire` endpoint, GitHub event),
+  combinable on one routine, with no permission prompts during a run. Primer
+  §3–4 and sources.md updated; confidence upgraded to **High** for the
+  mechanics (blog post's own byline/view-count claim stays Medium — still
+  unconfirmed).
+- **Gas City's July release confirmed real**, but misnamed in the prior
+  pass: the actual title is **"Gas City 1.3: Now We're Looping With Gas"**
+  (blog.gascity.com), not "Formulas 2.0" — that was a secondary-source guess.
+  URL confirmed by direct human visit; the specific feature list (convoys,
+  drain, Mayor-as-skill, JSON CLI) remains secondary-sourced only since
+  automated fetch still 403's. Confidence: **Medium-High**.
+- **"Graph engineering"** — human-reviewed: still just warm signals (a
+  Steinberger tease tweet + one thin blog post), no primary essay. Stays
+  **Low**, carried forward to the next pass rather than resolved.
+
+### Process amendments
+
+- **Standing re-verify backlog**: `update-knowledge` now re-checks every open
+  item in `sources.md`'s caveats list at the *start* of each pass (not just
+  reports new findings), and the PR must list every still-open item, not only
+  what's new. See the skill's new step 2.
+- **Archive introduced**: `knowledge/archive/resolved-caveats.md` now holds
+  caveats that have resolved, been corrected, or been checked and found not
+  worth tracking further, so the live "known caveats" list stays an
+  actionable backlog rather than an ever-growing history. Initial archive
+  pass moved 6 items: the roborev-creator correction, the Fable 5/Mythos 5
+  suspension, Dynamic Workflows Pro-GA (all resolved in earlier passes but
+  never archived), the Steinberger/Osmani "Loop Engineering" verbatim
+  caveat (resolved when Osmani's O'Reilly Radar mirror turned out to be
+  directly accessible), the Gas City v1.3.3/LangGraph 1.2.7 note (checked,
+  confirmed non-useful), and the now-superseded "Formulas 2.0" naming.
+  `update-knowledge`'s new step 6 makes this pruning a standing part of every
+  pass, not a one-off cleanup.
+- **Repo mission amendment**: `CLAUDE.md` and `README.md` reframed from
+  "my personal loop tooling" to an explicit **central, up-to-date practice
+  hub** — the ambition is that any AI agent or human landing here cold can
+  pick up loop engineering as a practiced methodology (skills to invoke,
+  templates to run, guardrails to apply), not just read about it. The
+  standing-backlog and archive disciplines above are part of what keeps that
+  ambition true rather than aspirational — a stale or cluttered knowledge
+  base can't serve as a practice hub.
+
+## 2026-07-20 — Reconciled pass (Jul 13–20 delta + merge with the unmerged Jul 13 PR)
+
+This pass was kicked off believing the last merge was 2026-07-06 (a 14-day
+gap), and ran a full five-agent research pass across July 6–20 on that
+assumption. Mid-flight, the PR for the **2026-07-13** pass (below) — open
+but unmerged for a week — was merged into `main`, so this branch's PR
+conflicted with it. Rather than discard either pass, the two were
+reconciled by hand: duplicate findings from the overlapping Jul 6–13 window
+were merged into single entries (not double-counted), and only what's
+genuinely new since Jul 13 is recorded as new below. Net effect: the two
+passes together cover July 6–20 with no gaps and no duplication.
+
+### Reconciled during merge (found by both passes independently — merged, not duplicated)
+
+- Anthropic's own "Getting started with loops" post (Jul 7) and Osmani's "Own
+  the Outer Loop" (Jul 9) were each found by both the Jul 13 and Jul 20
+  passes with different supporting detail (author names/view count vs.
+  `/schedule` detail for the Anthropic post; survey stats vs. the
+  cognitive-surrender/debt/orchestration-tax framing for Osmani). Combined
+  into single primer/sources entries carrying the union of detail.
+- roborev version history (v0.61.3 through v0.63.0) was split across both
+  passes' text — consolidated into one version-history bullet in primer §5A
+  instead of two overlapping narratives.
+
+### New facts added (genuinely new since the Jul 13 pass, i.e. the Jul 13–20 delta)
+
+- **Claude Code v2.1.208–215 (Jul 14–19)**: opt-in screen-reader mode
+  (`--ax-screen-reader`, v2.1.208); `--forward-subagent-text` flag (v2.1.211);
+  three new **native runaway-loop caps** — WebSearch cap, subagent-spawn cap,
+  MCP auto-background on >2min (v2.1.212) — direct product-level
+  reinforcement of this repo's §6 hard stops; `/fork` now spawns a background
+  session, old in-session behavior moved to `/subtask` (v2.1.212); new
+  `EndConversation` tool + ~58 security fixes including permission-bypass
+  closures (v2.1.214); **`/verify` and `/code-review` no longer auto-invoke —
+  require explicit calls** (v2.1.215), which directly affects this repo's own
+  `verify` and `code-review` skills. **High** (official changelog, read
+  directly).
+
+- **Boris Cherny "Steps of AI Adoption"** (~Jul 16–17, 2026): five-level org
+  maturity framework (Gated → Assisted → Parallel → Supervised autonomy →
+  AI-native); Anthropic org-wide at Step 3, Cherny claims Step 4 personally.
+  **High** (verbatim tweet confirmed).
+
+- **roborev v0.62.1–v0.63.0** (Jul 14–16, 2026, beyond the Jul 13 pass's
+  v0.61.3–v0.62.0 baseline): persistent CI panel metrics + export command
+  (v0.62.1); CI quiet-hours throttling + machine-readable launch receipts for
+  automation (v0.63.0). **High** (GitHub releases read directly).
+
+- **Microsoft Agent Skills for .NET reaches stable/GA** (Jul 7, 2026): another
+  first-party adopter of the Agent Skills open standard beyond the ~40-product
+  figure already in the primer. **High** (Microsoft dev blog).
+
+- **Ramp launched cross-provider AI Token Spend Management** (Jul 16, 2026):
+  finance-side dashboard across OpenAI/Anthropic/Gemini token spend; reports
+  20.7× YoY token-spend growth across its customer base. New entrant in the
+  budget-observability category, complementing the Tesla/Copilot/Codex items
+  the Jul 13 pass already added. **High** (multi-outlet + primary blog).
+
+- **Peter Steinberger tweet** (Jul 18, 2026): "Are we still talking loops or
+  did we shift to graphs yet?" — paired with a thin secondary
+  (datasciencedojo.com) gesturing at "graph engineering" as a possible
+  successor term. **Low** — two independent hints, no primary essay; added to
+  sources.md re-verify list, not promoted to primer as a real trend.
+
+### Corrected / clarified
+
+- **Anthropic Agent SDK billing split**: confirmed still paused as of Jul 20
+  with no revised plan announced (distinct from the Fable 5 metered-billing
+  date the Jul 13 pass already tracked, which did move). Flagged and rejected
+  a spurious search-summary claim that the billing split itself "went live
+  July 10, 2026" — unverified, contradicted by independent June reporting,
+  not promoted.
+
+### Not promoted (evidence insufficient or peripheral)
+
+- EvoAgentBench (arXiv:2607.05202) and SkillCheck (getskillcheck.com) — too
+  new/thin; added to sources.md only, not primer, consistent with prior
+  treatment of standalone academic papers.
+- OpenAI's "useful work per dollar" cost-governance guidance (Jul 14) —
+  competitor context, added to sources.md only.
+- Orca (stablyai/orca) point releases, HN "Show HN" loop-derivative posts
+  (Ralphex, LoopFlow), InfoQ billing-lag synthesis piece — dates unconfirmed
+  or purely incremental; not promoted.
+- Gas City "Formulas 2.0" (~early Jul 2026) — the Jul 13 pass found no Gas
+  City update at all ("quiet week"); this pass surfaced the claim via two
+  searches with identical detail, but primary blog.gascity.com 403'd both
+  times. **Medium**, not promoted to primer, added to sources.md re-verify
+  list.
+
 ## 2026-07-13 — Seven-day follow-up pass
 
 Research pass covering July 6–13, 2026. Five parallel agents across: tooling &

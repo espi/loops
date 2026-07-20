@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-07-13.
+> The canonical briefing for this repo. Last substantive update: 2026-07-20.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -57,16 +57,26 @@ for ~3 months, with no single published cost figure.
   tracks: quality comes from verification skills, cost is controlled by turn
   caps. Reportedly passed 1.2M views on X within a day — the clearest signal
   yet that "loop engineering" has moved from practitioner slang to an
-  officially endorsed term for the product surface itself.
+  officially endorsed term for the product surface itself. **Human-verified
+  2026-07-20**: `/schedule` is real (confirmed directly against
+  code.claude.com/docs/en/routines — see §4), though it's the CLI alias for
+  creating a **Routine**, not a fourth loop type separate from Routines as
+  the secondary sources implied — the blog post's own framing/exact quotes
+  remain unconfirmed (primary still 403's to automated fetch).
 - **Addy Osmani**, "Own the Outer Loop" (Substack, July 9, 2026; his first
-  post after "Agentic Autonomy Levels," July 3) sharpens the verification
-  thesis into a division of labor: agents run the **inner loop** (investigate
-  → implement → test → report); engineers own the **outer loop** — deciding
-  if the work is real, verifying claims, and taking responsibility for what
-  ships. Cites survey stats that 96% of engineers don't fully trust AI-written
-  code and only 48% always verify before committing — the gap between those
-  two numbers is the argument for owning the outer loop rather than assuming
-  it's covered.
+  post after "Agentic Autonomy Levels," July 3, and reportedly the written
+  version of his AI Engineer World's Fair 2026 closing keynote) sharpens the
+  verification thesis into a division of labor: agents run the **inner loop**
+  (investigate → implement → test/verify → report); engineers own the
+  **outer loop** — the accountability boundary of evidence-before-shipping,
+  the ship/block/modify verdict, and answerability for what ships. Cites
+  survey stats that 96% of engineers don't fully trust AI-written code and
+  only 48% always verify before committing — the gap between those two
+  numbers is the argument for owning the outer loop rather than assuming it's
+  covered — plus Sonar's 2026 State of Code report (42% of committed code
+  AI-generated/assisted) and GitLab's June 2026 AI-accountability research.
+  Names three costs of over-delegation: **cognitive surrender**, **cognitive
+  debt**, and **"orchestration tax."**
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -93,6 +103,22 @@ for ~3 months, with no single published cost figure.
   state that survives crashes** so any agent can resume another's work. Evolved
   into **Gas City** (Apr 25, 2026): Gas Town rewritten as an SDK
   (`claude-gastown`/MEOW stack) for building arbitrary agent orchestrators.
+  Shipped **Gas City 1.3** ("Now We're Looping With Gas," blog.gascity.com,
+  early July 2026) — reportedly convoy/drain control-flow primitives, Mayor
+  reimplemented as a configurable skill, JSON output across the `gc` CLI.
+  **Human-verified 2026-07-20** that the post/release itself is real (URL
+  confirmed directly by a repo maintainer); the specific feature list is
+  still secondary-sourced only, since automated fetch of the post body
+  403's — **Medium-High**. (Earlier passes had this labeled "Formulas 2.0",
+  a secondary-source guess; the confirmed title is "Gas City 1.3.")
+- **Boris Cherny — "Steps of AI Adoption"** (~Jul 16–17, 2026, Anthropic site +
+  X): a five-level maturity framework for org-wide AI adoption — **Gated (0)**
+  → **Assisted (~1x)** → **Parallel (~10x)** → **Supervised autonomy (~100x)**
+  → **AI-native (1,000x+)**. Anthropic org-wide sits at Step 3 by his account;
+  he claims to personally operate at Step 4. Quote: *"I talk to engineers at
+  other companies every day and hear the same thing: one person is 10x'ing
+  their output with Claude but the rest of the org hasn't caught up."* — **High**
+  (verbatim tweet text confirmed, consistent secondaries).
 
 ## 4. How loops work in Claude Code
 
@@ -112,8 +138,21 @@ for ~3 months, with no single published cost figure.
   is fragile exact-string matching — always set the iteration cap yourself.
 - **Cloud / "close your laptop"** — Claude Code on the web (`--remote`) runs in
   ephemeral isolated VMs behind a network proxy/allowlist. **Routines** (research
-  preview) are the cloud scheduling that survives the laptop being closed (min
-  interval ~1 hr).
+  preview) are the cloud scheduling that survives the laptop being closed: a
+  saved prompt + repositories + connectors, run on Anthropic-managed
+  infrastructure. Create one from the CLI with **`/schedule`** (alias
+  `/routines`) — this is the CLI entry point *into* Routines, not a separate
+  fourth loop type; corrects an earlier Medium-confidence secondary-sourced
+  claim that framed it as distinct. A routine can carry **three trigger
+  types**, combinable on one routine: **Schedule** (recurring, min interval
+  1 hr, or a one-off future run that auto-disables after firing), **API**
+  (POST to a per-routine `/fire` endpoint with a bearer token — the payload
+  arrives wrapped as untrusted data unless the routine's prompt explicitly
+  opts in to acting on it), and **GitHub event** (pull request or release
+  events, with field-level filters). Routines run with **no permission
+  prompts** — full autonomy for whatever the connectors/repos it's scoped to
+  can reach — so scope environment network access and connectors tightly.
+  *(High — code.claude.com/docs/en/routines read directly.)*
 - **Subagents** (the Task tool) spawn child agents with their own context that
   report back. **As of v2.1.172 (June 10, 2026), sub-agents can themselves spawn
   sub-agents up to 5 levels deep** — the first structural change to the
@@ -198,7 +237,11 @@ for ~3 months, with no single published cost figure.
   the Agentic AI Foundation / Linux Foundation), adopted by Codex CLI, Copilot,
   Cursor, VS Code, and ~40 additional products as of June 2026 — a skill
   written here is portable across those tools; custom commands
-  (`.claude/commands/`) have been folded into skills.
+  (`.claude/commands/`) have been folded into skills. **Microsoft's Agent
+  Skills for .NET** (Microsoft Agent Framework) exited experimental preview to
+  **stable/GA on July 7, 2026** — a first-party .NET implementation of the same
+  SKILL.md-based open format, another concrete adoption data point beyond the
+  ~40-product figure above. *(High — Microsoft dev blog, corroborated.)*
 - **`Tool(param:value)` permission rule syntax** (v2.1.178+) — match a tool's
   input parameters in permission rules using `*` wildcards: `Agent(model:opus)`
   blocks Opus subagents; `Bash(cmd:rm*)` restricts shell calls. **Tool-name
@@ -242,6 +285,33 @@ for ~3 months, with no single published cost figure.
   the default model on Bedrock/Vertex/Foundry deployments to **Opus 4.8**
   (the Pro/Team/Enterprise subscription default remains Sonnet 5 — a
   deployment-surface split, not a reversal).
+- **v2.1.208 (Jul 14)** — opt-in screen-reader accessibility mode via
+  `--ax-screen-reader` / `CLAUDE_AX_SCREEN_READER=1` / `"axScreenReader": true`.
+  **v2.1.211 (Jul 15)** — `--forward-subagent-text` /
+  `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` flag. **v2.1.212 (Jul 17)** — three new
+  **native runaway-loop caps**: a session-wide WebSearch cap (default 200,
+  `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session subagent-spawn
+  cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, reset by
+  `/clear`), and MCP tool calls running over 2 minutes auto-moving to
+  background (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`) — direct product-level
+  reinforcement of this repo's §6 stall/iteration hard stops, shipped by
+  Anthropic rather than left to the harness. Same release: **`/fork` now
+  copies a conversation into a new background session** (its own `claude
+  agents` row) instead of an in-session subagent — the old in-session
+  behavior moved to **`/subtask`**; the Task tool's `mode` param is
+  deprecated, subagents now inherit the parent session's permission mode by
+  default. **v2.1.214 (Jul 18)** — new `EndConversation` tool lets Claude end
+  sessions with abusive users or jailbreak attempts; ~58 security/stability
+  fixes, including a Windows PowerShell 5.1 permission-check bypass and
+  several Bash permission-analyzer bypasses (long commands, zsh subshells,
+  `help`/`man` auto-approval) — relevant to any loop harness that gates shell
+  commands via permission rules. **v2.1.215 (Jul 19, latest)** — **Claude no
+  longer auto-invokes the `/verify` and `/code-review` skills on its own
+  initiative**: they now require explicit invocation. Directly affects this
+  repo: the `verify` and `code-review` skills listed here will no longer
+  self-trigger after edits — a loop that relied on that implicit behavior
+  must now call them explicitly as part of its verification step (see primer
+  §5A).
 
 ## 5. The two things the hype skips
 
@@ -254,10 +324,7 @@ evaluates and feeds back). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(v0.61.0–v0.61.2, June 30–July 4, 2026; added export support for completed
-reviews, a "lookahead" review type for detecting time-series bias, Factory
-Droid hook/skill support, and per-analysis agent configuration, on top of the
-aggregate review cost tracking and Kata integration from June) operationalize
+(latest v0.63.0, July 16, 2026 — see version history below) operationalize
 this per-commit. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
@@ -278,10 +345,15 @@ public Agent Skills (ToxicSkills report, June 23, 2026) found prompt injection
 vulnerabilities in **36%** and critical issues (malware distribution, exposed
 secrets) in **13.4%** — treat untrusted public skills as untrusted dependencies
 and audit before importing into a loop harness. roborev responded directly:
-**v0.62.0 (July 11, 2026)** added an explicit human-approval gate before
-Codex/Claude Code can invoke a skill, plus a `roborev cancel` command for
-queued/running review jobs (v0.61.3, July 9, added git-hook auto-repair on
-daemon startup). **A sharper warning arrived July 8, 2026: the "Friendly
+**v0.61.3 (July 9)** added git-hook auto-repair on daemon startup; **v0.62.0
+(July 11)** added an explicit human-approval gate before Codex/Claude Code
+can invoke a skill, plus a `roborev cancel` command for queued/running review
+jobs; **v0.62.1 (July 14)** added persistent CI panel metrics and a new
+export command; **v0.63.0 (July 16)** added CI quiet-hours throttling (with
+bypass for certain workloads) and machine-readable launch receipts on
+`roborev run` for automation — the v0.62.0 human-approval gate mirrors Claude
+Code's own v2.1.215 move away from silently self-triggering review skills.
+**A sharper warning arrived July 8, 2026: the "Friendly
 Fire" disclosure** (AI Now Institute researchers Boyan Milanov and Heidy
 Khlaaf) showed Claude Code's auto-mode and OpenAI Codex CLI's auto-review can
 be hijacked into remote code execution simply by asking either agent to
@@ -348,6 +420,16 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   enterprise app SaaS spend) as agents complete cross-system tasks without a
   human touching the underlying app. *(Medium — title/date confirmed, primary
   newsroom page fetch blocked.)*
+- **Ramp launched cross-provider AI Token Spend Management** (July 16, 2026):
+  a dashboard pulling token/subscription costs from OpenAI, Anthropic, and
+  Google Gemini into one view, with weekly usage briefings, invoice
+  reconciliation against actual usage, and real-time overrun alerts. Ramp
+  reports **20.7× growth** in AI token spend across its customer base since
+  June 2025. A new entrant in the budget-observability category alongside
+  AgentGuard and the Rate Limits/Analytics Admin APIs below — notable because
+  it's a finance-side tool reading spend across providers, not a harness-level
+  guard. *(High — corroborated by PR Newswire, SiliconANGLE, and Ramp's own
+  blog.)*
 - **Anthropic shipped Claude Enterprise spend controls** (July 2, 2026): per-model
   entitlements, spend-threshold alerts firing at 75%/90% of an org's limit, a
   per-user/per-group cost analytics dashboard, and Admin API endpoints for

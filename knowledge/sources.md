@@ -63,6 +63,17 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
 - Steve Yegge — Gas City (Apr 25, 2026): Gas Town rewritten as SDK; MEOW stack,
   composable "packs." — **Medium** (search-confirmed; Medium 403'd to fetch).
   https://x.com/Steve_Yegge/status/2047582408799584394
+- **Gas City 1.3** ("Now We're Looping With Gas," blog.gascity.com, early July
+  2026) — reportedly convoy/drain control-flow primitives, Mayor
+  reimplemented as a configurable skill, JSON output across the `gc` CLI.
+  **Human-verified 2026-07-20**: URL confirmed real by a repo maintainer
+  visiting it directly (automated WebFetch still returns 403 on both the
+  post and the blog root). Post/release existence: **High** (human-verified).
+  Specific feature list (convoys/drain/etc.): **Medium** (secondary-sourced
+  only — the post body itself has never been independently read). Note: this
+  was mislabeled "Formulas 2.0" in the 2026-07-13 pass — that was a
+  secondary-source guess; the confirmed title is "Gas City 1.3."
+  https://blog.gascity.com/posts/gas-city-1-3-now-were-looping-with-gas/
 - Steve Yegge — "The Flat Curve Society" (Medium, ~June 19, 2026): model
   capability plateau, AI adoption culture; *"supervised agentic flows"* as the
   key enterprise shift. Peripheral to loop patterns but relevant macro context.
@@ -119,6 +130,15 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   post on the pattern. **Medium** (primary URL 403'd; consistent secondary
   reporting from explainx.ai, mer.vin, Claude Directory).
   https://claude.com/blog/getting-started-with-loops
+  **Human-verified 2026-07-20**: `/schedule` itself is real — confirmed
+  directly against the primary docs page. It's the CLI alias for creating a
+  **Routine** (also aliased `/routines`), not a separate fourth loop type as
+  the secondary sources framed it; a routine supports three trigger types
+  (Schedule/API/GitHub event). **High** for `/schedule`'s existence and
+  mechanics (code.claude.com/docs/en/routines read directly); the blog post's
+  own framing, author byline, and view-count claim remain unconfirmed at
+  **Medium** (primary blog itself still 403's).
+  https://code.claude.com/docs/en/routines#schedule
 
 ## Claude Code mechanics (official docs — High)
 
@@ -519,6 +539,12 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
 
 ## Known caveats / things to re-verify
 
+This is a **live backlog**, not a permanent record: every `update-knowledge`
+pass carries every open item below forward and re-checks it or asks a human
+to. When an item resolves (confirmed, corrected, or determined not worth
+tracking), move it to [`archive/resolved-caveats.md`](archive/resolved-caveats.md)
+instead of deleting it or leaving it here indefinitely.
+
 - The slogan "the costliest thing in AI coding is managing the agent loop" is a
   community paraphrase, not a sourced Cherny quote.
 - The "5 tips for running agents autonomously" is real in substance but not
@@ -537,16 +563,6 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   primary Microsoft announcement directly read. Re-verify if details matter.
 - **Huntley's Loom** as an "orchestrator of ralph loops" — self-described in
   talk/tweets; the public README is more modest. Re-check as it matures.
-- Steinberger / Osmani "Loop Engineering" verbatim — primary X/Substack URLs
-  403'd; quotes are snippet-sourced.
-- **Roborev creator confirmed**: Wes McKinney (@wesmckinn, author of Pandas).
-  Previous KB said Dan Kornas (a content creator, not the author). Corrected.
-- **Fable 5 / Mythos 5 suspension resolved**: suspension (Jun 12–13) was
-  short-lived; platform docs show both models available as of Jun 22. Opus 4.1
-  deprecation (retiring Aug 5, 2026) confirmed via docs.
-- **Dynamic Workflows Pro-plan GA** (~Jul 2, 2026) — secondary-source only, no
-  primary changelog line found; re-verify against code.claude.com/docs/en/changelog
-  or the whats-new digest once a Week 27 entry publishes.
 - **AI Engineer World's Fair 2026** (Jun 29–Jul 2, San Francisco) sessions by
   Steve Yegge ("Harness Engineering" fireside w/ Guy Podjarny) and reportedly
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
@@ -557,18 +573,13 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   that learn from execution traces — **Low-Medium**, existence corroborated by
   search but article not directly fetched, exact date unconfirmed. Not promoted;
   re-verify before citing.
-- **Gas City v1.3.3 hotfix** (Jul 2, 2026) and **LangGraph 1.2.7** (Jun 30,
-  2026) — routine maintenance releases, not new orchestration techniques; not
-  promoted to primer.
 - **"Graph engineering" as a successor term to "loop engineering"** — surfaced
   from a single thin secondary (datasciencedojo.com, ~Jul 18) plus a
   Steinberger tweet ("did we shift to graphs yet?") gesturing the same
   direction. Two independent hints, neither confirmed as an established term.
-  **Low.** Re-check in the next pass — if a primary essay appears, this could
-  become a real lineage-ladder addition.
-- **Gas City "Formulas 2.0"** (~early Jul 2026: convoys/drain primitives,
-  Mayor as configurable skill, JSON CLI output) — **Medium**, identical detail
-  across two searches but primary blog.gascity.com 403'd both times.
+  **Human-reviewed 2026-07-20**: warm signals, still unconfirmed — no primary
+  essay found. **Low.** Carry forward to next pass; promote to the lineage
+  ladder (primer §2) only if a primary essay actually defines the term.
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.

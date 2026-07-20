@@ -57,7 +57,12 @@ for ~3 months, with no single published cost figure.
   tracks: quality comes from verification skills, cost is controlled by turn
   caps. Reportedly passed 1.2M views on X within a day — the clearest signal
   yet that "loop engineering" has moved from practitioner slang to an
-  officially endorsed term for the product surface itself.
+  officially endorsed term for the product surface itself. **Human-verified
+  2026-07-20**: `/schedule` is real (confirmed directly against
+  code.claude.com/docs/en/routines — see §4), though it's the CLI alias for
+  creating a **Routine**, not a fourth loop type separate from Routines as
+  the secondary sources implied — the blog post's own framing/exact quotes
+  remain unconfirmed (primary still 403's to automated fetch).
 - **Addy Osmani**, "Own the Outer Loop" (Substack, July 9, 2026; his first
   post after "Agentic Autonomy Levels," July 3, and reportedly the written
   version of his AI Engineer World's Fair 2026 closing keynote) sharpens the
@@ -98,10 +103,14 @@ for ~3 months, with no single published cost figure.
   state that survives crashes** so any agent can resume another's work. Evolved
   into **Gas City** (Apr 25, 2026): Gas Town rewritten as an SDK
   (`claude-gastown`/MEOW stack) for building arbitrary agent orchestrators.
-  Reportedly shipped a "Formulas 2.0" update in early July 2026 (convoy/drain
-  control-flow primitives, Mayor reimplemented as a configurable skill, JSON
-  output across the `gc` CLI) — **Medium** (consistent secondary detail, primary
-  blog 403'd; re-verify).
+  Shipped **Gas City 1.3** ("Now We're Looping With Gas," blog.gascity.com,
+  early July 2026) — reportedly convoy/drain control-flow primitives, Mayor
+  reimplemented as a configurable skill, JSON output across the `gc` CLI.
+  **Human-verified 2026-07-20** that the post/release itself is real (URL
+  confirmed directly by a repo maintainer); the specific feature list is
+  still secondary-sourced only, since automated fetch of the post body
+  403's — **Medium-High**. (Earlier passes had this labeled "Formulas 2.0",
+  a secondary-source guess; the confirmed title is "Gas City 1.3.")
 - **Boris Cherny — "Steps of AI Adoption"** (~Jul 16–17, 2026, Anthropic site +
   X): a five-level maturity framework for org-wide AI adoption — **Gated (0)**
   → **Assisted (~1x)** → **Parallel (~10x)** → **Supervised autonomy (~100x)**
@@ -129,8 +138,21 @@ for ~3 months, with no single published cost figure.
   is fragile exact-string matching — always set the iteration cap yourself.
 - **Cloud / "close your laptop"** — Claude Code on the web (`--remote`) runs in
   ephemeral isolated VMs behind a network proxy/allowlist. **Routines** (research
-  preview) are the cloud scheduling that survives the laptop being closed (min
-  interval ~1 hr).
+  preview) are the cloud scheduling that survives the laptop being closed: a
+  saved prompt + repositories + connectors, run on Anthropic-managed
+  infrastructure. Create one from the CLI with **`/schedule`** (alias
+  `/routines`) — this is the CLI entry point *into* Routines, not a separate
+  fourth loop type; corrects an earlier Medium-confidence secondary-sourced
+  claim that framed it as distinct. A routine can carry **three trigger
+  types**, combinable on one routine: **Schedule** (recurring, min interval
+  1 hr, or a one-off future run that auto-disables after firing), **API**
+  (POST to a per-routine `/fire` endpoint with a bearer token — the payload
+  arrives wrapped as untrusted data unless the routine's prompt explicitly
+  opts in to acting on it), and **GitHub event** (pull request or release
+  events, with field-level filters). Routines run with **no permission
+  prompts** — full autonomy for whatever the connectors/repos it's scoped to
+  can reach — so scope environment network access and connectors tightly.
+  *(High — code.claude.com/docs/en/routines read directly.)*
 - **Subagents** (the Task tool) spawn child agents with their own context that
   report back. **As of v2.1.172 (June 10, 2026), sub-agents can themselves spawn
   sub-agents up to 5 levels deep** — the first structural change to the

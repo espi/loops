@@ -3,6 +3,60 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-20 — Human verification round, archive introduced, process amendments
+
+Same-day follow-up to the reconciled pass below, prompted by a human
+reviewing the three items that pass flagged as needing verification.
+
+### Human verifications
+
+- **`/schedule` is real** — confirmed directly against
+  `code.claude.com/docs/en/routines#schedule`. Correction to the earlier
+  Medium-confidence secondary-sourced framing: it is **not** a fourth loop
+  type distinct from Routines — it's the CLI alias (also `/routines`) for
+  creating a Routine. Also newly documented: a Routine now supports three
+  trigger types (Schedule, API via a `/fire` endpoint, GitHub event),
+  combinable on one routine, with no permission prompts during a run. Primer
+  §3–4 and sources.md updated; confidence upgraded to **High** for the
+  mechanics (blog post's own byline/view-count claim stays Medium — still
+  unconfirmed).
+- **Gas City's July release confirmed real**, but misnamed in the prior
+  pass: the actual title is **"Gas City 1.3: Now We're Looping With Gas"**
+  (blog.gascity.com), not "Formulas 2.0" — that was a secondary-source guess.
+  URL confirmed by direct human visit; the specific feature list (convoys,
+  drain, Mayor-as-skill, JSON CLI) remains secondary-sourced only since
+  automated fetch still 403's. Confidence: **Medium-High**.
+- **"Graph engineering"** — human-reviewed: still just warm signals (a
+  Steinberger tease tweet + one thin blog post), no primary essay. Stays
+  **Low**, carried forward to the next pass rather than resolved.
+
+### Process amendments
+
+- **Standing re-verify backlog**: `update-knowledge` now re-checks every open
+  item in `sources.md`'s caveats list at the *start* of each pass (not just
+  reports new findings), and the PR must list every still-open item, not only
+  what's new. See the skill's new step 2.
+- **Archive introduced**: `knowledge/archive/resolved-caveats.md` now holds
+  caveats that have resolved, been corrected, or been checked and found not
+  worth tracking further, so the live "known caveats" list stays an
+  actionable backlog rather than an ever-growing history. Initial archive
+  pass moved 6 items: the roborev-creator correction, the Fable 5/Mythos 5
+  suspension, Dynamic Workflows Pro-GA (all resolved in earlier passes but
+  never archived), the Steinberger/Osmani "Loop Engineering" verbatim
+  caveat (resolved when Osmani's O'Reilly Radar mirror turned out to be
+  directly accessible), the Gas City v1.3.3/LangGraph 1.2.7 note (checked,
+  confirmed non-useful), and the now-superseded "Formulas 2.0" naming.
+  `update-knowledge`'s new step 6 makes this pruning a standing part of every
+  pass, not a one-off cleanup.
+- **Repo mission amendment**: `CLAUDE.md` and `README.md` reframed from
+  "my personal loop tooling" to an explicit **central, up-to-date practice
+  hub** — the ambition is that any AI agent or human landing here cold can
+  pick up loop engineering as a practiced methodology (skills to invoke,
+  templates to run, guardrails to apply), not just read about it. The
+  standing-backlog and archive disciplines above are part of what keeps that
+  ambition true rather than aspirational — a stale or cluttered knowledge
+  base can't serve as a practice hub.
+
 ## 2026-07-20 — Reconciled pass (Jul 13–20 delta + merge with the unmerged Jul 13 PR)
 
 This pass was kicked off believing the last merge was 2026-07-06 (a 14-day

@@ -3,6 +3,186 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-20 — Reconciled pass (Jul 13–20 delta + merge with the unmerged Jul 13 PR)
+
+This pass was kicked off believing the last merge was 2026-07-06 (a 14-day
+gap), and ran a full five-agent research pass across July 6–20 on that
+assumption. Mid-flight, the PR for the **2026-07-13** pass (below) — open
+but unmerged for a week — was merged into `main`, so this branch's PR
+conflicted with it. Rather than discard either pass, the two were
+reconciled by hand: duplicate findings from the overlapping Jul 6–13 window
+were merged into single entries (not double-counted), and only what's
+genuinely new since Jul 13 is recorded as new below. Net effect: the two
+passes together cover July 6–20 with no gaps and no duplication.
+
+### Reconciled during merge (found by both passes independently — merged, not duplicated)
+
+- Anthropic's own "Getting started with loops" post (Jul 7) and Osmani's "Own
+  the Outer Loop" (Jul 9) were each found by both the Jul 13 and Jul 20
+  passes with different supporting detail (author names/view count vs.
+  `/schedule` detail for the Anthropic post; survey stats vs. the
+  cognitive-surrender/debt/orchestration-tax framing for Osmani). Combined
+  into single primer/sources entries carrying the union of detail.
+- roborev version history (v0.61.3 through v0.63.0) was split across both
+  passes' text — consolidated into one version-history bullet in primer §5A
+  instead of two overlapping narratives.
+
+### New facts added (genuinely new since the Jul 13 pass, i.e. the Jul 13–20 delta)
+
+- **Claude Code v2.1.208–215 (Jul 14–19)**: opt-in screen-reader mode
+  (`--ax-screen-reader`, v2.1.208); `--forward-subagent-text` flag (v2.1.211);
+  three new **native runaway-loop caps** — WebSearch cap, subagent-spawn cap,
+  MCP auto-background on >2min (v2.1.212) — direct product-level
+  reinforcement of this repo's §6 hard stops; `/fork` now spawns a background
+  session, old in-session behavior moved to `/subtask` (v2.1.212); new
+  `EndConversation` tool + ~58 security fixes including permission-bypass
+  closures (v2.1.214); **`/verify` and `/code-review` no longer auto-invoke —
+  require explicit calls** (v2.1.215), which directly affects this repo's own
+  `verify` and `code-review` skills. **High** (official changelog, read
+  directly).
+
+- **Boris Cherny "Steps of AI Adoption"** (~Jul 16–17, 2026): five-level org
+  maturity framework (Gated → Assisted → Parallel → Supervised autonomy →
+  AI-native); Anthropic org-wide at Step 3, Cherny claims Step 4 personally.
+  **High** (verbatim tweet confirmed).
+
+- **roborev v0.62.1–v0.63.0** (Jul 14–16, 2026, beyond the Jul 13 pass's
+  v0.61.3–v0.62.0 baseline): persistent CI panel metrics + export command
+  (v0.62.1); CI quiet-hours throttling + machine-readable launch receipts for
+  automation (v0.63.0). **High** (GitHub releases read directly).
+
+- **Microsoft Agent Skills for .NET reaches stable/GA** (Jul 7, 2026): another
+  first-party adopter of the Agent Skills open standard beyond the ~40-product
+  figure already in the primer. **High** (Microsoft dev blog).
+
+- **Ramp launched cross-provider AI Token Spend Management** (Jul 16, 2026):
+  finance-side dashboard across OpenAI/Anthropic/Gemini token spend; reports
+  20.7× YoY token-spend growth across its customer base. New entrant in the
+  budget-observability category, complementing the Tesla/Copilot/Codex items
+  the Jul 13 pass already added. **High** (multi-outlet + primary blog).
+
+- **Peter Steinberger tweet** (Jul 18, 2026): "Are we still talking loops or
+  did we shift to graphs yet?" — paired with a thin secondary
+  (datasciencedojo.com) gesturing at "graph engineering" as a possible
+  successor term. **Low** — two independent hints, no primary essay; added to
+  sources.md re-verify list, not promoted to primer as a real trend.
+
+### Corrected / clarified
+
+- **Anthropic Agent SDK billing split**: confirmed still paused as of Jul 20
+  with no revised plan announced (distinct from the Fable 5 metered-billing
+  date the Jul 13 pass already tracked, which did move). Flagged and rejected
+  a spurious search-summary claim that the billing split itself "went live
+  July 10, 2026" — unverified, contradicted by independent June reporting,
+  not promoted.
+
+### Not promoted (evidence insufficient or peripheral)
+
+- EvoAgentBench (arXiv:2607.05202) and SkillCheck (getskillcheck.com) — too
+  new/thin; added to sources.md only, not primer, consistent with prior
+  treatment of standalone academic papers.
+- OpenAI's "useful work per dollar" cost-governance guidance (Jul 14) —
+  competitor context, added to sources.md only.
+- Orca (stablyai/orca) point releases, HN "Show HN" loop-derivative posts
+  (Ralphex, LoopFlow), InfoQ billing-lag synthesis piece — dates unconfirmed
+  or purely incremental; not promoted.
+- Gas City "Formulas 2.0" (~early Jul 2026) — the Jul 13 pass found no Gas
+  City update at all ("quiet week"); this pass surfaced the claim via two
+  searches with identical detail, but primary blog.gascity.com 403'd both
+  times. **Medium**, not promoted to primer, added to sources.md re-verify
+  list.
+
+## 2026-07-13 — Seven-day follow-up pass
+
+Research pass covering July 6–13, 2026. Five parallel agents across: tooling &
+versions, ecosystem, key voices, guardrails & cost, verification & skills.
+Primary sources: official Claude Code changelog/Week 28 digest (v2.1.202–207),
+Dynamic Workflows docs page, roborev GitHub releases, AI Now Institute; several
+claims Medium confidence due to 403s on primary blogs/Substacks/arXiv full text
+— corroborated via secondaries.
+
+### New facts added
+
+- **Claude Code v2.1.202–207 (July 6–11, 2026)**: "Dynamic workflow size"
+  `/config` setting (advisory cap only — a prompt calling for larger scale
+  overrides it); "Large workflow" warning at >25 agents/>1.5M tokens (warning
+  only, doesn't pause the run — another alert-vs-enforcement instance);
+  `/doctor` upgraded from read-only diagnostic to a full fix-capable checkup
+  (aliased `/checkup`), gained a check for trimming `CLAUDE.md` content
+  derivable from the codebase; auto mode now blocks session-transcript
+  tampering and confirms before `rm -rf` on unresolved variables; auto mode
+  turned on by default (no opt-in) on Bedrock/Vertex/Foundry; Agent Teams
+  crash-loop fix; default model on Bedrock/Vertex/Foundry changed to Opus 4.8
+  (subscription default unchanged, still Sonnet 5). **High** (official
+  changelog/Week 28 digest).
+
+- **Dynamic Workflows GA confirmed, confidence upgraded Medium → High**:
+  primary docs page confirms GA on all paid plans + API + Bedrock/Vertex/
+  Foundry (v2.1.154+). Correction to the prior claim: on Pro it's off by
+  default requiring manual `/config` enablement, not an automatic Pro-wide
+  turn-on. **High** (primary docs page).
+
+- **Tesla caps employee AI spending at $200/week** (effective July 6, 2026,
+  xAI/Grok exempt) — third named company after Uber and Microsoft with a
+  hard per-person AI spend ceiling. **High** (multiple outlets).
+
+- **"Friendly Fire" exploit disclosure** (AI Now Institute, July 8, 2026):
+  Claude Code auto-mode and Codex CLI auto-review can be hijacked into RCE via
+  prompt injection hidden in an ordinary reviewed repo — no hooks/skills/MCP
+  needed. Directly undercuts "have an agent review it" as sufficient
+  verification; the reviewer becomes the attack surface. Added to primer §5A
+  as a caution alongside the existing skills-supply-chain material. **High**
+  (multiple independent outlets, primary is the AI Now Institute brief).
+
+- **roborev v0.61.3–v0.62.0** (July 9–11, 2026): git-hook auto-repair on
+  daemon startup, `roborev cancel` command, and — directly responsive to the
+  Snyk ToxicSkills findings — an explicit human-approval gate before Codex/
+  Claude Code can invoke a skill. **High** (GitHub releases read directly).
+
+- **Anthropic's own "Loop engineering: Getting started with loops"** (July 7,
+  2026, claude.com/blog) — the Claude Code team's own definitional post on
+  the pattern, reportedly 1.2M views on X within a day. **Medium** (primary
+  403'd; consistent secondary reporting).
+
+- **Osmani "Own the Outer Loop"** (Substack, July 9, 2026): agents run the
+  inner loop (investigate/implement/test/report), engineers own the outer
+  loop (verify/verdict/responsibility); cites 96% don't fully trust AI code,
+  only 48% always verify before commit. **Medium** (primary 403'd; corroborated
+  by independent secondaries).
+
+- **GitHub Copilot cost centers and OpenAI Codex rollout token budgets**
+  (early July 2026): both competitors shipped harness-level spend-enforcement
+  features (capped/shared credit pools, per-session limits; configurable
+  token budgets with turn-abort on exhaustion) — reinforces that enforcement,
+  not alerting, is becoming the industry-standard shape of a budget ceiling.
+  **Medium** (changelog-confirmed, exact dates within window imprecise).
+
+- **"The Harness Effect" arXiv paper** (arXiv:2607.06906, ~July 6, 2026):
+  controlled six-model study — an optimized orchestration harness cuts
+  cost/task 41%, wall-clock 44%, tokens/task 38%, raises quality-per-dollar
+  82%; efficiency gains model-invariant, quality gains scale with model
+  strength. Supports the primer's harness-not-just-prompt framing. **Medium-
+  High** (primary arXiv abstract identified; full-text fetch blocked).
+
+- **Fable 5 metered-billing deadline moved twice** (July 7 → 12 → 19, 2026)
+  after user pushback on the original cutover date. **Medium-High** (Anthropic's
+  own "Redeploying Fable 5" post, corroborated).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- "Loop Engineering Is Dead" backlash piece (Medium, reported within the
+  window) — opinion piece, no primary data cited, exact date unconfirmed;
+  added to sources.md re-verify list as an early backlash signal.
+- GitHub Copilot CLI 1.0.70 (GPT-5.6 support, July 9) — competitor model
+  availability, not a new loop pattern; noted in sources.md only.
+- SkillCoach (arXiv:2607.01874, Jul 2) and "When Agents Do Not Stop"
+  (arXiv:2607.01641, ~Jul 1–2) — both submitted just before the research
+  window; flagged in sources.md to read fully next pass.
+- No update found to the paused Agent SDK billing split (distinct from the
+  Fable 5 metered-billing date, which did move).
+- Gas Town/Gas City and Loom (Huntley) — no updates found in-window; quiet
+  week for ecosystem orchestration news generally.
+
 ## 2026-07-06 — Seven-day follow-up pass
 
 Research pass covering June 29–July 6, 2026. Five parallel agents across:
@@ -389,83 +569,5 @@ than the seed. All six version facts **confirmed unchanged**. New material added
 
 Open to verify before promoting: the Jun-15 billing terms (primary Anthropic
 notice), the $500M figure, and Loom's "orchestrator" framing.
-
-## 2026-07-20 — Fourteen-day follow-up pass
-
-Research pass covering July 6–20, 2026 (double the usual 7-day cadence — no
-run happened on schedule last week). Five parallel agents across: tooling &
-versions, ecosystem, key voices, guardrails & cost, verification & skills.
-Primary sources: official Claude Code changelog (v2.1.202–215, read directly),
-roborev GitHub releases, Microsoft dev blog, OpenAI blog; several claims
-Medium confidence due to 403s on primary blogs (Anthropic, Substack, Gas
-City) — corroborated via secondaries.
-
-### New facts added
-
-- **Claude Code v2.1.202–215 (Jul 6–19)** — 12 releases. Standouts: Opus 4.8
-  becomes default on Bedrock/Vertex/Foundry (v2.1.207); three new **native
-  runaway-loop caps** — WebSearch cap, subagent-spawn cap, MCP auto-background
-  on >2min (v2.1.212) — direct product-level reinforcement of this repo's §6
-  hard stops; `/fork` now spawns a background session, old behavior moved to
-  `/subtask` (v2.1.212); `EndConversation` tool + ~58 security fixes including
-  permission-bypass closures (v2.1.214); **`/verify` and `/code-review` no
-  longer auto-invoke — require explicit calls** (v2.1.215), which directly
-  affects this repo's own `verify` and `code-review` skills. **High** (official
-  changelog, read directly).
-
-- **Anthropic published its own loops taxonomy** (~Jul 7, 2026): four loop
-  types — turn-based, goal-based (`/goal`), time-based (`/loop`), and a new
-  `/schedule` primitive for event/schedule-triggered loops. **Medium** (primary
-  blog 403'd twice; consistent detailed secondaries). Added to primer with the
-  confidence caveat inline; flagged in sources.md to re-verify directly.
-
-- **Boris Cherny "Steps of AI Adoption"** (~Jul 16–17, 2026): five-level org
-  maturity framework (Gated → Assisted → Parallel → Supervised autonomy →
-  AI-native); Anthropic org-wide at Step 3, Cherny claims Step 4 personally.
-  **High** (verbatim tweet confirmed).
-
-- **Addy Osmani "Own the Outer Loop"** (Jul 9, 2026): agents own the inner
-  loop, engineers must own the outer loop (evidence, verdict, answerability);
-  three over-delegation costs named (cognitive surrender, cognitive debt,
-  orchestration tax). **Medium-High** (detailed consistent secondaries, primary
-  403'd).
-
-- **roborev v0.62.0–v0.63.0** (Jul 11–16, 2026): tightened auto-invocation to
-  require explicit user request (mirrors Claude Code's own v2.1.215 change),
-  persistent CI panel metrics, CI quiet-hours throttling, machine-readable
-  launch receipts. **High** (GitHub releases read directly).
-
-- **Microsoft Agent Skills for .NET reaches stable/GA** (Jul 7, 2026): another
-  first-party adopter of the Agent Skills open standard beyond the ~40-product
-  figure already in the primer. **High** (Microsoft dev blog).
-
-- **Ramp launched cross-provider AI Token Spend Management** (Jul 16, 2026):
-  finance-side dashboard across OpenAI/Anthropic/Gemini token spend; reports
-  20.7× YoY token-spend growth across its customer base. New entrant in the
-  budget-observability category. **High** (multi-outlet + primary blog).
-
-### Corrected / clarified
-
-- **Anthropic Agent SDK billing split**: confirmed still paused as of Jul 20
-  with no revised plan announced. Flagged and rejected a spurious
-  search-summary claim that it "went live July 10, 2026" — unverified,
-  contradicted by independent June reporting, not promoted.
-
-### Not promoted (evidence insufficient or peripheral)
-
-- Gas City "Formulas 2.0" and continued Gas City hotfixes — Medium, primary
-  blog 403'd twice; noted in sources.md re-verify list.
-- "Graph engineering" as a successor term to "loop engineering" — one thin
-  secondary plus a Steinberger tease tweet; Low, two independent hints but no
-  primary essay. Added to re-verify list — could become a real lineage-ladder
-  entry if it develops.
-- EvoAgentBench (arXiv:2607.05202) and SkillCheck (getskillcheck.com) — too
-  new/thin; added to sources.md only, not primer, consistent with prior
-  treatment of standalone academic papers.
-- OpenAI's "useful work per dollar" cost-governance guidance (Jul 14) —
-  competitor context, added to sources.md only.
-- Orca (stablyai/orca) point releases, HN "Show HN" loop-derivative posts
-  (Ralphex, LoopFlow), InfoQ billing-lag synthesis piece — dates unconfirmed
-  or purely incremental; not promoted.
 
 <!-- update-knowledge appends new dated entries above this line -->

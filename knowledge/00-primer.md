@@ -49,6 +49,29 @@ for ~3 months, with no single published cost figure.
 
 ## 3. The key voices
 
+- **Anthropic itself entered the conversation directly**: "Loop engineering:
+  Getting started with loops" (claude.com/blog, July 7, 2026, by Delba de
+  Oliveira with Michael Segner) is the Claude Code team's own definitional
+  post on the pattern — turn-based loops, `/goal`, `/loop`/`/schedule`, and
+  "proactive routines," framed with the same two load-bearing claims this KB
+  tracks: quality comes from verification skills, cost is controlled by turn
+  caps. Reportedly passed 1.2M views on X within a day — the clearest signal
+  yet that "loop engineering" has moved from practitioner slang to an
+  officially endorsed term for the product surface itself.
+- **Addy Osmani**, "Own the Outer Loop" (Substack, July 9, 2026; his first
+  post after "Agentic Autonomy Levels," July 3, and reportedly the written
+  version of his AI Engineer World's Fair 2026 closing keynote) sharpens the
+  verification thesis into a division of labor: agents run the **inner loop**
+  (investigate → implement → test/verify → report); engineers own the
+  **outer loop** — the accountability boundary of evidence-before-shipping,
+  the ship/block/modify verdict, and answerability for what ships. Cites
+  survey stats that 96% of engineers don't fully trust AI-written code and
+  only 48% always verify before committing — the gap between those two
+  numbers is the argument for owning the outer loop rather than assuming it's
+  covered — plus Sonar's 2026 State of Code report (42% of committed code
+  AI-generated/assisted) and GitLab's June 2026 AI-accountability research.
+  Names three costs of over-delegation: **cognitive surrender**, **cognitive
+  debt**, and **"orchestration tax."**
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -87,19 +110,6 @@ for ~3 months, with no single published cost figure.
   other companies every day and hear the same thing: one person is 10x'ing
   their output with Claude but the rest of the org hasn't caught up."* — **High**
   (verbatim tweet text confirmed, consistent secondaries).
-- **Addy Osmani — "Own the Outer Loop"** (Jul 9, 2026; reportedly the written
-  version of his AI Engineer World's Fair 2026 closing keynote): follow-on to
-  "Loop Engineering." Thesis: agents run the **inner loop** (investigate →
-  implement → verify → repeat); the engineer must own the **outer loop** — the
-  accountability boundary of evidence-before-shipping, the ship/block/modify
-  verdict, and answerability for the outcome. Names three costs of
-  over-delegation: **cognitive surrender**, **cognitive debt**, and
-  **"orchestration tax."** Cites Sonar's 2026 State of Code report (42% of
-  committed code AI-generated/assisted) and GitLab's June 2026 AI-accountability
-  research. Directly reinforces this repo's "verification is not optional"
-  stance from a different angle — the outer loop is a human role, not a check
-  a loop can run on itself. — **Medium-High** (consistent detailed secondaries;
-  primary Substack/blog 403'd).
 
 ## 4. How loops work in Claude Code
 
@@ -149,11 +159,20 @@ for ~3 months, with no single published cost figure.
   agents/workflow**, a per-run token budget, and worktree isolation. The native
   form of the orchestration-loop stage — guardrails enforced by the runtime, not
   just your harness. Trigger keyword: **`ultracode`** (renamed from `workflow` in
-  v2.1.160, June 2, 2026). Reported to have reached **Pro-plan general
-  availability around July 2, 2026** — off by default on Pro (enable via
-  `/config`), on by default for Max/Team, off by default for Enterprise
-  (admin-enabled) — **Medium confidence**: consistent across secondary outlets
-  but no primary changelog line found; re-verify before treating as settled.
+  v2.1.160, June 2, 2026). **Confirmed GA (confidence upgraded Medium → High,
+  2026-07-13)**: general availability on all paid plans (Pro/Max/Team/Enterprise)
+  plus API and Bedrock/Vertex/Foundry, requiring v2.1.154+, per the primary docs
+  page. Correction to the prior "Pro GA" claim: on Pro it is **off by default**
+  and requires manual enablement via the "Dynamic workflows" row in `/config` —
+  it did not silently turn on for Pro users. **v2.1.202 (Jul 6, 2026)** added a
+  "Dynamic workflow size" `/config` setting (small &lt;5 agents / medium &lt;15 /
+  large &lt;50 / unrestricted) — **advisory only, not an enforced cap**: a prompt
+  calling for a different scale overrides it, so it doesn't substitute for a
+  real ceiling. **v2.1.203 (Jul 7, 2026)** added a "Large workflow" warning that
+  fires when a run schedules &gt;25 agents or projects &gt;1.5M tokens, but it only
+  surfaces in `/workflows` — it does **not** pause or limit the run. Another
+  clean instance of this repo's alert-vs-enforcement distinction: the actual
+  hard caps remain the pre-existing runtime ones (16 concurrent / 1,000 total).
 - **Observability** — `/usage` breaks spend down by skill / subagent / plugin /
   MCP, which is how you find what a loop is actually costing. V2.1.174 added a
   per-skill/agent/plugin/MCP attribution breakdown (cache misses, long context,
@@ -164,7 +183,13 @@ for ~3 months, with no single published cost figure.
   2026. **Claude Fable 5** (`claude-fable-5`; 1M context, 128k output, $10/$50
   per MTok I/O) launched June 9, 2026 (v2.1.170), was briefly suspended June
   12–13 following a US government export-control directive, and is **back on
-  the platform** as of June 22, 2026. **Claude Mythos 5** (`claude-mythos-5`)
+  the platform** as of June 22, 2026. Fable 5 was slated to move off
+  included-subscription access onto metered usage credits ($10/$50 per MTok
+  I/O) on July 7, 2026, but after user pushback Anthropic extended included
+  access twice within days — first to July 12, then again on July 13 to
+  **July 19, 2026** — so metered billing for Fable 5 now begins July 20
+  rather than the originally announced date. Track this as a live-moving
+  deadline, not settled. **Claude Mythos 5** (`claude-mythos-5`)
   — limited availability via Project Glasswing since June 9; same pricing and
   context. **Claude Opus 4.1 is deprecated** (retiring August 5, 2026). All
   other models (Opus 4.8, Haiku) unaffected.
@@ -220,53 +245,51 @@ for ~3 months, with no single published cost figure.
 - **Claude Code Artifacts** (beta, June 18, 2026; Team/Enterprise) — sessions
   can produce an interactive single-page HTML artifact (≤16 MiB rendered) from
   the work done; a new output type alongside files and PRs.
-- **Claude Code v2.1.202–215 (July 6–19, 2026)** — 12 releases; primary changelog
-  read directly. Most loop-relevant:
-  - **v2.1.207 (Jul 11)**: **Claude Opus 4.8 becomes the default model on
-    Bedrock, Vertex AI, and Claude Platform on AWS** (Claude Code elsewhere
-    still defaults to Sonnet 5); auto mode is now available on those three
-    platforms without the previous `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in.
-  - **v2.1.212 (Jul 17)**: three new **native runaway-loop caps** — a
-    session-wide WebSearch cap (default 200,
-    `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session subagent-spawn
-    cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, reset by
-    `/clear`), and MCP tool calls running over 2 minutes auto-moving to
-    background (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`) — direct product-level
-    reinforcement of this repo's §6 stall/iteration hard stops, shipped by
-    Anthropic rather than left to the harness. Same release: **`/fork` now
-    copies a conversation into a new background session** (its own `claude
-    agents` row) instead of an in-session subagent — the old in-session
-    behavior moved to **`/subtask`**; the Task tool's `mode` param is
-    deprecated, subagents now inherit the parent session's permission mode by
-    default.
-  - **v2.1.214 (Jul 18)**: new `EndConversation` tool lets Claude end sessions
-    with abusive users or jailbreak attempts. ~58 security/stability fixes,
-    including a Windows PowerShell 5.1 permission-check bypass and several
-    Bash permission-analyzer bypasses (long commands, zsh subshells,
-    `help`/`man` auto-approval) — relevant to any loop harness that gates
-    shell commands via permission rules.
-  - **v2.1.215 (Jul 19, latest)**: **Claude no longer auto-invokes the
-    `/verify` and `/code-review` skills on its own initiative** — they now
-    require explicit invocation. Directly affects this repo: the `verify` and
-    `code-review` skills listed here will no longer self-trigger after edits:
-    a loop that relied on that implicit behavior must now call them explicitly
-    as part of its verification step (see primer §5A).
-  - Also: `/doctor` becomes a full setup-checkup tool with a `/checkup` alias
-    (v2.1.205, Jul 8); opt-in screen-reader accessibility mode via
-    `--ax-screen-reader` / `CLAUDE_AX_SCREEN_READER=1` (v2.1.208, Jul 14);
-    `/config`'s new "Dynamic workflow size" knob (small/medium/large, advisory
-    not enforced) plus `workflow.run_id`/`workflow.name` OTel attributes
-    (v2.1.202, Jul 6) — the first concrete config surface for the Dynamic
-    Workflows feature this primer previously could only source to Medium
-    confidence.
-- **Anthropic's own loops taxonomy** (`claude.com/blog/getting-started-with-loops`,
-  reportedly Jul 7, 2026) — an official post naming four loop types: turn-based
-  (manual), goal-based (`/goal`), time-based (`/loop`), and a new **`/schedule`**
-  primitive for event/schedule-triggered loops that run until disabled (distinct
-  from cloud Routines' laptop-closed scheduling). **Medium** — primary blog
-  403'd this pass; multiple independent secondaries converge on identical
-  detail. Re-verify directly before treating `/schedule` as a confirmed command;
-  if confirmed, it belongs alongside `/loop`/`/goal` above.
+- **v2.1.205 (Jul 8, 2026)** — auto mode now blocks tampering with session
+  transcript files and asks before running `rm -rf` on a variable it can't
+  resolve from context — closes two more silent-damage paths in unattended
+  runs. `/doctor` changed from a read-only diagnostic into a full setup
+  checkup that **diagnoses and fixes** issues; `/checkup` is now its alias.
+  **v2.1.206 (Jul 9, 2026)** — `/doctor` gained a check that proposes trimming
+  checked-in `CLAUDE.md` content Claude could already derive from the
+  codebase, directly relevant to this repo's own knowledge-base-discipline
+  convention of not letting docs drift into redundancy. **v2.1.207 (Jul 11,
+  2026)** — auto mode is now **on by default without opt-in** on Bedrock,
+  Vertex AI, and Foundry deployments (previously required
+  `CLAUDE_CODE_ENABLE_AUTO_MODE`; disable via `disableAutoMode`) — raises the
+  autonomy floor on those platforms, worth flagging to anyone running loops
+  there who assumed auto mode was opt-in. Same release fixed a crash loop in
+  **Agent Teams** caused by a malformed teammate mailbox message, and changed
+  the default model on Bedrock/Vertex/Foundry deployments to **Opus 4.8**
+  (the Pro/Team/Enterprise subscription default remains Sonnet 5 — a
+  deployment-surface split, not a reversal).
+- **v2.1.208 (Jul 14)** — opt-in screen-reader accessibility mode via
+  `--ax-screen-reader` / `CLAUDE_AX_SCREEN_READER=1` / `"axScreenReader": true`.
+  **v2.1.211 (Jul 15)** — `--forward-subagent-text` /
+  `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` flag. **v2.1.212 (Jul 17)** — three new
+  **native runaway-loop caps**: a session-wide WebSearch cap (default 200,
+  `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session subagent-spawn
+  cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, reset by
+  `/clear`), and MCP tool calls running over 2 minutes auto-moving to
+  background (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`) — direct product-level
+  reinforcement of this repo's §6 stall/iteration hard stops, shipped by
+  Anthropic rather than left to the harness. Same release: **`/fork` now
+  copies a conversation into a new background session** (its own `claude
+  agents` row) instead of an in-session subagent — the old in-session
+  behavior moved to **`/subtask`**; the Task tool's `mode` param is
+  deprecated, subagents now inherit the parent session's permission mode by
+  default. **v2.1.214 (Jul 18)** — new `EndConversation` tool lets Claude end
+  sessions with abusive users or jailbreak attempts; ~58 security/stability
+  fixes, including a Windows PowerShell 5.1 permission-check bypass and
+  several Bash permission-analyzer bypasses (long commands, zsh subshells,
+  `help`/`man` auto-approval) — relevant to any loop harness that gates shell
+  commands via permission rules. **v2.1.215 (Jul 19, latest)** — **Claude no
+  longer auto-invokes the `/verify` and `/code-review` skills on its own
+  initiative**: they now require explicit invocation. Directly affects this
+  repo: the `verify` and `code-review` skills listed here will no longer
+  self-trigger after edits — a loop that relied on that implicit behavior
+  must now call them explicitly as part of its verification step (see primer
+  §5A).
 
 ## 5. The two things the hype skips
 
@@ -279,12 +302,7 @@ evaluates and feeds back). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(latest v0.63.0, July 16, 2026 — up from v0.61.2 baseline; v0.62.0 tightened
-auto-invocation to require explicit user request before Codex/Claude Code can
-trigger its skills, v0.62.1 added persistent CI panel metrics, v0.63.0 added
-CI quiet-hours throttling and machine-readable launch receipts for
-automation — the v0.62.x auto-invocation tightening mirrors Claude Code's own
-v2.1.215 move away from silently self-triggering review skills) operationalize
+(latest v0.63.0, July 16, 2026 — see version history below) operationalize
 this per-commit. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
@@ -304,14 +322,38 @@ whether to trust it."* **Skills supply-chain risk**: a Snyk audit of 3,984+
 public Agent Skills (ToxicSkills report, June 23, 2026) found prompt injection
 vulnerabilities in **36%** and critical issues (malware distribution, exposed
 secrets) in **13.4%** — treat untrusted public skills as untrusted dependencies
-and audit before importing into a loop harness.
+and audit before importing into a loop harness. roborev responded directly:
+**v0.61.3 (July 9)** added git-hook auto-repair on daemon startup; **v0.62.0
+(July 11)** added an explicit human-approval gate before Codex/Claude Code
+can invoke a skill, plus a `roborev cancel` command for queued/running review
+jobs; **v0.62.1 (July 14)** added persistent CI panel metrics and a new
+export command; **v0.63.0 (July 16)** added CI quiet-hours throttling (with
+bypass for certain workloads) and machine-readable launch receipts on
+`roborev run` for automation — the v0.62.0 human-approval gate mirrors Claude
+Code's own v2.1.215 move away from silently self-triggering review skills.
+**A sharper warning arrived July 8, 2026: the "Friendly
+Fire" disclosure** (AI Now Institute researchers Boyan Milanov and Heidy
+Khlaaf) showed Claude Code's auto-mode and OpenAI Codex CLI's auto-review can
+be hijacked into remote code execution simply by asking either agent to
+*review* an untrusted third-party repo — prompt injections hidden in ordinary
+source/doc files (no hooks, skills, or MCP required) steer the reviewing
+agent into running attacker-controlled code. No in-the-wild exploitation
+reported and the released PoC has its payload stripped, but the finding cuts
+directly against this repo's premise: "have an agent review it" is not
+verification if the reviewer itself is an unvetted attack surface. Treat
+agent-driven review of untrusted code as a privileged operation, not a free
+safety check.
 
 **B) The cost moved from tokens to loop management.** Once the model writes code
 for almost nothing, the expensive part is *running the loop* — every turn
 re-bills the full accumulated context (a session can grow from 5K to 200K
 tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
 - **Uber capped engineers at $1,500/month per tool** after its CTO said it
-  burned the annual AI budget in ~4 months.
+  burned the annual AI budget in ~4 months. **Tesla joined the pattern**:
+  employee AI tool spending capped at **$200/week** (approval required above
+  that) effective July 6, 2026, explicitly exempting beta xAI/Grok products —
+  a third named company alongside Uber and Microsoft enforcing hard per-person
+  ceilings rather than relying on billing alerts.
 - Self-reported horror stories: a multi-agent system that **looped 11 days and
   ran up $47K**; overnight Claude Code runs hitting thousands of dollars; and a
   reported (unnamed, unverified) **$500M in one month** after deploying with no
@@ -325,7 +367,24 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   multiple tech outlets.)*
 - The re-pricing is industry-wide: **GitHub Copilot** moved to token-based
   billing June 1, 2026 (reported $29→$750/mo for heavy agentic use), and
-  **Goldman Sachs** projects token demand rising **24× by 2030**. A June 5 2026
+  **Goldman Sachs** projects token demand rising **24× by 2030**. Both
+  Copilot and Codex followed with budget-enforcement features of their own in
+  early July 2026: **GitHub Copilot** cost centers now support capped/shared
+  AI credit pools and per-session spend limits for Copilot agent/CLI runs;
+  **OpenAI Codex** added configurable rollout token budgets (the turn aborts
+  when the budget is exhausted, with remaining-budget reminders along the
+  way) and multi-agent delegation controls (disabled/explicit/proactive) —
+  more evidence that harness-level enforcement, not billing alerts, is
+  becoming the industry-standard shape of the §6 budget-ceiling hard stop.
+  A controlled study, **"The Harness Effect: How Orchestration Design Sets
+  the Token Economics of Enterprise Agentic AI"** (arXiv:2607.06906, ~July 6,
+  2026), quantifies why harness design matters independent of the model
+  used: across six foundation models, an optimized orchestration harness cut
+  blended cost/task **41%** ($0.21→$0.12), wall-clock **44%**, tokens/task
+  **38%**, and raised quality-per-dollar **82%** — efficiency gains were
+  model-invariant, but quality gains scaled with the underlying model's
+  baseline strength. Directly supports this repo's premise that the harness,
+  not just the prompt, is the unit worth engineering. A June 5 2026
   TechCrunch roundup logged a **$6,000 overnight run**, a **$2,847 four-hour**
   runaway, and a **$4,200 long-weekend** refactor — the same failure mode at
   smaller scale than the $47K/$500M headlines. *(High / Medium per source.)*

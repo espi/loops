@@ -6,3 +6,7 @@
 # Local env / secrets
 *.local
 .env
+
+# Python bytecode (e.g. from running .github/self-edit-guard.py locally)
+__pycache__/
+*.pyc

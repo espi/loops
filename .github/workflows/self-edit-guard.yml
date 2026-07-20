@@ -1,0 +1,31 @@
+name: self-edit-guard
+
+# Enforces the update-knowledge routine's self-improvement envelope
+# (.claude/skills/update-knowledge/SKILL.md step 7). Runs on EVERY PR to main —
+# deliberately no `paths:` filter, so a scope-violating `self-edit:` commit
+# cannot dodge the check by not touching SKILL.md. The script no-ops in a few
+# seconds when a PR has no `self-edit:` commits.
+#
+# To make this a hard merge gate (not just a visible red X the reviewer sees),
+# add it as a required status check in the repo's branch-protection rules for
+# `main`. Without that, human merge remains the enforcement floor.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce self-improvement envelope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 .github/self-edit-guard.py

@@ -67,6 +67,26 @@ self-assessment of correctness.
   landing here should find the *current* state of the practice, not have to
   wade through a growing pile of resolved history to find it.
 
+## The routine may improve itself — within a fenced envelope
+
+The `update-knowledge` routine may edit *its own* skill file inside the PR it
+opens, but only through the self-improvement gate in
+`.claude/skills/update-knowledge/SKILL.md` step 7: **default-deny**, one
+≤10-line edit per pass, confined to that `SKILL.md`, limited to non-semantic
+repo-internal fixes (stale cross-references, broken paths, typos), and **never**
+justified by web-sourced research (that channel is a prompt-injection surface —
+see primer §5A "Friendly Fire"). Scope, the protected regions (the three hard
+stops and verification, the "Guardrails for this skill" section, the
+frontmatter, and the gate itself), and the per-pass cap are enforced by
+`.github/workflows/self-edit-guard.yml` — **not** by the agent's own judgement,
+because a self-graded gate is no gate (the same reason a cost *alert* is not a
+budget *ceiling*). "Auto-apply" means "written into the PR without pausing to
+ask" — a human reviews and merges every PR, the routine never merges to main,
+and it never auto-edits `guardrails/`, `budget.env`, `CLAUDE.md`, permissions,
+or its own gate. Widening this envelope — the rubric, the protected set, or the
+cap — is a human-authored change only. This is the repo eating its own dog food:
+autonomy earned by an enforceable check, not asserted by a task label.
+
 ## Tooling version notes (verify against live docs before relying on these)
 
 - `/loop` is a bundled skill, Claude Code **v2.1.72+**; cron under the hood;

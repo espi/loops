@@ -3,6 +3,63 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-20 — Bounded self-improvement for the routine
+
+The `update-knowledge` routine can now fold a fix to *its own* skill file into
+the PR it already opens — without pausing mid-run to ask a human to greenlight
+the idea — instead of only ever suggesting it. New `SKILL.md` **step 7,
+"Triage improvements to this routine"** (renumbering Open-a-PR to step 8).
+Design was pressure-tested with a fan-out of 5 independent design lenses, each
+adversarially critiqued, then synthesized — the decisive finding: a self-graded
+prose checklist is *not* a gate (it's the primer's own §5A "Friendly Fire"
+weakness aimed at the gate itself), so the safe design is narrow + machine-
+enforced, not broad + trusted.
+
+### What the routine may now do on its own
+- Fold **one** non-semantic, **repo-internal** correction per pass (a stale
+  cross-reference / step number, a broken relative path, an unambiguous typo)
+  into its PR, confined to `update-knowledge/SKILL.md`, ≤10 changed lines, as a
+  single `self-edit:` commit. Default-deny; effect only after a human merges.
+
+### What always stays a suggestion for a human
+- Anything semantic, behavioral, or web-sourced (a version bump / renamed tool
+  the research surfaced — the prompt-injection surface); anything outside that
+  one `SKILL.md`; and anything touching the three hard stops, verification,
+  the never-merge-to-main rule, permissions, frontmatter, or the gate itself
+  (no self-loosening / self-privilege-escalation).
+
+### Why it's real, not theater
+- **`.github/workflows/self-edit-guard.yml`** (+ `.github/self-edit-guard.py`,
+  the repo's first CI) fails any PR whose `self-edit:` commit breaks scope,
+  touches a protected region (frontmatter + sentinel-fenced verification / gate
+  / guardrails blocks), or exceeds the cap — the enforcement lives in the
+  harness, mirroring this repo's own "an alert is not a ceiling" principle. The
+  guard was tested against valid + 4 violation scenarios before shipping.
+- Auto-applied self-edits are surfaced in a **leading `## Routine
+  self-improvements` PR section** (Applied / Suggested), never buried under the
+  knowledge diff; the runbook reviewer checklist now points at the `self-edit:`
+  commit specifically. CLAUDE.md gained a standing convention for the envelope.
+
+### Follow-ups (folded into the same PR)
+- **Branch-prefix mismatch — fixed.** Step 8 now opens the PR from a
+  `claude/knowledge-update-YYYY-MM-DD` branch (was `knowledge/update-*`), so it
+  stays inside the Routine's default `claude/`-only push restriction — the
+  "never touches main" floor holds without disabling that restriction. Also
+  matches the repo's earlier branch history.
+- **Hard stops made explicit — done.** The skill's "Guardrails for this skill"
+  section now maps each of the three stops to a real backstop for a scheduled
+  one-shot (iteration = one trigger/pass + no self-reinvoke +
+  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`; budget = subscription/daily-run cap,
+  real only with metered overage off; stall = N/A, no-op exit), and the runbook
+  gained a "Budget & caps" section with the concrete env-var / overage config.
+
+### Still needs a human (settings-only, can't be done in a PR)
+- Make `self-edit-guard` a **required** status check in `main`'s
+  branch-protection rules to turn the red X into a hard merge gate.
+- Set the Routine's env vars (`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12`) and
+  keep metered overage OFF (or set a spend alert) per the runbook's
+  "Budget & caps."
+
 ## 2026-07-20 — Human verification round, archive introduced, process amendments
 
 Same-day follow-up to the reconciled pass below, prompted by a human

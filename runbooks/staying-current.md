@@ -1,19 +1,49 @@
 # Runbook: staying current
 
-How this repo keeps itself up to date. The `update-knowledge` skill does the
-research and proposes changes; a schedule decides when.
+How this repo keeps itself up to date. Two maintenance loops, each a skill that
+proposes changes as a PR; schedules decide when.
+
+## The two maintenance loops (and why not five)
+
+Maintenance splits into two genuinely different jobs, so it's two schedules —
+not one broad job, and not one-per-research-angle:
+
+| | `update-knowledge` (weekly) | `artifact-audit` (monthly) |
+|---|---|---|
+| **Question** | Is the knowledge base current with the world? | Do our own skills / templates / guardrails / runbooks still match that world? |
+| **Direction** | Outward research | Inward consistency |
+| **Edits** | `knowledge/` | the practice artifacts (never `knowledge/`) |
+| **Cadence** | Weekly — the ecosystem moves fast | Monthly — artifacts drift slower |
+
+**Why the weekly research isn't split into five per-angle schedules.** Its five
+research angles (tooling, ecosystem, voices, guardrails/cost, verification) look
+broad, but they produce **one coherent artifact**: they're deduped and
+cross-referenced against each other, share one backlog carry-forward, one
+CHANGELOG entry, one review. Splitting them into five schedules would mean five
+PRs all editing `primer.md` / `sources.md` / `CHANGELOG.md` in the same week →
+merge conflicts between your own PRs (the exact failure the step-1 open-PR check
+was added to prevent), 5× the review load, and loss of cross-angle synthesis.
+Chunking optimizes the cheap part (research, already parallel *within* one run)
+and pessimizes the expensive part (reconciling into one clean KB). So: **keep
+each job single; if the weekly delta ever feels too big, go twice-weekly — not
+angle-split.** The two jobs above are separate because they're *different tasks*
+with different cadences, not because the work was chunked for size.
 
 ## On demand
 
 From a Claude Code session in this repo:
 
 ```
-/update-knowledge
+/update-knowledge     # refresh the knowledge base against the world
+/artifact-audit       # check our own skills/templates/guardrails for drift
 ```
 
-It runs a fan-out research pass, diffs findings against `knowledge/`, and — if
-anything material changed — opens a PR on a `claude/knowledge-update-YYYY-MM-DD`
-branch for you to review and merge. If nothing changed, it reports a no-op.
+`update-knowledge` runs a fan-out research pass, diffs findings against
+`knowledge/`, and — if anything material changed — opens a PR on a
+`claude/knowledge-update-YYYY-MM-DD` branch. `artifact-audit` audits the repo's
+own runnable artifacts against the knowledge base and opens a PR on a
+`claude/artifact-audit-YYYY-MM-DD` branch with proposed fixes. Either reports a
+no-op if nothing changed.
 
 ## Scheduled (recommended) — cloud Routine
 
@@ -98,11 +128,48 @@ changes automatically instead of needing the Routine edited every time.
 > Why a Routine and not `/loop`? `/loop` is session-scoped — it stops when the
 > terminal closes. Routines persist in the cloud. See `knowledge/00-primer.md` §4.
 
+## Scheduled — the monthly artifact audit
+
+A **second** cloud Routine runs `artifact-audit` monthly. It reads the knowledge
+base as the source of truth and checks the repo's own skills / templates /
+guardrails / runbooks for drift (a renamed flag, a changed default, a stale
+version note), opening a PR with proposed fixes. Set it up the same way as the
+weekly, with these differences:
+
+| Field | Value |
+|---|---|
+| **Name** | Monthly loops artifact audit |
+| **Trigger** | Schedule → Monthly (e.g. 1st of the month, 08:00 local) |
+| **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12`; **Full/Custom** network for primary-doc checks; `claude/`-only branch pushes; overage off). See "Budget & caps" above. |
+
+Prompt (paste verbatim — points at the skill file, same anti-staleness reason as
+the weekly):
+
+```
+Run the /artifact-audit skill for this repository (the loops control plane).
+Read .claude/skills/artifact-audit/SKILL.md fresh from the cloned repo and
+follow its procedure exactly, in full, including every numbered step — do not
+rely on a remembered summary, since the skill is a living document. Before
+starting, check whether a prior artifact-audit PR is already open, and yield to
+any open update-knowledge PR on a file it is mid-editing. Never merge to the
+default branch.
+```
+
+Why monthly, not weekly: the practice artifacts drift far slower than the
+ecosystem the weekly tracks, and this audit *depends on* the knowledge base
+being current — so it runs after several weekly refreshes have landed. If a
+major tool change lands mid-month (a renamed command, a deprecated flag), just
+run `/artifact-audit` on demand rather than waiting.
+
 ## Reviewing an update PR
 
 - Check that new High-confidence claims actually cite a primary source.
 - Anything marked Low / "to re-verify" stays out of the primer until confirmed.
 - Merge moves the knowledge base forward; the `CHANGELOG.md` entry is the record.
+- For an **`artifact-audit` PR**: read its leading `## Artifact drift` section —
+  confirm each *Fixed* item cites a High-confidence KB entry or primary source,
+  and give the *Flagged for you* items (hard stops / mission / permissions / the
+  self-edit gate) a real decision rather than a rubber stamp.
 - **Read the "Routine self-improvements" section first** (it leads the PR body).
   If it lists any *Applied (auto-gated)* self-edit, open that `self-edit:`
   commit in full and confirm the change is non-semantic, in-scope (only the
@@ -115,9 +182,11 @@ changes automatically instead of needing the Routine edited every time.
 
 ## Self-guardrails
 
-`update-knowledge` is itself a loop with a natural stop: one pass → one PR (or a
-no-op). It does not re-run itself; the Routine owns the cadence. It never merges
-to main automatically.
+`update-knowledge` and `artifact-audit` are both scheduled one-shots with a
+natural stop: one pass → one PR (or a no-op). Neither re-runs itself; the
+Routine owns the cadence, and neither merges to main automatically.
+`artifact-audit` additionally has **no auto-apply** — every change it proposes is
+human-reviewed (the `self-edit:` fast-path is `update-knowledge`-only).
 
 It may also **improve its own skill file** inside the PR it opens — but only
 through the fenced gate in `.claude/skills/update-knowledge/SKILL.md` step 7

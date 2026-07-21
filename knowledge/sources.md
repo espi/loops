@@ -494,6 +494,107 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   independent secondaries).
   https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure
 
+## Alternative harnesses & cross-tool landscape (mid-2026 survey)
+
+Added 2026-07-20 from a 3-agent survey (CLI harnesses / orchestration platforms
+/ portability). Feeds primer §4 "Beyond Claude Code" and §6 gateway enforcement.
+**Most per-tool guardrail specifics are Medium** — vendor docs were often
+thin/403'd; re-verify a specific flag against live docs before treating as High.
+
+### Peer CLI harnesses
+- **OpenAI Codex CLI** — `/goal` with persistent completion conditions and a
+  real `budget-limited` stop state; completion is **self-judged** (no separate
+  validator model like Claude's). MCP + AGENTS.md; no native scheduler. **High**
+  (official) on `/goal`; **Medium** on budget-stop specifics.
+  https://developers.openai.com/codex/use-cases/follow-goals ·
+  https://github.com/openai/codex/issues/20536
+- **Goose (Block)** — strongest guardrail story among CLI peers: `max_turns` /
+  `GOOSE_MAX_TURNS` cap (**High**, official), a built-in **cron scheduler** for
+  recurring unattended recipes (**High**, official), and a reported `--budget`
+  dollar ceiling (**Low** — single secondary; verify).
+  https://block.github.io/goose/docs/guides/recipes/recipe-reference/ ·
+  https://deepwiki.com/block/goose/4.1.5-scheduler-and-recurring-tasks
+- **Gemini CLI** — `maxSessionTurns` / `--max-turns` iteration cap (**High**,
+  PR #3507); scheduling only via the separate `run-gemini-cli` GitHub Action, not
+  the CLI. No hard $ ceiling / stall detector / separate validator.
+  https://github.com/google-gemini/gemini-cli/pull/3507
+- **opencode** (MIT) — headless `opencode serve` OpenAPI server enables async /
+  remote / scheduled orchestration; JSON/MD-defined subagent pipelines
+  (reviewer + sandboxed implementor). Best *substrate* to build a guarded loop
+  on; no built-in budget/validator. **Medium** (secondary).
+  https://byteiota.com/opencode-open-source-ai-coding-agent-guide-2026/
+- **Cursor** — cloud **background agents** (laptop-closed, branch→PR) +
+  **Automations** (scheduled + Slack/Linear/GitHub/webhook triggers, cross-run
+  memory); agent loop iterates ~8× by default. No documented hard $ ceiling or
+  separate validator. More sophisticated than a single CC session. **Medium**
+  (secondary). https://byteiota.com/cursor-automations-always-on-ai-coding-agents-end-prompt-loop/
+- **Amp** (Sourcegraph) — autonomous multi-step agent; **no documented**
+  iteration cap / stall detector / budget ceiling / scheduler (guidance is "keep
+  threads short"). MCP. **Less** on guardrails. **Medium/Low** (secondary).
+- **Aider** — bounded ~3× self-correction retry + `--auto-test` (real test in
+  loop); no goal primitive, scheduler, or budget ceiling. A retry helper, not an
+  autonomous loop harness. **Medium**.
+- **Cline / Roo Code** — IDE-embedded; `allowedMaxRequests` caps consecutive
+  auto-approved calls then pauses (an iteration cap, not a goal primitive); no
+  scheduler / hard $ / validator. **High** on the cap (official Roo docs).
+  https://docs.roocode.com/advanced-usage/rate-limits-costs
+
+### Orchestration platforms
+- **Claude Agent SDK** — real enforcement: `max_turns` + `max_budget_usd` **both
+  default to "No limit"** but halt with `error_max_turns` / `error_max_budget_usd`
+  when set (reinforces this repo's "explicitly set a ceiling" rule — the SDK
+  ships the mechanism, not a default cap); worktree-isolated subagents;
+  resumable/forkable sessions with pluggable `session_store`. **High** (primary).
+  https://code.claude.com/docs/en/agent-sdk/agent-loop
+- **OpenHands** (ex-OpenDevin, ~70k★) — `AgentDelegateAction` hand-off;
+  `MAX_ITERATIONS` (~100) + a hard accumulated-cost cutoff that aborts. **more**
+  on delegation + cost caps. **Medium**. https://github.com/All-Hands-AI/OpenHands
+- **Devin** (Cognition) — Managed Devins: coordinator decomposes → child
+  sessions in isolated VMs; playbooks; durable managed loop-of-loops. Guardrail
+  specifics opaque (product). **Medium / Low** on ceilings.
+  https://docs.devin.ai/release-notes/2026
+- **Factory (Droid)** — coordinator → specialized droids; Missions;
+  `--worktree` conflict-free parallel `droid exec`; managed model routing.
+  Enterprise-scale parallelism, **more** sophisticated. **Medium**.
+  https://theaiagentindex.com/agents/factory-ai
+- **LangGraph / Google ADK / CrewAI / AG2** — framework substrates (you build
+  the loop). **Key caveat (High):** their "durable execution" is *recovery
+  checkpoints, not crash-surviving execution* — a dead process kills the run
+  without Temporal/Diagrid/hosted platform. CrewAI guardrails are opt-in
+  (`max_iter` default 15, no default $ ceiling — a $2,400 runaway is the
+  cautionary tale). `microsoft/autogen` is **maintenance-mode**; use **AG2** or
+  **Microsoft Agent Framework 1.0** (Apr 3 2026).
+  https://www.diagrid.io/blog/checkpoints-are-not-durable-execution-why-langgraph-crewai-google-adk-and-others-fall-short-for-production-agent-workflows ·
+  https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-autogen/
+
+### Cross-tool standards & portability
+- **MCP** — de-facto cross-tool standard for tool/context access (OpenAI,
+  Google, Microsoft, Anthropic; an AAIF project; 5,800+ servers; 2026 spec adds
+  stateless HTTP, MCP Apps, a **Tasks** extension for long-running work).
+  Standardizes *tool access, not the loop harness*. **High** adoption / **Medium**
+  figures. https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
+- **Codex `/goal` = cross-tool validator-judge pattern** — same architecture as
+  Claude Code `/goal` (distinct judge, evidence-based stop). Confirms the
+  validator-model stop is an industry pattern, not a Claude feature. **High**.
+  https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex
+- **Osmani "Loop Engineering" is explicitly tool-agnostic** — layered model
+  (prompt → context → harness → loop), "Claude Code and Codex have landed on
+  very similar primitives, so the loop shape is becoming tool-agnostic." **High**.
+  https://addyosmani.com/blog/loop-engineering/
+
+### Tool-agnostic guardrail / budget enforcement (feeds primer §6)
+- **LiteLLM** — gateway: per-session iteration cap + `max_budget_per_session`,
+  429 `budget_exceeded`, `fail_closed_budget_enforcement: true` for a true
+  ceiling. **High** (docs, though page 403'd to fetcher — search-summary
+  confirmed). https://docs.litellm.ai/docs/a2a_iteration_budgets
+- **OpenRouter** — gateway: rejects over-limit requests (HTTP 402) on
+  daily/weekly/monthly windows. **High**.
+  https://openrouter.ai/docs/guides/features/guardrails
+- **LoopGain** (`loopgain-ai/loopgain`) — convergence-based early stop +
+  rollback; adapters for LangGraph, CrewAI, AutoGen, OpenAI Agents, **Claude
+  Agent SDK**. **Medium**. https://github.com/loopgain-ai/loopgain
+  (AgentGuard already tracked under Guardrails & cost.)
+
 ## Ecosystem (newer than the seed)
 
 - Geoffrey Huntley — **Loom** ("factory" orchestrator of ralph loops). Repo is
@@ -545,6 +646,20 @@ to. When an item resolves (confirmed, corrected, or determined not worth
 tracking), move it to [`archive/resolved-caveats.md`](archive/resolved-caveats.md)
 instead of deleting it or leaving it here indefinitely.
 
+- **`SKILL.md` cross-tool *execution* is contested.** Two research passes
+  disagreed: one found the Agent Skills format read by a broad cross-vendor set
+  (Codex CLI, Gemini CLI, Cursor, VS Code, Goose, opencode…); the other found
+  **no** surveyed CLI tool *confirmed to execute* a `SKILL.md`, with **`AGENTS.md`**
+  being the actually-common file convention. The format is spreading but
+  per-tool execution behavior (discovery, honored frontmatter, permissions)
+  differs. Treat a skill authored here as portable-with-testing, not drop-in.
+  Re-verify which tools truly run `SKILL.md` vs. only `AGENTS.md`.
+- **Agent Skills governance status unclear.** Earlier KB passes recorded Agent
+  Skills as an AAIF / Linux Foundation-governed open standard; the 2026-07-20
+  survey found the LF only names **MCP / AGENTS.md / goose** as AAIF projects —
+  `SKILL.md` may still be Anthropic-spec + community, *not* neutrally governed.
+  If so, `SKILL.md` portability rests on vendor goodwill, not a neutral
+  standard. Re-verify against the LF/AAIF project list.
 - The slogan "the costliest thing in AI coding is managing the agent loop" is a
   community paraphrase, not a sourced Cherny quote.
 - The "5 tips for running agents autonomously" is real in substance but not

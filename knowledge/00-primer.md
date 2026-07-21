@@ -120,7 +120,16 @@ for ~3 months, with no single published cost figure.
   their output with Claude but the rest of the org hasn't caught up."* — **High**
   (verbatim tweet text confirmed, consistent secondaries).
 
-## 4. How loops work in Claude Code
+## 4. How loops work in Claude Code (the reference implementation)
+
+The loop *primitives* below are increasingly **tool-agnostic** — a
+validator-model "done" check, iteration/budget caps, cloud scheduling,
+verification-in-the-loop — and Codex, Goose, Cursor and others now ship their
+own versions (see "Beyond Claude Code — the same loop on other harnesses" at
+the end of this section, and §6 on tool-agnostic *enforcement*). Claude Code is
+this repo's **reference implementation**: the one we document deeply and keep
+runnable. Read the mechanics here as the worked example of primitives that
+generalize, not as the only place they exist.
 
 - **`/loop`** — bundled skill (v2.1.72+). `/loop 5m check the deploy` (fixed),
   `/loop check the deploy` (self-paced 1 min–1 hr), or bare `/loop`
@@ -313,6 +322,55 @@ for ~3 months, with no single published cost figure.
   must now call them explicitly as part of its verification step (see primer
   §5A).
 
+### Beyond Claude Code — the same loop on other harnesses
+
+The primitives above aren't Claude-only. As of mid-2026 the loop *shape* is
+converging across tools (Osmani: "Claude Code and Codex have landed on very
+similar primitives, so the loop shape is becoming tool-agnostic"). This repo
+stays deep on Claude Code as the reference, but the discipline — the three hard
+stops (§6) and verification (§5A) — is what's portable, not the vendor. Where a
+tool below is thinner on a hard stop, that's a *gap to close in your harness*,
+not a reason it can't run a loop. **Confidence on the per-tool cells is mostly
+Medium** (vendor docs were often thin/blocked; see `sources.md`), so treat this
+as a map, not gospel — re-verify before betting on a specific flag.
+
+| Harness | Goal/validator stop | 3 hard stops (iter · stall · $ ceiling) | Laptop-closed schedule | vs. a single CC loop |
+|---|---|---|---|---|
+| **Codex CLI** | `/goal`, real `budget-limited` stop; **self-judged** (no separate validator) | ✓ · – · ✓ | via GitHub Action | ≈ peer (nearest to `/goal`) |
+| **Goose** (Block) | recipes | `max_turns` · – · `--budget` (unverified) | **native cron** | ≈ / more on unattended |
+| **Gemini CLI** | – | `--max-turns` · – · – | via GitHub Action | middle |
+| **opencode** | build-your-own | you wire all three | headless `serve` | best *substrate* |
+| **Amp · Aider · Cline/Roo** | – | caps only · – · – | – | **less** (weak guardrails) |
+| **Cursor** (bg agents + Automations) | – | iter · – · no hard $ | **cloud + event triggers + memory** | **more** |
+| **Devin · Factory Droid** | managed | managed (opaque) | ✓ | **more** (coordinator→child-VMs) |
+| **Gas Town / Gas City** | – | early | git-ledger (Beads) | **more** topology, early maturity |
+| **Claude Agent SDK** | `Stop` hooks | **`max_turns` + `max_budget_usd` real enforcement** | you host | baseline for a loop-of-loops |
+| **LangGraph · Google ADK · CrewAI · AG2** | build-your-own | opt-in; mostly no $ default | needs Temporal/Diagrid | framework substrate |
+
+Three things worth carrying as durable facts:
+
+- **The validator-judge stop is now cross-tool.** Both Claude Code `/goal` and
+  Codex `/goal` implement a distinct "is it done?" judge — the fix for
+  AutoGPT's open loop (§2) is an industry pattern, not a Claude feature. Claude
+  Code's remaining edge is a genuinely *separate* validator model; Codex
+  self-judges.
+- **"Durable execution" is the field's biggest hype-vs-substance gap.**
+  LangGraph, CrewAI, and Google ADK advertise persistence, but their
+  checkpoints are *recovery points, not crash-surviving execution* — a dead
+  process kills the run unless you bolt on Temporal/Diagrid or a hosted
+  platform. Weigh this against the "state survives a crash" criterion (§2)
+  before calling one an orchestration loop. The managed products (Devin,
+  Factory) and git-ledger designs (Gas City's Beads) are the ones that actually
+  clear that bar.
+- **Portability is real for MCP, contested for skills.** MCP is near-universal
+  and portable — but it standardizes *tool/context access, not the loop
+  harness*. Agent Skills (`SKILL.md`) portability is **unsettled**: the format
+  is spreading, but whether the CLI tools actually *execute* a `SKILL.md`
+  (vs. adopting the rival **`AGENTS.md`** convention) is unconfirmed, and the
+  standard may not be neutrally governed yet — both tracked as re-verify items
+  in `sources.md`. A loop written here is portable in *principle*; assume
+  per-tool testing, not drop-in.
+
 ## 5. The two things the hype skips
 
 **A) Verification is the whole game.** A loop is only as good as its ability to
@@ -473,6 +531,24 @@ first-class params (`max_turns`, `max_budget_usd`).
    2026) expose org/workspace limits and per-user estimated cost, so a gateway
    can read spend and cut the loop off; third-party gateways (e.g. Databricks
    Unity AI Gateway) now hard-stop requests at a budget rather than just alert.
+
+**Enforce these tool-agnostically, at the gateway.** The cleanest place to put
+the hard stops isn't inside any one agent — it's the **LLM gateway every agent
+routes through**, so *any* harness (Claude Code, Codex, a homegrown SDK loop)
+is capped the same way. **LiteLLM** enforces a per-session iteration cap and
+`max_budget_per_session`, returns HTTP 429 `budget_exceeded`, and offers
+`fail_closed_budget_enforcement: true` for a true ceiling even under
+infrastructure degradation; **OpenRouter** rejects over-limit requests with
+HTTP 402 on daily/weekly/monthly windows; **Portkey** and **Helicone** add
+budgets/guardrails (Helicone skews toward observability/alerts). This is the
+tool-agnostic answer to hard stop #3 (and #1): the gateway is a real ceiling
+for every agent behind it, not a per-tool flag you have to re-implement.
+In-harness, framework-agnostic libraries cover the same three stops as a
+kill-switch — **AgentGuard** (`BudgetGuard`/`LoopGuard`/`TimeoutGuard`) and
+**LoopGain** (convergence-based early stop + rollback, with adapters for
+LangGraph, CrewAI, AutoGen, and the Claude Agent SDK). *(Gateway/library
+specifics: **Medium** — see `sources.md`; verify a flag against live docs
+before relying on it.)*
 
 ## 7. The one-paragraph answer
 

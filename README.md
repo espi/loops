@@ -30,7 +30,7 @@ written down and kept current.
 | Path | What it is |
 |------|------------|
 | [`knowledge/`](knowledge/) | Living knowledge base — primer, curated sources, changelog, and an `archive/` for resolved/superseded material. Kept current by the `update-knowledge` skill. |
-| [`.claude/skills/`](.claude/skills/) | Reusable, invocable skills: `new-loop`, `loop-guardrails`, `update-knowledge`. |
+| [`.claude/skills/`](.claude/skills/) | Reusable, invocable skills: `new-loop`, `loop-guardrails`, `update-knowledge` (weekly knowledge refresh), `artifact-audit` (monthly drift check on the repo's own artifacts). |
 | [`templates/`](templates/) | Runnable starters — ralph bash loop, `/goal` recipes, `/loop` maintenance prompt. |
 | [`guardrails/`](guardrails/) | The three hard stops: budget/iteration defaults + a preflight checklist. |
 | [`runbooks/`](runbooks/) | Step-by-step playbooks for common loops. |
@@ -63,10 +63,19 @@ billing layer will *not* save you (soft alerts only). See
 
 ## Staying current
 
-The [`update-knowledge`](.claude/skills/update-knowledge/SKILL.md) skill runs a
-fan-out research pass on the loops ecosystem and opens a PR proposing changes to
-`knowledge/`. It also carries forward every open item on the standing
-re-verify backlog and archives what's since resolved, so the live knowledge
-base stays both current *and* lean rather than accumulating indefinitely.
-Schedule it as a cloud Routine so it self-maintains — see
-[`runbooks/staying-current.md`](runbooks/staying-current.md).
+Two maintenance loops keep the repo honest, each a scheduled skill that proposes
+changes as a human-reviewed PR:
+
+- [`update-knowledge`](.claude/skills/update-knowledge/SKILL.md) (**weekly**) —
+  a fan-out research pass on the loops ecosystem → PR against `knowledge/`. It
+  carries forward the standing re-verify backlog and archives what's resolved,
+  so the knowledge base stays both current *and* lean.
+- [`artifact-audit`](.claude/skills/artifact-audit/SKILL.md) (**monthly**) —
+  checks the repo's own skills / templates / guardrails / runbooks for drift
+  against the knowledge base → PR with proposed fixes. The inward-facing
+  complement: `update-knowledge` keeps the *knowledge* current, `artifact-audit`
+  keeps the *runnable artifacts* matching it.
+
+Why two schedules (and not one broad job, or five per-angle ones) is explained
+in [`runbooks/staying-current.md`](runbooks/staying-current.md), which also has
+the cloud-Routine setup for both.

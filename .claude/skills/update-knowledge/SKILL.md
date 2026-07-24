@@ -61,9 +61,15 @@ confidence (High/Medium/Low):
 1. **Tooling & versions** — Claude Code `/loop`, `/goal`, Routines, Skills,
    subagents/agent-teams, Agent SDK guardrails. New flags, version bumps,
    deprecations. Prioritize official docs (code.claude.com, platform.claude.com).
+   Also track the **peer CLI harnesses** for loop-relevant primitives (Codex
+   CLI, Goose, Cursor, Gemini CLI, opencode, Amp, Aider) — keep the primer §4
+   "Beyond Claude Code" capability matrix current.
 2. **Ecosystem & techniques** — new loop patterns, orchestration frameworks
-   (Gas Town and successors), ralph derivatives, `/goal`-style validators in
-   other tools.
+   (Gas Town/Gas City, OpenHands, Devin, Factory, LangGraph/ADK/CrewAI),
+   ralph derivatives, `/goal`-style validators in other tools, and **cross-tool
+   standards** (MCP, Agent Skills vs. `AGENTS.md` portability and governance,
+   tool-agnostic gateway/guardrail enforcement — LiteLLM, OpenRouter,
+   AgentGuard, LoopGain).
 3. **Key voices** — new primary statements from Steinberger, Cherny, Yegge,
    Huntley, Osmani, and notable practitioners.
 4. **Guardrails & cost** — new budget/stall tooling, fresh cost-overrun

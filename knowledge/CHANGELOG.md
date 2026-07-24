@@ -3,6 +3,54 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-20 — Beyond Claude Code: tool-agnostic loop landscape
+
+Broadened the repo from Claude-Code-specific toward **principles-first, Claude
+Code as the reference implementation** — the loop primitives (validator-judge
+stop, three hard stops, cloud scheduling, verification) are converging
+cross-tool, so the *discipline* is what's portable, not the vendor. Sourced
+from a 3-agent survey (peer CLI harnesses / orchestration platforms /
+portability). Most per-tool guardrail specifics entered at **Medium**
+(vendor docs thin/403'd) — the principles are High, the flag names are not.
+
+### Added
+- **Primer §4 "Beyond Claude Code — the same loop on other harnesses"**: a
+  cross-tool capability matrix (Codex CLI, Goose, Gemini CLI, opencode, Cursor,
+  Amp/Aider/Cline, Devin/Factory, Gas Town/City, Claude Agent SDK,
+  LangGraph/ADK/CrewAI/AG2) scored on goal-stop / three-hard-stops / scheduling
+  vs. a single Claude Code loop. Plus three durable facts: the validator-judge
+  stop is now cross-tool (Codex + Claude Code `/goal`); "durable execution" is
+  the field's biggest hype-vs-substance gap (checkpoints ≠ crash-survival
+  without Temporal/Diagrid); portability is real for MCP, contested for
+  `SKILL.md`.
+- **Primer §6 + `guardrails/README.md`: tool-agnostic enforcement.** The
+  cleanest place for hard stops #1/#3 is the **LLM gateway** every agent routes
+  through (LiteLLM `max_budget_per_session` + `fail_closed_budget_enforcement`;
+  OpenRouter 402 windows; Portkey/Helicone), plus framework-agnostic in-harness
+  libs (AgentGuard, LoopGain). This strengthens the repo's #1 rule beyond
+  Claude rather than diluting it.
+- **`sources.md`: new "Alternative harnesses & cross-tool landscape" section**
+  with per-tool entries + confidence, and the survey's key caveats (Agent SDK
+  `max_turns`/`max_budget_usd` both default to "no limit"; the durable-execution
+  gap).
+- **`update-knowledge` research angles expanded** (step 3) to track peer CLI
+  harnesses and cross-tool standards (MCP, Agent Skills vs. `AGENTS.md`,
+  gateway/guardrail enforcement), so this breadth stays maintained weekly.
+
+### Re-verify (added to the standing backlog)
+- **`SKILL.md` cross-tool *execution* is contested** — two passes disagreed;
+  `AGENTS.md` may be the more common CLI file. Portability is with-testing, not
+  drop-in.
+- **Agent Skills governance status** — the LF/AAIF may only govern
+  MCP/AGENTS.md/goose, not `SKILL.md`; earlier KB passes may have overstated its
+  "open standard" governance. Re-verify.
+
+### Quality note
+Breadth was added without diluting depth: Claude Code stays the single deeply
+runnable reference, and most new tool-claims landed at Medium/sourced rather
+than as primer-High assertions. Coverage serves the discipline (the three hard
+stops + verification), which is the actual product.
+
 ## 2026-07-20 — Bounded self-improvement for the routine
 
 The `update-knowledge` routine can now fold a fix to *its own* skill file into

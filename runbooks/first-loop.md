@@ -45,7 +45,7 @@ The first few runs are where cost surprises happen. Watch the meter; stop with
 
 If you re-typed the same instructions, turn them into a skill
 (`.claude/skills/<name>/SKILL.md`) so next time is free. That's the durable
-asset — see `knowledge/00-primer.md` §5.
+asset — see `knowledge/00-primer.md` §4 (Skills).
 
 ## Common beginner mistakes
 

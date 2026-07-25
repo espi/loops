@@ -26,12 +26,16 @@ that returns clear pass/fail (e.g. `pytest test/users`, `npm test`,
 
 | Pattern | Use when | Mechanism |
 |---|---|---|
-| **`/goal`** (default) | Iterate-to-completion on a well-scoped task with a provable success condition. | `/goal` with a Haiku validator. Requires Claude Code v2.1.139+. |
+| **`/goal`** (default) | Iterate-to-completion on a well-scoped task with a provable success condition. | `/goal` with a separate validator model (defaults to Haiku). Requires Claude Code v2.1.139+. |
 | **ralph** (`/ralph-loop` or bash) | Long autonomous build where each iteration should reset context to anchor files. | Official `ralph-wiggum` plugin, or `templates/ralph/run.sh`. |
-| **`/loop`** | Recurring maintenance on an interval (babysit PRs, poll a deploy). | Bundled `/loop` skill (v2.1.72+); cron-backed, session-scoped. |
+| **`/loop`** | Recurring maintenance on an interval (babysit PRs, poll a deploy). | Bundled `/loop` skill (v2.1.72+); cron-backed, session-scoped; recurring tasks expire after 7 days. |
 
 Default to `/goal` for "do this task once, correctly." Use ralph for
-multi-hour/overnight builds. Use `/loop` only for recurring/scheduled work.
+multi-hour/overnight builds. Use `/loop` only for recurring work attended
+within a session — it is session-scoped (does not run with the laptop closed)
+and recurring tasks expire after 7 days. For unattended / laptop-closed
+scheduling, point the user at a cloud **Routine** instead (create with
+`/schedule`, alias `/routines`).
 
 ## Step 2 — Scaffold
 

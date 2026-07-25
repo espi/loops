@@ -29,4 +29,6 @@ it. Don't start until every box is checked.
 - [ ] For laptop-closed runs: using a **cloud Routine / Claude Code on the web**,
       not session-scoped `/loop`.
 - [ ] Permissions scope is intentional (`--dangerously-skip-permissions` only in
-      a sandbox / headless / cloud VM).
+      a sandbox / headless / cloud VM). Note: on Bedrock / Vertex AI / Foundry
+      deployments, auto mode is **on by default** since v2.1.207 — set
+      `disableAutoMode` if that isn't intended.

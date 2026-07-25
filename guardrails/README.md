@@ -37,6 +37,13 @@ Claude Code"). Two enforcement locations, both agent-independent:
   (`BudgetGuard`/`LoopGuard`/`TimeoutGuard`) and **LoopGain** (convergence early
   stop + rollback; adapters for LangGraph/CrewAI/AutoGen/Claude Agent SDK) ship
   the three stops as a kill-switch you drop into any loop.
+- **Native in Claude Code** (v2.1.212, Jul 17 2026): a session-wide WebSearch
+  cap (default 200, `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session
+  subagent-spawn cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`,
+  reset by `/clear`), and MCP calls running >2 min auto-moved to background.
+  Product-level backstops against runaway loops — they complement the three
+  hard stops, they don't replace them (none is a dollar ceiling, and the
+  defaults are far above a sane per-loop cap — set them lower explicitly).
 
 Confidence on specific gateway/library flags is **Medium** — verify against live
 docs before relying on one (see `knowledge/sources.md`). The principle is firm;
@@ -46,6 +53,9 @@ the flag names drift.
 
 - Uber capped engineers at **$1,500/month per tool** after burning its annual AI
   budget in ~4 months.
+- Tesla capped employee AI tool spending at **$200/week** (approval required
+  above that) effective July 6, 2026 — the third named company, after Uber and
+  Microsoft, enforcing hard per-person ceilings rather than billing alerts.
 - A multi-agent system reportedly **looped 11 days and ran up $47K**.
 - Every turn re-bills the full accumulated context; a 20-step loop can cost
   ~10x a naive per-step estimate.

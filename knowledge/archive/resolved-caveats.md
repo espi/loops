@@ -9,6 +9,25 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-07-27
+
+- **SkillCoach (arXiv:2607.01874) and "When Agents Do Not Stop"
+  (arXiv:2607.01641) — both read in full.** Flagged across the Jul 13 and Jul
+  20 passes as "not yet read." Both abstracts were read directly this pass and
+  promoted to sources.md's academic section with their actual findings
+  (SkillCoach: process rubrics complement a deterministic check; "When Agents
+  Do Not Stop": IAL-Scan static analysis, 91.9% precision, empirical support
+  for the max-iteration/stall hard stops — now cited in primer §6). No further
+  action.
+- **Fable 5 metered-billing deadline — resolved.** Tracked in primer §4 as a
+  "live-moving deadline" after three slips (Jul 7 → 12 → 19). Metered billing
+  **went live July 20, 2026 as planned**: Max & Team Premium keep Fable 5
+  included up to 50% of the weekly usage limit (stated permanent), Pro & Team
+  Standard move to usage credits at $10/$50 per MTok with a one-time $100
+  credit (Jul 20–Aug 2). Primer prose updated from "not settled" to the settled
+  outcome; the moving-deadline history lives in the CHANGELOG. No further
+  action.
+
 ## Archived 2026-07-20
 
 - **Roborev creator confirmed**: Wes McKinney (@wesmckinn, author of Pandas).

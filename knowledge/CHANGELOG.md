@@ -3,6 +3,109 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-07-27 — Seven-day follow-up pass (Jul 20–27)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques,
+key voices, guardrails & cost, and verification & skills. A modest but real
+window: the substance is a Claude Code guardrail cluster, Opus 5, the Fable 5
+billing resolution, one new Osmani essay, and two backlog papers finally read.
+No `update-knowledge` PR was open (only the artifact-audit PR #12, which
+doesn't touch `knowledge/` — no conflict expected). Several primaries returned
+402/403 to automated fetch (x.com especially); noted per-claim.
+
+### New facts added
+
+- **Claude Code v2.1.216–220 (Jul 20–25)** — a guardrail-tightening cluster,
+  several mapping onto this repo's §6 hard stops: **`--max-budget-usd` now halts
+  background subagents** (v2.1.217) — closes a gap where the dollar ceiling
+  didn't reach backgrounded fan-out; **concurrent-subagent cap default 20**
+  (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, v2.1.217); **subagent-nesting default
+  flipped twice** (v2.1.217 off → v2.1.219 depth-3, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`);
+  Dynamic Workflows default to a "medium" (~<15 agents) `workflowSizeGuideline`
+  (v2.1.219); auto-mode checks moved to the classifier + `/code-review` no
+  longer auto-launches + `context: fork` skills run in background (v2.1.218);
+  `sandbox.network.strictAllowlist`, `sandbox.filesystem.disabled`,
+  `DirectoryAdded` hook, and a symlink-write fix at `.claude`. **High**
+  (changelog read directly; `whats-new/2026-w30` unpublished, changelog sole
+  primary).
+- **Claude Opus 5** (`claude-opus-5`) shipped Jul 24 (v2.1.219) as the default
+  Opus model — 1M context, $5/$25 per MTok (unchanged from Opus 4.8), fast mode
+  $10/$50, new `xhigh` tier; Opus 4.7 removed from fast mode. **High**.
+- **Fable 5 metered billing went live Jul 20 as planned** (resolving the
+  three-slip deadline): Premium tiers keep it included to 50% of the weekly
+  limit; Pro/Standard move to $10/$50 usage credits with a one-time $100 credit.
+  **High**. Resolves the primer's "live-moving deadline" item.
+- **Osmani "Software Factories, Light and Dark"** (Substack, Jul 22): a software
+  factory is "harnessing loops at scale"; the **back-pressure rule** — *"you can
+  only hand a loop as much autonomy as you can cheaply and reliably verify, and
+  not one inch more"* (reusing Huntley's Jan-2026 term) — plus "comprehension
+  debt" and the "dark factory" image. Maps directly onto the repo's
+  verification-gated-autonomy non-negotiables. **High** (primary fetched,
+  verbatim quotes).
+- **Amp self-scheduling** (Jul 21): agents schedule and re-wake themselves with
+  full context, with **no published re-wake cap** — a self-perpetuating loop
+  shipping *without* the three hard stops; added to primer §4's peer-harness
+  section as a live uncapped-loop example. **High** feature / **Medium**
+  cap-absence.
+- **MCP 2026-07-28 release candidate** — largest revision since launch:
+  stateless core, first-class **Tasks** extension for bounded long-running async
+  work, MCP Apps, OAuth/OIDC auth, 12-month deprecation policy. **High**.
+- **Two backlog arXiv papers read and promoted**: **"When Agents Do Not Stop"**
+  (2607.01641) — IAL-Scan static analysis, 91.9% precision across 6,549 repos,
+  now cited in primer §6 as empirical support for the max-iteration/stall hard
+  stops; **SkillCoach** (2607.01874) — process rubrics *complement* a
+  deterministic check. Plus **SkillCorpus** (2607.15557, v4 Jul 23, in-window)
+  and the pre-window **Recursive Self-Improvement** paper (2607.07663, Jul 8)
+  whose "verification hierarchy / self-confirming loops" finding is a citable
+  primary for the "never declare done on self-assessment" rule. **High**
+  (abstracts read directly).
+
+### Corrected / clarified
+
+- **Agent Skills / `SKILL.md` governance** — primer §4 softened: two more
+  independent agents confirm the LF's AAIF stewards **MCP / AGENTS.md / goose**,
+  *not* `SKILL.md` (Anthropic-authored, community-maintained), and cross-tool
+  *execution* of `SKILL.md` (vs. format compatibility) has thin primary
+  evidence — `AGENTS.md` is the real broad convention. The two governance
+  caveats were strengthened toward "not AAIF-governed," still carried as open.
+- **Agent SDK billing split** — the recurring "went live July 10" secondary
+  claim surfaced *again* (one agent, Medium) and was *again* rejected: a second
+  agent independently confirmed "still paused" at High, matching the last pass's
+  finding. A textbook primer §5A "don't trust search snippets" case. Status:
+  paused, no revised plan, **Medium**.
+
+### Archived (resolved — see archive/resolved-caveats.md)
+
+- SkillCoach + "When Agents Do Not Stop" — both now read in full.
+- Fable 5 metered-billing deadline — resolved (went live Jul 20).
+
+### Currently-open re-verify backlog (carried forward — every open item, per step 2)
+
+`SKILL.md` cross-tool *execution* contested; Agent Skills governance
+(converging toward not-AAIF); "costliest thing is managing the loop" paraphrase;
+"5 tips" not a Cherny numbered list; `/goal` "Codex→Claude 11 days" single
+secondary; `$47K`/`$500M`/overnight anecdotes unverified; June-15 billing split
+(still paused, re-check on revised plan); Microsoft dropping Claude Code (no
+primary read); Huntley's Loom "orchestrator" framing; AI Engineer World's Fair
+2026 sessions; Cobus Greyling "HarnessX"; **"graph engineering"** (still no
+primary definition — now well-characterized as a contested meme via Turing Post
+Jul 20 + Hamel Husain); roborev.io/changelog 403s; EvoAgentBench + SkillCheck
+too new. **New this pass**: roborev-dev vs kenn-io repo identity; **GuardFall**
+(single-aggregator, unverified); AgentGuard/LoopGain re-findability; Portkey
+(→Palo Alto) / Helicone (→Mintlify) ownership changes; subagent-nesting default
+flipped twice in one week.
+
+### Not promoted (evidence insufficient or peripheral)
+
+- **Linear "Loops"** product (Jul 21) — a product *named* Loops (self-driving
+  project workflows), adjacent to but distinct from loop engineering; Medium,
+  secondary. Noted, not promoted.
+- **Opus 4.7 fast-mode removal** (Jul 24) — captured with the Opus 5 entry;
+  minor and peripheral to loops on its own.
+- **SkillCloak / Mitiga "Breaking Skills" / GuardFall** supply-chain items —
+  all pre-window or single-aggregator; GuardFall added to the re-verify backlog
+  rather than the KB.
+
 ## 2026-07-20 — Beyond Claude Code: tool-agnostic loop landscape
 
 Broadened the repo from Claude-Code-specific toward **principles-first, Claude

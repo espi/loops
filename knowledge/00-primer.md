@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-07-20.
+> The canonical briefing for this repo. Last substantive update: 2026-07-27.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -76,7 +76,18 @@ for ~3 months, with no single published cost figure.
   covered — plus Sonar's 2026 State of Code report (42% of committed code
   AI-generated/assisted) and GitLab's June 2026 AI-accountability research.
   Names three costs of over-delegation: **cognitive surrender**, **cognitive
-  debt**, and **"orchestration tax."**
+  debt**, and **"orchestration tax."** His follow-up, **"Software Factories,
+  Light and Dark"** (Substack, July 22, 2026), reframes a software factory as
+  *"harnessing loops at scale"* and makes the same verification-gated-autonomy
+  argument this repo enforces, in one rule: *"Back pressure is the rule that
+  you can only hand a loop as much autonomy as you can cheaply and reliably
+  verify, and not one inch more"* (borrowing Geoffrey Huntley's Jan-2026 "back
+  pressure" term). The "dark factory" (lights physically off, only machines on
+  the floor) is his image for full autonomy; he warns it's earned per-task by
+  cheap verification, not switched on wholesale, and names **"comprehension
+  debt"** — *"the widening gap between how much code exists and how much any
+  human still understands"* — as its cost. High-stakes paths (auth, billing)
+  keep human gates regardless of speed.
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -208,22 +219,27 @@ generalize, not as the only place they exist.
   MCP, which is how you find what a loop is actually costing. V2.1.174 added a
   per-skill/agent/plugin/MCP attribution breakdown (cache misses, long context,
   24h/7d) to the VS Code Account dialog.
-- **Model availability** — **Claude Sonnet 5** (`claude-sonnet-5`) became Claude
-  Code's **default model** in v2.1.197 (June 30, 2026) — native 1M-token
-  context, promotional pricing $2/$10 per MTok input/output through August 31,
-  2026. **Claude Fable 5** (`claude-fable-5`; 1M context, 128k output, $10/$50
-  per MTok I/O) launched June 9, 2026 (v2.1.170), was briefly suspended June
-  12–13 following a US government export-control directive, and is **back on
-  the platform** as of June 22, 2026. Fable 5 was slated to move off
-  included-subscription access onto metered usage credits ($10/$50 per MTok
-  I/O) on July 7, 2026, but after user pushback Anthropic extended included
-  access twice within days — first to July 12, then again on July 13 to
-  **July 19, 2026** — so metered billing for Fable 5 now begins July 20
-  rather than the originally announced date. Track this as a live-moving
-  deadline, not settled. **Claude Mythos 5** (`claude-mythos-5`)
-  — limited availability via Project Glasswing since June 9; same pricing and
-  context. **Claude Opus 4.1 is deprecated** (retiring August 5, 2026). All
-  other models (Opus 4.8, Haiku) unaffected.
+- **Model availability** — **Claude Opus 5** (`claude-opus-5`) shipped **July
+  24, 2026 (v2.1.219)** as Claude Code's **default Opus model** — 1M-token
+  context, 128k max output, priced **$5/$25 per MTok I/O (unchanged from Opus
+  4.8)**, fast mode $10/$50 (~2.5× faster), and a new `xhigh` reasoning tier.
+  `/fast` now covers Opus 5 and Opus 4.8; **Opus 4.7 was removed from fast
+  mode** (Jul 24). *(High — changelog read directly, multiple secondaries.)*
+  **Claude Sonnet 5** (`claude-sonnet-5`) remains the subscription **default
+  model** (since v2.1.197, June 30, 2026) — native 1M-token context,
+  promotional pricing $2/$10 per MTok I/O through August 31, 2026. **Claude
+  Fable 5** (`claude-fable-5`; 1M context, 128k output) launched June 9, 2026
+  (v2.1.170), was briefly suspended June 12–13 (US export-control directive),
+  and returned June 22. After three deadline slips (Jul 7 → 12 → 19), **Fable 5
+  metered billing went live July 20, 2026 as planned**: Max & Team Premium keep
+  Fable 5 included up to 50% of the weekly usage limit (stated permanent);
+  Pro & Team Standard move to usage credits at $10/$50 per MTok I/O (2× Opus
+  4.8), softened by a one-time $100 credit claimable Jul 20–Aug 2. *(High —
+  changelog + corroborating secondaries; the earlier "live-moving deadline"
+  is now resolved.)* **Claude Mythos 5** (`claude-mythos-5`) — limited
+  availability via Project Glasswing since June 9; same context. **Claude Opus
+  4.1 is deprecated** (retiring August 5, 2026). Other models (Opus 4.8, Haiku)
+  unaffected.
 - **Diagnostic flags** — `--safe-mode` / `CLAUDE_CODE_SAFE_MODE=1` (v2.1.169+)
   disables all customizations (skills, hooks, MCP, plugins, themes) for debugging
   without affecting auth. `fallbackModel` setting (v2.1.166+) chains up to three
@@ -242,11 +258,18 @@ generalize, not as the only place they exist.
   version-controlled, testable, loaded on demand. `/loop` itself is one.
   As of v2.1.178, skills in **nested `.claude/skills/` directories** load
   automatically; on name clash, both appear as `<dir>:<name>`. Since Dec 2025
-  the **Agent Skills spec is an open standard** (Anthropic-authored, now under
-  the Agentic AI Foundation / Linux Foundation), adopted by Codex CLI, Copilot,
-  Cursor, VS Code, and ~40 additional products as of June 2026 — a skill
-  written here is portable across those tools; custom commands
-  (`.claude/commands/`) have been folded into skills. **Microsoft's Agent
+  the **Agent Skills / `SKILL.md` spec is an Anthropic-authored open format**,
+  community-maintained (agentskills.io) and adopted as a *format* by Codex CLI,
+  Copilot, Cursor, VS Code, and ~40 products — but two independent research
+  passes now agree it is **not** itself an AAIF/Linux-Foundation-governed
+  project (the LF's Agentic AI Foundation stewards **MCP, `AGENTS.md`, and
+  goose**, not `SKILL.md`), and there is **thin primary evidence that non-Claude
+  CLIs actually *execute* a `SKILL.md`** vs. merely accepting the format —
+  `AGENTS.md` is the genuinely broad cross-tool convention. So a skill written
+  here is portable *in principle* but assume per-tool testing, not drop-in, and
+  don't lean on its "governed open standard" status (both tracked as re-verify
+  items in `sources.md`). Custom commands (`.claude/commands/`) have been folded
+  into skills. **Microsoft's Agent
   Skills for .NET** (Microsoft Agent Framework) exited experimental preview to
   **stable/GA on July 7, 2026** — a first-party .NET implementation of the same
   SKILL.md-based open format, another concrete adoption data point beyond the
@@ -321,6 +344,34 @@ generalize, not as the only place they exist.
   self-trigger after edits — a loop that relied on that implicit behavior
   must now call them explicitly as part of its verification step (see primer
   §5A).
+- **v2.1.216–220 (Jul 20–25)** — a cluster of changes that tighten the
+  fan-out blast radius, several mapping straight onto this repo's §6 hard
+  stops. **`--max-budget-usd` now halts background subagents** (v2.1.217, Jul
+  21): once the cap is hit, new subagent spawns are denied and running
+  background agents are stopped — previously the dollar ceiling didn't reach
+  backgrounded fan-out, so this closes a real gap in hard stop #3. Same release
+  added a **concurrent-subagent cap, default 20** (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`),
+  "so one message can't fan out unbounded background agents," and made
+  subagents **not** spawn nested subagents by default. **v2.1.219 (Jul 24)**
+  then flipped that: subagent nesting defaults to **depth 3** (was 1), disabled
+  via `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` — the default flipped twice
+  inside one week, so re-verify the shipped default before baking it into a
+  template. v2.1.219 also made Dynamic Workflows default to a **"medium" size
+  guideline (~<15 agents)** via a new `workflowSizeGuideline` key (still a
+  guideline a larger-scale prompt overrides, not a hard cap), added
+  `sandbox.network.strictAllowlist` (deny non-allowlisted hosts without
+  prompting) and a `DirectoryAdded` hook. **v2.1.218 (Jul 22)** moved several
+  auto-mode checks (dangerous-`rm`, background-`&`, suspicious Windows paths,
+  un-provable read-only Bash in plan mode) from permission dialogs to the
+  auto-mode classifier — changing how a loop in auto mode gets gated — and made
+  skills with `context: fork` run in the background by default, moved
+  `/deep-research` and `/code-review` to background subagents, and confirmed
+  **`/code-review` no longer auto-launches** (consistent with v2.1.215).
+  v2.1.216 (Jul 20) added `sandbox.filesystem.disabled` and fixed workflow /
+  scheduled-task writes to stop following a symlink at `.claude` (which could
+  redirect writes outside the project); v2.1.220 (Jul 25) was reliability fixes
+  only. *(High — changelog read directly; `whats-new/2026-w30` had not
+  published yet, so the changelog was the sole primary.)*
 
 ### Beyond Claude Code — the same loop on other harnesses
 
@@ -346,6 +397,16 @@ as a map, not gospel — re-verify before betting on a specific flag.
 | **Gas Town / Gas City** | – | early | git-ledger (Beads) | **more** topology, early maturity |
 | **Claude Agent SDK** | `Stop` hooks | **`max_turns` + `max_budget_usd` real enforcement** | you host | baseline for a loop-of-loops |
 | **LangGraph · Google ADK · CrewAI · AG2** | build-your-own | opt-in; mostly no $ default | needs Temporal/Diagrid | framework substrate |
+
+**In-window movement (Jul 2026):** **Amp** (Sourcegraph) shipped
+**self-scheduling** (Jul 21, 2026) — an agent sets its own schedule and, when
+it fires, "wakes up with its saved prompt and continues right where it left
+off, with all of its context and history." The published feature page documents
+**no cap on re-wake frequency** — a clean example of a self-perpetuating loop
+shipping *without* this repo's hard stops, not with them: if you run it, the
+iteration/budget ceiling is yours to add. Amp stays in the "weak native
+guardrails" column of the matrix. *(High for the feature; Medium that no
+internal cap exists — absence in docs ≠ confirmed absent.)*
 
 Three things worth carrying as durable facts:
 
@@ -531,6 +592,21 @@ first-class params (`max_turns`, `max_budget_usd`).
    2026) expose org/workspace limits and per-user estimated cost, so a gateway
    can read spend and cut the loop off; third-party gateways (e.g. Databricks
    Unity AI Gateway) now hard-stop requests at a budget rather than just alert.
+   Claude Code itself moved closer to a real in-harness ceiling in **v2.1.217
+   (Jul 21, 2026)**: `--max-budget-usd` now **halts background subagents**
+   (denies new spawns, stops running ones) when the cap is hit — previously the
+   dollar ceiling didn't reach backgrounded fan-out — alongside a default-20
+   concurrent-subagent cap. Still set the ceiling explicitly; the mechanism, not
+   a default limit, is what shipped.
+
+That unbounded feedback paths are a *widespread, statically detectable* defect
+now has empirical backing: **"When Agents Do Not Stop: Uncovering Infinite
+Agentic Loops in LLM Agents"** (arXiv:2607.01641) defines infinite agentic loops
+as unbounded repetition of model/tool/handoff calls when the feedback path isn't
+bounded, and introduces **IAL-Scan** — a static analyzer that builds an "Agentic
+Loop Dependence Graph" and flags paths able to hit expensive ops without a bound,
+at **91.9% precision across 6,549 repos**. Independent evidence that hard stops
+#1/#2 guard against a real and common failure mode, not a hypothetical one.
 
 **Enforce these tool-agnostically, at the gateway.** The cleanest place to put
 the hard stops isn't inside any one agent — it's the **LLM gateway every agent

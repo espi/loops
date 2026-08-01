@@ -31,5 +31,5 @@ no-op change repeatedly.
 ```
 /loop babysit all my PRs. Auto-fix build issues, and when comments come in, use a worktree agent to fix them.
 /loop 30m run the test suite on this branch and fix any failures, then stop when green.
-/loop 15m /review-pr 1234
+/loop 15m /review 1234
 ```

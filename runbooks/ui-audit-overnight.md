@@ -41,7 +41,7 @@ on your Mac, against your running app. Template: `templates/ui-audit/`.
    match your intent and the "Not covered by docs" gaps look right. This review
    gate is what makes the overnight run trustworthy — don't skip it.
 4. Edit the `[bracketed]` parts of `PROMPT.md` (base URL, viewports, test command,
-   branch date). Rename `FINDINGS.md` is already in place.
+   branch date). `FINDINGS.md` is already in place.
 
 ## Run it
 

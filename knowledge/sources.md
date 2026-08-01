@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
+Verified as of 2026-07-27. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -104,8 +104,22 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
 - Peter Steinberger tweet (Jul 18, 2026): "Are we still talking loops or did we
   shift to graphs yet?" — teaser, possibly signaling a "graph engineering"
   framing shift; not independently corroborated as a real trend yet (see
-  re-verify list). — **Medium** (search-snippet sourced; direct fetch 403'd).
-  https://x.com/steipete/status/2078277297791189132
+  re-verify list). Followed ~Jul 25 by a one-line "am I a graph engineer now"
+  post — still no long-form essay. — **Medium** (search-snippet sourced; direct
+  fetch 402/403'd). https://x.com/steipete/status/2078277297791189132
+- **Addy Osmani "Software Factories, Light and Dark"** (Substack, July 22,
+  2026) — follow-on to "Own the Outer Loop"; a software factory is "harnessing
+  loops at scale," oversight calibrated per task by verification cost and
+  consequence. Verbatim: *"Back pressure is the rule that you can only hand a
+  loop as much autonomy as you can cheaply and reliably verify, and not one inch
+  more"* (reuses Geoffrey Huntley's Jan-2026 "back pressure" term,
+  ghuntley.com/pressure/); *"A dark factory runs with the lights physically off,
+  because the only things on the floor are machines and machines don't need
+  light to see"*; names **"comprehension debt"** — *"the widening gap between how
+  much code exists and how much any human still understands."* Maps directly to
+  this repo's verification-gated-autonomy non-negotiables. — **High** (primary
+  Substack fetched directly, verbatim quotes, date confirmed).
+  https://addyo.substack.com/p/software-factories-light-and-dark
 - Boris Cherny at Meta @Scale (June 22, 2026): "Two years ago, we wrote source
   code by hand. We started to transition so agents write the code. And now
   we're transitioning to the point where agents are prompting agents that then
@@ -305,6 +319,40 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   v0.62.1 (Jul 14, 2026): persistent CI panel metrics + new export command;
   stable JSON contract for version info; Codex agent hook can invoke
   `roborev-fix` skill; blocks incompatible model pairings.
+- **Claude Code v2.1.216–220 (Jul 20–25, 2026)** — **High** (changelog read
+  directly; `whats-new/2026-w30` not yet published, changelog was sole primary).
+  v2.1.216 (Jul 20): `sandbox.filesystem.disabled`; workflow/scheduled-task
+  writes no longer follow a symlink at `.claude`. v2.1.217 (Jul 21):
+  `--max-budget-usd` now **halts background subagents** (denies new spawns,
+  stops running ones) at the cap; new **concurrent-subagent cap default 20**
+  (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); subagents no longer spawn nested
+  subagents by default. v2.1.218 (Jul 22): several auto-mode checks
+  (dangerous-`rm`, background-`&`, suspicious Windows paths, un-provable
+  read-only Bash in plan mode) moved from permission dialogs to the auto-mode
+  classifier; skills with `context: fork` run in background by default;
+  `/deep-research` + `/code-review` run as background subagents; `/code-review`
+  no longer auto-launches. v2.1.219 (Jul 24): **subagent nesting defaults to
+  depth 3** (was 1; `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` to disable — note
+  the default flipped twice inside the week); Dynamic Workflows default to a
+  "medium" size guideline (~<15 agents) via `workflowSizeGuideline`;
+  `sandbox.network.strictAllowlist`; `DirectoryAdded` hook; Opus 5 added (below).
+  v2.1.220 (Jul 25): reliability fixes only.
+  https://code.claude.com/docs/en/changelog
+- **Claude Opus 5** (`claude-opus-5`) shipped v2.1.219 (Jul 24, 2026) as the
+  **default Opus model** — 1M context, 128k output, $5/$25 per MTok I/O
+  (unchanged from Opus 4.8), fast mode $10/$50 (~2.5× faster), new `xhigh`
+  reasoning tier; `/fast` covers Opus 5 + Opus 4.8, Opus 4.7 removed from fast
+  mode. — **High** (changelog + secondaries).
+  https://code.claude.com/docs/en/changelog ·
+  https://www.marktechpost.com/2026/07/24/meet-the-new-claude-opus-5-frontier-class-agentic-coding-and-computer-use-at-unchanged-opus-pricing/
+- **Fable 5 metered billing went live July 20, 2026 as planned** (resolving the
+  Jul 7→12→19 slips): Max & Team Premium keep Fable 5 included up to 50% of the
+  weekly usage limit (stated permanent); Pro & Team Standard move to usage
+  credits at $10/$50 per MTok I/O (2× Opus 4.8), one-time $100 credit claimable
+  Jul 20–Aug 2. — **High** (v2.1.219 changelog fixed the Fable plan-labeling,
+  corroborating live rollout; multiple secondaries).
+  https://fable5.app/fable-5-usage-limits/ ·
+  https://usagebox.com/articles/claude-fable-5-usage-credits-switch-july-2026
   v0.63.0 (Jul 16, 2026): CI quiet-hours throttling (with bypass for certain
   workloads); machine-readable launch receipts on `roborev run` for
   automation; tightened skill triggers to prevent unintended activation.
@@ -405,14 +453,18 @@ Verified as of 2026-07-20. Re-check before relying on version numbers or dates.
   Anthropic or Claude Code change. **High** (primary OpenAI page read).
   https://openai.com/index/managing-ai-investments-in-agentic-era/
 - **Anthropic Agent SDK billing split — still paused, no revised plan found**
-  as of Jul 20, 2026. No primary Anthropic announcement located in the Jul
-  6–20 window revising the pause from June 15. One AI-generated search summary
-  claimed the split "went live July 10, 2026" — this is **unverified and
-  likely erroneous**: it appears only in synthesized search output, contradicts
-  multiple independent June reports that it remains paused pending a revised
-  plan, and no dated primary or secondary article confirms it. **Do not treat
-  as fact.** Status: paused-with-no-revision-announced remains **Medium**
-  confidence (absence of evidence, not evidence of absence).
+  as of Jul 27, 2026. No primary Anthropic announcement located in the Jul
+  6–27 window revising the pause from June 15. The recurring search-sourced
+  claim that the split "went live July 10, 2026" **surfaced again this pass**
+  (one research agent reported it at Medium via a single secondary,
+  thenewstack.io/anthropic-agent-sdk-credits) and was **again rejected**: a
+  second agent independently confirmed "still paused" at High
+  (thenewstack.io/anthropic-pauses-...), and the last pass had already flagged
+  the "went live" framing as unverified and likely erroneous. **Do not treat as
+  fact.** This is a textbook primer §5A "don't trust search snippets" case —
+  two passes, two independent contradictions. Status:
+  paused-with-no-revision-announced remains **Medium** (absence of evidence,
+  not evidence of absence). Re-check when Anthropic announces a revised plan.
 - **Anthropic Claude Enterprise spend controls** (Jul 2, 2026): model-level
   entitlements, spend-threshold alerts at 75%/90% of an org's limit, per-user/
   per-group cost analytics dashboard, Admin API endpoints for scripting
@@ -529,8 +581,15 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   separate validator. More sophisticated than a single CC session. **Medium**
   (secondary). https://byteiota.com/cursor-automations-always-on-ai-coding-agents-end-prompt-loop/
 - **Amp** (Sourcegraph) — autonomous multi-step agent; **no documented**
-  iteration cap / stall detector / budget ceiling / scheduler (guidance is "keep
-  threads short"). MCP. **Less** on guardrails. **Medium/Low** (secondary).
+  iteration cap / stall detector / budget ceiling (guidance is "keep threads
+  short"). MCP. **Less** on guardrails. **Medium/Low** (secondary). **New Jul
+  21, 2026**: shipped **self-scheduling** — an agent sets its own schedule and
+  on firing "wakes up with its saved prompt and continues right where it left
+  off, with all of its context and history." Published page documents **no
+  re-wake-frequency cap** — a self-perpetuating loop shipping *without* the
+  three hard stops; the ceiling is the operator's to add. Also new: Puck
+  meta-agent, Slack "summon Amp." — **High** feature / **Medium** cap-absence
+  (absence in docs ≠ confirmed absent). https://ampcode.com/news/schedule
 - **Aider** — bounded ~3× self-correction retry + `--auto-test` (real test in
   loop); no goal primitive, scheduler, or budget ceiling. A retry helper, not an
   autonomous loop harness. **Medium**.
@@ -569,10 +628,16 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
 
 ### Cross-tool standards & portability
 - **MCP** — de-facto cross-tool standard for tool/context access (OpenAI,
-  Google, Microsoft, Anthropic; an AAIF project; 5,800+ servers; 2026 spec adds
-  stateless HTTP, MCP Apps, a **Tasks** extension for long-running work).
-  Standardizes *tool access, not the loop harness*. **High** adoption / **Medium**
-  figures. https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
+  Google, Microsoft, Anthropic; an AAIF project; 5,800+ servers). The
+  **2026-07-28 release candidate** (largest revision since launch) finalized at
+  this window's edge: stateless core, a first-class **Tasks** extension for
+  long-running async work (directly relevant to *bounded* long-running loop
+  work), **MCP Apps** (server-rendered UI over the same JSON-RPC consent path),
+  OAuth/OIDC-aligned auth, and a formal 12-month deprecation policy; beta SDKs
+  for the RC shipped in-window. Standardizes *tool access, not the loop
+  harness*. **High** (primary release-candidate post + secondaries).
+  https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/ ·
+  https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
 - **Codex `/goal` = cross-tool validator-judge pattern** — same architecture as
   Claude Code `/goal` (distinct judge, evidence-based stop). Confirms the
   validator-model stop is an industry pattern, not a Claude feature. **High**.
@@ -637,6 +702,37 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   — arXiv:2606.08671, submitted June 7, 2026. Addresses loss of decision history
   across skill revisions. — **High** (arXiv HTML page read).
   https://arxiv.org/html/2606.08671
+- **"When Agents Do Not Stop: Uncovering Infinite Agentic Loops in LLM Agents"**
+  — arXiv:2607.01641 (~Jul 1–2, 2026; **read this pass**, resolving the
+  standing backlog item). Defines infinite agentic loops as unbounded
+  repetition of model/tool/handoff calls when the feedback path isn't bounded;
+  introduces **IAL-Scan**, a static analyzer building an "Agentic Loop
+  Dependence Graph" to detect paths that repeatedly hit expensive ops without a
+  bound — **91.9% precision across 6,549 repos**. Empirical support for this
+  repo's max-iteration / stall-detection hard stops (primer §6). — **High**
+  (abstract read directly). https://arxiv.org/abs/2607.01641
+- **"SkillCoach: Self-Evolving Rubrics for Evaluating and Enhancing Agentic
+  Skill-Use"** — arXiv:2607.01874 (submitted Jul 2, 2026; **read this pass**,
+  resolving the standing backlog item). Derives skill-grounded *process* rubrics
+  from real rollouts to evaluate skill selection/following/composition/
+  reflection, catching failures outcome-only checks miss; keeps an external
+  verifier as a separate signal — i.e. process rubrics *complement*, don't
+  replace, a deterministic success check (consistent with primer §5A). — **High**
+  (abstract read directly). https://arxiv.org/abs/2607.01874
+- **"SkillCorpus: Consolidating and Evaluating the Open Skill Ecosystem for
+  Real-World LLM Agents"** — arXiv:2607.15557 (v1 Jul 17, **v4 Jul 23, 2026,
+  in-window**). Consolidates ~821K→96,401 curated skills across 16 categories +
+  a retrieval stack; reports up to +7.5pp task gains. Relevant to the
+  `SKILL.md` ecosystem/portability question. — **High** (abstract read
+  directly). https://arxiv.org/abs/2607.15557
+- "Recursive Self-Improvement in AI: From Bounded Self-Refinement to Autonomous
+  Research Loops" — arXiv:2607.07663 (submitted Jul 8, 2026). Posits a
+  **verification hierarchy** — formal verifiers (strongest) → … → self-assessment
+  (weakest) — and shows demonstrated self-improvement strength *tracks* this
+  hierarchy, with **self-confirming loops** as the failure mode when the ordering
+  is violated. A citable primary source for this repo's "an agent never declares
+  done on its own self-assessment" rule. — **High** (abstract read directly).
+  https://arxiv.org/abs/2607.07663
 
 ## Known caveats / things to re-verify
 
@@ -654,12 +750,16 @@ instead of deleting it or leaving it here indefinitely.
   per-tool execution behavior (discovery, honored frontmatter, permissions)
   differs. Treat a skill authored here as portable-with-testing, not drop-in.
   Re-verify which tools truly run `SKILL.md` vs. only `AGENTS.md`.
-- **Agent Skills governance status unclear.** Earlier KB passes recorded Agent
-  Skills as an AAIF / Linux Foundation-governed open standard; the 2026-07-20
-  survey found the LF only names **MCP / AGENTS.md / goose** as AAIF projects —
-  `SKILL.md` may still be Anthropic-spec + community, *not* neutrally governed.
-  If so, `SKILL.md` portability rests on vendor goodwill, not a neutral
-  standard. Re-verify against the LF/AAIF project list.
+- **Agent Skills governance status — converging toward "not AAIF-governed."**
+  Earlier KB passes recorded Agent Skills as an AAIF / Linux Foundation-governed
+  open standard; the 2026-07-20 survey and now **two independent 2026-07-27
+  agents** all found the LF's Agentic AI Foundation names only **MCP /
+  AGENTS.md / goose** as its projects — `SKILL.md` is Anthropic-authored,
+  community-maintained (agentskills.io), *not* confirmed AAIF-governed. Primer
+  §4 softened accordingly this pass. Still an open re-verify (no primary AAIF
+  project list stating the negative was read), but the evidence is now
+  one-directional. If it holds, `SKILL.md` portability rests on vendor goodwill,
+  not a neutral standard.
 - The slogan "the costliest thing in AI coding is managing the agent loop" is a
   community paraphrase, not a sourced Cherny quote.
 - The "5 tips for running agents autonomously" is real in substance but not
@@ -688,13 +788,20 @@ instead of deleting it or leaving it here indefinitely.
   that learn from execution traces — **Low-Medium**, existence corroborated by
   search but article not directly fetched, exact date unconfirmed. Not promoted;
   re-verify before citing.
-- **"Graph engineering" as a successor term to "loop engineering"** — surfaced
-  from a single thin secondary (datasciencedojo.com, ~Jul 18) plus a
-  Steinberger tweet ("did we shift to graphs yet?") gesturing the same
-  direction. Two independent hints, neither confirmed as an established term.
-  **Human-reviewed 2026-07-20**: warm signals, still unconfirmed — no primary
-  essay found. **Low.** Carry forward to next pass; promote to the lineage
-  ladder (primer §2) only if a primary essay actually defines the term.
+- **"Graph engineering" as a successor term to "loop engineering"** — the meme
+  is heating in secondaries but **still has no primary long-form definition** as
+  of 2026-07-27. This pass found: Steinberger has published only tweets (Jul 18
+  "did we shift to graphs yet?"; ~Jul 25 "am I a graph engineer now"), no essay;
+  Hamel Husain's X Article "Loop Engineering Is Dead. Enter Graph Engineering"
+  (Jul 18, pre-window) is an opinion piece, not a definition; **Turing Post
+  FOD#159 "Is Graph Engineering Real?" (Jul 20, read directly, High)** argues
+  the term spread with *no consensus definition* ("graph" used for control
+  graphs, knowledge graphs, execution traces, and improvement loops
+  interchangeably); Louis-François Bouchard (Towards AI, in-window) and others
+  push back on the "loop engineering is dead" framing. Net: a **contested,
+  undefined meme, not a defined successor discipline**. **Low.** Carry forward;
+  promote to the lineage ladder (primer §2) only if a primary essay actually
+  defines the term. https://www.turingpost.com/p/is-graph-engineering-real-why-everyone-is-talking-about-it
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.
@@ -708,10 +815,25 @@ instead of deleting it or leaving it here indefinitely.
   cited per summary, exact publish date unconfirmed) — not promoted to
   primer; useful as an early signal of backlash if corroborated later.
   https://medium.com/ai-engineering-simplified/loop-engineering-is-dead-heres-the-data-behind-the-ai-backlash-6d1b204e4b9a
-- **SkillCoach: Self-Evolving Rubrics for Evaluating and Enhancing Agentic
-  Skill-Use** (arXiv:2607.01874, submitted Jul 2, 2026) — still not read in
-  full as of the Jul 20 pass; noted for next pass.
-- **"When Agents Do Not Stop: Uncovering Infinite Agentic Loops in LLM
-  Agents"** (arXiv:2607.01641, ~Jul 1–2, 2026) — directly on-topic (AutoGPT-
-  style non-termination) but still not read in full as of the Jul 20 pass;
-  flagged to read fully next pass.
+- **roborev repo identity** — search surfaced two repos described as
+  "continuous background code review": `roborev-dev/roborev` (the one the KB
+  tracks and reads directly) and `kenn-io/roborev`. Confirm which is canonical
+  (possible fork/rename) before citing the other. **Low.** Added 2026-07-27.
+- **GuardFall** — a claimed "universal shell-injection design flaw affecting
+  >500k open-source deployments," attributed to July 2026, surfaced from a
+  single aggregator (adversa.ai roundup) with no primary source or precise
+  date. Verify against a primary before treating as real. **Low.** Added
+  2026-07-27.
+- **AgentGuard / LoopGain re-findability** — two research agents this pass
+  could not re-locate AgentGuard (KB cites github.com/bmdhodl/agent47, High
+  from README) or LoopGain (github.com/loopgain-ai/loopgain, Medium) via
+  search. A search miss is not disproof, but confirm both repos still exist at
+  the cited URLs next pass before relying on their flag names. Added 2026-07-27.
+- **Gateway ownership changes** — Portkey was acquired by Palo Alto Networks
+  (closed ~May 29, folding into Prisma AIRS) and Helicone by Mintlify (~March
+  2026); both are cited in primer §6. Pre-window context, but re-verify the
+  budget-enforcement flags still exist under new ownership before citing.
+  **Medium.** Added 2026-07-27.
+- **Subagent-nesting default flipped twice in one week** (v2.1.217 off →
+  v2.1.219 depth-3, Jul 21–24) — re-verify the currently-shipped default before
+  baking it into a template. Added 2026-07-27.

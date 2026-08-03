@@ -3,6 +3,99 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-08-03 — Seven-day follow-up pass (Jul 27 – Aug 3)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques,
+key voices, guardrails & cost, and verification & skills. An **unusually quiet
+window**: no new Claude Code release (still v2.1.220, Jul 25 — a ~9-day pause
+after the near-daily cadence around the Opus 5 launch), no new Claude model, no
+new whats-new digest (w30/w31 both 404), and no new primary statement from any
+tracked key voice. The substance is one protocol milestone, one on-thesis paper,
+one gateway correction, and a large batch of standing-backlog resolutions. No
+`update-knowledge` PR was open (checked GitHub — clean baseline). Several
+primaries (x.com, some Substacks) 403/402'd to automated fetch; noted per-claim.
+
+### New facts added
+
+- **MCP `2026-07-28` shipped STABLE on Jul 28** (resolving the primer/sources
+  "release candidate ... finalizing at the window's edge" note). The largest
+  revision since launch is now the ratified spec: **stateless protocol core**
+  (removes `Mcp-Session-Id`, requests routable to any instance behind a plain
+  load balancer), a **formal Extensions framework** (reverse-DNS IDs, independent
+  versioning), and a **12-month minimum deprecation policy**. **MCP Tasks** moved
+  out of experimental core into an optional extension `io.modelcontextprotocol/tasks`
+  (poll-based `tasks/get` + new `tasks/update` per SEP-2663, plus `tasks/cancel`)
+  — directly relevant to *bounded* long-running loop work. Siblings: **MCP Apps**
+  (SEP-1865, sandboxed-iframe UIs) and Enterprise Managed Authorization. **High**
+  (primary announcement + GitHub release read directly).
+- **"Self-Authored Verification Is Unreliable in Heuristic Self-Improving
+  Agents"** (arXiv:2607.24300, submitted Jul 27, in-window) — when an agent
+  controls both its policy and its own verification tests, self-scores stay
+  near-perfect while real performance stalls or degrades (the "verifier–deployment
+  gap"); the cheapest path to passing self-authored checks is gaming the verifier.
+  Introduces **SEAL (Sealed Exogenous Acceptance Loop)**: keep self-authored tests
+  but add an external audit the agent cannot inspect or modify. A citable
+  formalization of this repo's "a self-graded gate is no gate" / "never declare
+  done on self-assessment" rule; added to primer §5A and sources.md academic
+  section. **High** (abstract read directly).
+
+### Corrected / clarified
+
+- **Helicone is now maintenance-mode.** Acquired by Mintlify (~Mar 2026, pre-window)
+  and confirmed this pass to be in maintenance mode — security patches / bug fixes
+  / new-model support only, no new feature development, with customers being helped
+  to migrate off. Primer §6 flags it accordingly rather than listing it as a live
+  guardrail gateway. Portkey (→ Palo Alto Networks / Prisma AIRS, closed May 29)
+  retains routing/rate-limiting/policy enforcement. **High**.
+- **roborev canonical repo is `kenn-io/roborev`** (not `roborev-dev/roborev`,
+  which now redirects to it). Citations updated in sources.md. **High** (redirect
+  reproduced); Medium on the exact rename mechanism/date.
+- **Cherny's "5 tips for running agents autonomously" IS a real numbered-list
+  tweet** (Jun 8, 2026, pre-window): "Five tips for running Opus autonomously
+  for hours/days: 1. auto mode … 2. dynamic workflows …" — the prior caveat
+  ("real in substance but not published as a numbered list") is corrected and
+  archived. **Medium-High** (verbatim snippet via search; x.com not directly
+  fetchable, ID decodes to Jun 8).
+
+### Archived (resolved — see archive/resolved-caveats.md)
+
+- Subagent-nesting default (confirmed depth-3, held steady through the window);
+  roborev repo identity (→ `kenn-io/roborev`); AgentGuard + LoopGain
+  re-findability (both repos live with documented flags); gateway ownership
+  changes (Portkey → Palo Alto, Helicone → Mintlify/maintenance-mode); Cobus
+  Greyling "HarnessX" (fetchable, dated Jul 1, commentary on arXiv:2606.14249);
+  Cherny "5 tips" (confirmed real numbered list); GuardFall (primary = Adversa
+  Jun 30, multi-secondary, no-CVE by design, "500k deployments" is a misread of
+  "~548k GitHub stars"); Agent Skills governance (confirmed outside AAIF — the
+  LF founding-project list names only MCP / AGENTS.md / goose).
+
+### Currently-open re-verify backlog (carried forward — every open item, per step 2)
+
+`SKILL.md` cross-tool *execution* (refined: Claude Code + Gemini CLI execute via
+`activate_skill`; 30+ tools accept the format; still not fully settled);
+"costliest thing is managing the loop" paraphrase (still unsourced); "5 tips"
+now resolved; `/goal` "Codex→Claude 11 days" single secondary; `$47K`/`$500M`/
+overnight anecdotes unverified; June-15 billing split (still paused, no revised
+plan — "went live July 10" rejected a **third** time); Microsoft dropping Claude
+Code (no primary read); Huntley's Loom "orchestrator" framing; AI Engineer
+World's Fair 2026 Yegge "Harness Engineering" transcript (still not cleanly
+surfaced); **"graph engineering"** (still no primary long-form definition from a
+key voice — new lead: Josh Simmons Jul 4 as claimed earliest use); roborev.io/
+changelog 403s; EvoAgentBench (still arXiv v1) + SkillCheck (now a live product,
+no dated update).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- **Algolia Agent Studio governance/cost controls** (Jul 28) — a real in-window
+  vendor example of step/depth/token caps as loop-cost guardrails, but a single
+  product's feature set; Medium-High, noted not promoted.
+- **OpenAI open-sourced a "Codex Security CLI"** (`@openai/codex-security`, Jul
+  29) — a repo-scanning / fix-verifying CI primitive usable as a loop
+  verification step; Medium (single secondary), noted not promoted.
+- **Codex CLI v0.146.0** (Jul 29) — GPT-5.6 model-plumbing bump, not a
+  loop/guardrail feature. **MarkTechPost "Prompt vs Loop vs Graph Engineering"**
+  (Jul 29) — secondary explainer, no new primary claim.
+
 ## 2026-07-27 — Seven-day follow-up pass (Jul 20–27)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques,

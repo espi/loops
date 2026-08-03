@@ -9,6 +9,62 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-08-03
+
+- **Subagent-nesting default — resolved to depth-3.** After the twice-flipped
+  week (v2.1.217 Jul 21 disabled nesting → v2.1.219 Jul 24 reinstated at
+  depth-3), the default held steady: subagents may spawn nested subagents up to
+  **depth 3**, disabled via `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`. v2.1.220
+  (Jul 25) didn't touch it and no newer release exists as of Aug 3. Confirmed
+  against the primary changelog. No further action.
+- **roborev repo identity — resolved to `kenn-io/roborev`.** The KB tracked
+  `roborev-dev/roborev`; that path now redirects to `kenn-io/roborev` (Go,
+  canonical, last pushed Aug 2), so treat it as a rename/move. sources.md
+  citations updated. No further action (Medium on the exact rename date/mechanism,
+  which no dated notice confirmed).
+- **AgentGuard + LoopGain re-findability — resolved.** Both repos confirmed
+  live at their cited URLs: `github.com/bmdhodl/agent47` (AgentGuard — still
+  documents BudgetGuard `max_cost_usd`, LoopGuard `max_repeats`, FuzzyLoopGuard,
+  Retry/Timeout/RateLimit guards) and `github.com/loopgain-ai/loopgain` (LoopGain
+  — still documents `max_iterations` default-50 backstop, convergence classifier,
+  adapters incl. Claude Agent SDK). The Jul-27 search miss was not disproof; both
+  exist. No further action.
+- **Gateway ownership changes — resolved.** Portkey acquired by Palo Alto
+  Networks (closed May 29, 2026, folding into Prisma AIRS; routing/rate-limiting/
+  policy enforcement retained) and Helicone acquired by Mintlify (~Mar 2026, now
+  in **maintenance mode** — patches/new-model support only, no new feature dev,
+  customers being migrated off). Primer §6 updated to flag Helicone as sunsetting.
+  No further action.
+- **Cobus Greyling "HarnessX" — resolved.** The Substack post is now fetchable
+  and dated **Jul 1, 2026** (pre-window); it is Greyling's *commentary on*
+  **arXiv:2606.14249 "HarnessX: A Composable, Adaptive, and Evolvable Agent
+  Harness Foundry"** (harness as a first-class versioned artifact that evolves
+  from execution traces; +14.5% avg, up to +44%), not his own framework. Existence
+  and date confirmed; not promoted to primer (peripheral). No further action.
+- **Cherny "5 tips for running agents autonomously" — resolved.** It IS a real
+  Cherny numbered-list tweet (Jun 8, 2026): "Five tips for running Opus
+  autonomously for hours/days: 1. auto mode for permissions … 2. dynamic
+  workflows …" plus /goal-or-/loop, sub-agent orchestration, run in cloud. The
+  prior caveat ("real in substance but not published as a numbered list") is
+  corrected. Medium-High (verbatim search snippet; x.com not directly fetchable,
+  tweet ID decodes to Jun 8). No further action.
+- **GuardFall — resolved (corroborated + figure corrected).** Was single-
+  aggregator/unverified. Now: primary is Adversa AI (published **Jun 30, 2026**,
+  researcher Omer Ben Simon), amplified by The Hacker News / SC Media / Security
+  Affairs; the "July 2026" attribution came from Adversa's July roundup, not the
+  disclosure date. **No CVE by design** (structural shell-expansion flaw, not a
+  patchable component). The ">500k deployments" figure is a **misread of "~548k
+  combined GitHub stars"** across the 10 affected tools. Now a proper sources.md
+  entry under Guardrails & cost. No further action.
+- **Agent Skills governance — resolved to "not AAIF-governed."** Multiple
+  independent confirmations now: the Linux Foundation's Agentic AI Foundation
+  founding-project list names only **MCP / `AGENTS.md` / goose**; Agent Skills /
+  `SKILL.md` is Anthropic-authored and community-maintained (agentskills.io),
+  outside LF governance. Primer §4 states this directly. Portability therefore
+  rests on vendor goodwill, not a neutral standard. (The narrower *execution*
+  question — which tools actually run a `SKILL.md` — stays open in sources.md.)
+  No further action.
+
 ## Archived 2026-07-27
 
 - **SkillCoach (arXiv:2607.01874) and "When Agents Do Not Stop"

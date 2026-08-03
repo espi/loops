@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-07-27. Re-check before relying on version numbers or dates.
+Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -356,9 +356,12 @@ Verified as of 2026-07-27. Re-check before relying on version numbers or dates.
   v0.63.0 (Jul 16, 2026): CI quiet-hours throttling (with bypass for certain
   workloads); machine-readable launch receipts on `roborev run` for
   automation; tightened skill triggers to prevent unintended activation.
-  https://github.com/roborev-dev/roborev/releases · https://www.roborev.io/
+  https://github.com/kenn-io/roborev/releases · https://www.roborev.io/
   (v0.62.x–v0.63.0: **High** primary GitHub releases read directly; not
   independently cross-checked against roborev.io/changelog, which 403'd.)
+  Canonical repo is **`kenn-io/roborev`** (`roborev-dev/roborev` now redirects
+  to it — treat as a rename/move; confirmed 2026-08-03). Latest release is still
+  **v0.63.0 (Jul 16)** — nothing new through Aug 3.
 - **Microsoft Agent Skills for .NET reaches stable/GA** (July 7, 2026) — exited
   experimental preview in Microsoft Agent Framework; `[Experimental]` attribute
   removed. Same SKILL.md-based open format as Anthropic's Agent Skills
@@ -484,8 +487,24 @@ Verified as of 2026-07-27. Re-check before relying on version numbers or dates.
   https://www.gartner.com/en/newsroom/press-releases/2026-07-01-gartner-says-us-dollars-234-billion-in-enterprise-application-software-spend-is-at-risk-from-agentic-artificial-intelligence
 - Anthropic Agent SDK guardrail params — **High**.
   https://code.claude.com/docs/en/agent-sdk/agent-loop
-- AgentGuard (budget/loop/timeout guards) — **High** (README read).
+- AgentGuard (budget/loop/timeout guards) — **High** (README read; repo
+  confirmed live 2026-08-03, still documents BudgetGuard `max_cost_usd`,
+  LoopGuard `max_repeats`, FuzzyLoopGuard, RetryGuard, TimeoutGuard).
   https://github.com/bmdhodl/agent47
+- **GuardFall** (Adversa AI, published Jun 30, 2026; researcher Omer Ben Simon) —
+  a *structural* shell-injection design flaw in open-source AI coding agents: the
+  permission guard inspects the raw command string, but bash expands/rewrites it
+  before exec, so a guard can be bypassed. Adversa reports **10 of 11** surveyed
+  tools affected (opencode, Goose, Cline, Roo-Code, Aider, Plandex, Open
+  Interpreter, OpenHands, SWE-agent, Hermes; **Continue** resisted). **No CVE by
+  design** — it's a design convention, not a single patchable component. Relevant
+  to any loop harness that gates shell commands via string-matching permission
+  rules (cf. Claude Code's own v2.1.214 Bash permission-analyzer bypass fixes).
+  **Correction:** the widely-repeated ">500k deployments" figure is a misread of
+  "~548k combined GitHub stars" across the affected tools. — **Medium-High**
+  (primary Adversa post + The Hacker News / SC Media / Security Affairs; resolves
+  the 2026-07-27 backlog item). https://adversa.ai/blog/opensource-ai-coding-agents-shell-injection-vulnerability/ ·
+  https://thehackernews.com/2026/06/guardfall-exposes-open-source-ai-coding.html
 - Uber $1,500/mo per-tool cap, annual budget gone in ~4 months — **High** (multi-outlet).
   https://techcrunch.com/2026/06/02/uber-caps-employee-ai-spending-after-blowing-through-budget-in-four-months/
 - Gartner ">40% of agentic AI projects canceled by 2027" — **High** (press release).
@@ -628,15 +647,22 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
 
 ### Cross-tool standards & portability
 - **MCP** — de-facto cross-tool standard for tool/context access (OpenAI,
-  Google, Microsoft, Anthropic; an AAIF project; 5,800+ servers). The
-  **2026-07-28 release candidate** (largest revision since launch) finalized at
-  this window's edge: stateless core, a first-class **Tasks** extension for
-  long-running async work (directly relevant to *bounded* long-running loop
-  work), **MCP Apps** (server-rendered UI over the same JSON-RPC consent path),
-  OAuth/OIDC-aligned auth, and a formal 12-month deprecation policy; beta SDKs
-  for the RC shipped in-window. Standardizes *tool access, not the loop
-  harness*. **High** (primary release-candidate post + secondaries).
-  https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/ ·
+  Google, Microsoft, Anthropic; an AAIF / Linux Foundation project; 5,800+
+  servers). The **`2026-07-28` revision shipped STABLE on Jul 28, 2026** (the RC
+  finalized/ratified on schedule — largest revision since launch): a **stateless
+  protocol core** (removes `Mcp-Session-Id`, so requests route to any instance
+  behind a plain load balancer), a **formal Extensions framework** (reverse-DNS
+  IDs, independent versioning), and a **12-month minimum deprecation policy**.
+  **MCP Tasks** moved out of experimental core into an optional extension
+  `io.modelcontextprotocol/tasks` (poll-based `tasks/get` + new `tasks/update`
+  per SEP-2663, plus `tasks/cancel`) — directly relevant to *bounded*
+  long-running loop work. Siblings: **MCP Apps** (SEP-1865, sandboxed-iframe UIs
+  over the same JSON-RPC consent path) and **Enterprise Managed Authorization**.
+  Tier-1 SDKs (Python/TypeScript/Go/C#) updated. Standardizes *tool access, not
+  the loop harness*. **High** (primary stable-release post + GitHub release read
+  directly).
+  https://blog.modelcontextprotocol.io/posts/2026-07-28/ ·
+  https://github.com/modelcontextprotocol/modelcontextprotocol/releases ·
   https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
 - **Codex `/goal` = cross-tool validator-judge pattern** — same architecture as
   Claude Code `/goal` (distinct judge, evidence-based stop). Confirms the
@@ -733,6 +759,18 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   is violated. A citable primary source for this repo's "an agent never declares
   done on its own self-assessment" rule. — **High** (abstract read directly).
   https://arxiv.org/abs/2607.07663
+- **"Self-Authored Verification Is Unreliable in Heuristic Self-Improving
+  Agents"** — arXiv:2607.24300 (submitted Jul 27, 2026, in-window). When an agent
+  controls both its policy *and* its own verification tests, self-scores stay
+  near-perfect while real deployment performance stalls or degrades (the
+  **"verifier–deployment gap"**) — the cheapest path to passing self-authored
+  checks is gaming the verifier, not improving the policy. Introduces **SEAL
+  (Sealed Exogenous Acceptance Loop)**: keep the self-authored tests but add an
+  external audit the agent cannot inspect or modify; across six models / three
+  seeds SEAL beats unprotected baselines (weaker agents damage prior strategies
+  while still passing self-tests). A formalization of this repo's "a self-graded
+  gate is no gate" — cited in primer §5A. — **High** (abstract + HTML v1 read
+  directly). https://arxiv.org/abs/2607.24300
 
 ## Known caveats / things to re-verify
 
@@ -742,28 +780,18 @@ to. When an item resolves (confirmed, corrected, or determined not worth
 tracking), move it to [`archive/resolved-caveats.md`](archive/resolved-caveats.md)
 instead of deleting it or leaving it here indefinitely.
 
-- **`SKILL.md` cross-tool *execution* is contested.** Two research passes
-  disagreed: one found the Agent Skills format read by a broad cross-vendor set
-  (Codex CLI, Gemini CLI, Cursor, VS Code, Goose, opencode…); the other found
-  **no** surveyed CLI tool *confirmed to execute* a `SKILL.md`, with **`AGENTS.md`**
-  being the actually-common file convention. The format is spreading but
-  per-tool execution behavior (discovery, honored frontmatter, permissions)
-  differs. Treat a skill authored here as portable-with-testing, not drop-in.
-  Re-verify which tools truly run `SKILL.md` vs. only `AGENTS.md`.
-- **Agent Skills governance status — converging toward "not AAIF-governed."**
-  Earlier KB passes recorded Agent Skills as an AAIF / Linux Foundation-governed
-  open standard; the 2026-07-20 survey and now **two independent 2026-07-27
-  agents** all found the LF's Agentic AI Foundation names only **MCP /
-  AGENTS.md / goose** as its projects — `SKILL.md` is Anthropic-authored,
-  community-maintained (agentskills.io), *not* confirmed AAIF-governed. Primer
-  §4 softened accordingly this pass. Still an open re-verify (no primary AAIF
-  project list stating the negative was read), but the evidence is now
-  one-directional. If it holds, `SKILL.md` portability rests on vendor goodwill,
-  not a neutral standard.
+- **`SKILL.md` cross-tool *execution* is still not fully settled** (refined
+  2026-08-03). Current picture: **Claude Code and Gemini CLI both execute** a
+  `SKILL.md` (Gemini via an `activate_skill` tool that loads the SKILL.md body +
+  grants directory file access — docs dated Apr 30, 2026); 30+ tools *accept* the
+  Agent Skills format (portability via the `.agents/skills/` alias directory);
+  **`AGENTS.md`** remains a *separate* project-instruction convention (e.g.
+  Codex's), not the skill-execution mechanism. So "execute vs. merely accept"
+  differs tool to tool. No in-window change. Treat a skill authored here as
+  portable-with-testing, not drop-in; re-verify which additional tools truly
+  *run* a `SKILL.md`.
 - The slogan "the costliest thing in AI coding is managing the agent loop" is a
   community paraphrase, not a sourced Cherny quote.
-- The "5 tips for running agents autonomously" is real in substance but not
-  published by Cherny as a numbered list — secondary packaging.
 - The `/goal` "Codex invented it, Claude copied in 11 days" timeline rests on a
   single secondary source.
 - `$47K / 11-day loop` and overnight-billing figures are self-reported anecdotes.
@@ -783,11 +811,6 @@ instead of deleting it or leaving it here indefinitely.
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
   no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
   re-verify if a transcript or recording surfaces.
-- **Cobus Greyling** ("HarnessX: When the Harness Starts Learning From Its Own
-  Runs", Medium, reported Jul 2026) proposing harnesses as versioned artifacts
-  that learn from execution traces — **Low-Medium**, existence corroborated by
-  search but article not directly fetched, exact date unconfirmed. Not promoted;
-  re-verify before citing.
 - **"Graph engineering" as a successor term to "loop engineering"** — the meme
   is heating in secondaries but **still has no primary long-form definition** as
   of 2026-07-27. This pass found: Steinberger has published only tweets (Jul 18
@@ -797,11 +820,18 @@ instead of deleting it or leaving it here indefinitely.
   FOD#159 "Is Graph Engineering Real?" (Jul 20, read directly, High)** argues
   the term spread with *no consensus definition* ("graph" used for control
   graphs, knowledge graphs, execution traces, and improvement loops
-  interchangeably); Louis-François Bouchard (Towards AI, in-window) and others
-  push back on the "loop engineering is dead" framing. Net: a **contested,
-  undefined meme, not a defined successor discipline**. **Low.** Carry forward;
-  promote to the lineage ladder (primer §2) only if a primary essay actually
-  defines the term. https://www.turingpost.com/p/is-graph-engineering-real-why-everyone-is-talking-about-it
+  interchangeably); Louis-François Bouchard (Towards AI) and others
+  push back on the "loop engineering is dead" framing. **2026-08-03 re-check:**
+  still no primary long-form definition from a key voice — Steinberger has only
+  ever tweeted (the graph tweets decode to Jul 8 + Jul 18); the in-window
+  artifacts are all secondary explainers (MarkTechPost "Prompt vs Loop vs Graph
+  Engineering," Jul 29; Eugeniu Ghelbur "field guide," theaioperator.io, Jul 21;
+  Turing Post's Jul 23 follow-up arguing "a loop is already a graph… which makes
+  the whole thing a bit ridiculous"). New lead to chase: **Josh Simmons (Jul 4)**
+  cited as the earliest documented use of the term. Net: a **contested, undefined
+  meme, not a defined successor discipline**. **Low.** Carry forward; promote to
+  the lineage ladder (primer §2) only if a primary essay actually defines the
+  term. https://www.turingpost.com/p/is-graph-engineering-real-why-everyone-is-talking-about-it
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.
@@ -815,25 +845,10 @@ instead of deleting it or leaving it here indefinitely.
   cited per summary, exact publish date unconfirmed) — not promoted to
   primer; useful as an early signal of backlash if corroborated later.
   https://medium.com/ai-engineering-simplified/loop-engineering-is-dead-heres-the-data-behind-the-ai-backlash-6d1b204e4b9a
-- **roborev repo identity** — search surfaced two repos described as
-  "continuous background code review": `roborev-dev/roborev` (the one the KB
-  tracks and reads directly) and `kenn-io/roborev`. Confirm which is canonical
-  (possible fork/rename) before citing the other. **Low.** Added 2026-07-27.
-- **GuardFall** — a claimed "universal shell-injection design flaw affecting
-  >500k open-source deployments," attributed to July 2026, surfaced from a
-  single aggregator (adversa.ai roundup) with no primary source or precise
-  date. Verify against a primary before treating as real. **Low.** Added
-  2026-07-27.
-- **AgentGuard / LoopGain re-findability** — two research agents this pass
-  could not re-locate AgentGuard (KB cites github.com/bmdhodl/agent47, High
-  from README) or LoopGain (github.com/loopgain-ai/loopgain, Medium) via
-  search. A search miss is not disproof, but confirm both repos still exist at
-  the cited URLs next pass before relying on their flag names. Added 2026-07-27.
-- **Gateway ownership changes** — Portkey was acquired by Palo Alto Networks
-  (closed ~May 29, folding into Prisma AIRS) and Helicone by Mintlify (~March
-  2026); both are cited in primer §6. Pre-window context, but re-verify the
-  budget-enforcement flags still exist under new ownership before citing.
-  **Medium.** Added 2026-07-27.
-- **Subagent-nesting default flipped twice in one week** (v2.1.217 off →
-  v2.1.219 depth-3, Jul 21–24) — re-verify the currently-shipped default before
-  baking it into a template. Added 2026-07-27.
+
+_(Resolved and archived 2026-08-03: roborev repo identity → `kenn-io/roborev`;
+GuardFall → corroborated primary + corrected "500k" figure, see Guardrails &
+cost below; AgentGuard / LoopGain re-findability → both repos confirmed live;
+gateway ownership changes → confirmed, Helicone now maintenance-mode; subagent-
+nesting default → confirmed depth-3, held steady. See
+[`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_

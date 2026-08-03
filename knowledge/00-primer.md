@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-07-27.
+> The canonical briefing for this repo. Last substantive update: 2026-08-03.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -425,12 +425,19 @@ Three things worth carrying as durable facts:
   clear that bar.
 - **Portability is real for MCP, contested for skills.** MCP is near-universal
   and portable — but it standardizes *tool/context access, not the loop
-  harness*. Agent Skills (`SKILL.md`) portability is **unsettled**: the format
-  is spreading, but whether the CLI tools actually *execute* a `SKILL.md`
-  (vs. adopting the rival **`AGENTS.md`** convention) is unconfirmed, and the
-  standard may not be neutrally governed yet — both tracked as re-verify items
-  in `sources.md`. A loop written here is portable in *principle*; assume
-  per-tool testing, not drop-in.
+  harness*. The **`2026-07-28` revision shipped stable on Jul 28, 2026** (the
+  largest revision since launch): a stateless protocol core, a formal Extensions
+  framework, a 12-month deprecation policy, and — most relevant to loops — a
+  first-class **Tasks** extension (`io.modelcontextprotocol/tasks`) for *bounded*
+  long-running async work. Governance is settled and neutral: MCP is a Linux
+  Foundation / AAIF project. Agent Skills (`SKILL.md`) portability is **less
+  settled**: the format is spreading fast (30+ tools accept it, and Claude Code
+  and Gemini CLI both *execute* it — Gemini via an `activate_skill` tool), but
+  cross-tool *execution* behavior still differs tool to tool, and the standard
+  is **not** AAIF-governed — it's Anthropic-authored and community-maintained
+  (the LF's Agentic AI Foundation stewards only **MCP / `AGENTS.md` / goose**),
+  so its portability rests on vendor goodwill, not neutral governance. A loop
+  written here is portable in *principle*; assume per-tool testing, not drop-in.
 
 ## 5. The two things the hype skips
 
@@ -439,7 +446,15 @@ check its own work; an open loop with no feedback is a machine for generating
 confident mistakes. Give every loop one deterministic check (`npm test`,
 `pytest`, `tsc --noEmit`, a linter) and run it *inside* the loop. Anthropic's
 name for the pattern: **evaluator-optimizer** (one model generates, another
-evaluates and feeds back). Addy Osmani's canonical loop-turn anatomy (O'Reilly
+evaluates and feeds back). Keep that check **external to the agent**: *"Self-
+Authored Verification Is Unreliable in Heuristic Self-Improving Agents"*
+(arXiv:2607.24300, Jul 27 2026) shows that when an agent controls both its policy
+*and* its own tests, self-scores stay near-perfect while real performance stalls
+or degrades — the cheapest way to pass self-authored checks is to game the
+verifier, not improve the work. Its fix, **SEAL** (Sealed Exogenous Acceptance
+Loop) — keep the self-tests but add an audit the agent can't inspect or modify —
+is the same principle this repo enforces in code with its own machine-checked
+self-edit gate (a self-graded gate is no gate). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
@@ -615,8 +630,11 @@ is capped the same way. **LiteLLM** enforces a per-session iteration cap and
 `max_budget_per_session`, returns HTTP 429 `budget_exceeded`, and offers
 `fail_closed_budget_enforcement: true` for a true ceiling even under
 infrastructure degradation; **OpenRouter** rejects over-limit requests with
-HTTP 402 on daily/weekly/monthly windows; **Portkey** and **Helicone** add
-budgets/guardrails (Helicone skews toward observability/alerts). This is the
+HTTP 402 on daily/weekly/monthly windows; **Portkey** (acquired by Palo Alto
+Networks, folded into Prisma AIRS) and **Helicone** add budgets/guardrails
+(Helicone skews toward observability/alerts, and as of its Mintlify acquisition
+is in **maintenance mode** — patches and new-model support only, no new feature
+work — so treat it as sunsetting, not a gateway to build new guardrails on). This is the
 tool-agnostic answer to hard stop #3 (and #1): the gateway is a real ceiling
 for every agent behind it, not a per-tool flag you have to re-implement.
 In-harness, framework-agnostic libraries cover the same three stops as a

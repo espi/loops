@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-08-03.
+> The canonical briefing for this repo. Last substantive update: 2026-08-10.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -47,6 +47,23 @@ The $297 was a Y-Combinator hackathon team shipping six repos overnight.
 Huntley's actual language, **CURSED**, came from running Claude in a ralph loop
 for ~3 months, with no single published cost figure.
 
+**"Graph engineering" now has a primary definition (but isn't a new rung
+here).** The long-tracked "successor term" meme finally rests on a real
+definitional essay: Josh C. Simmons, *"We Are Entering the Graph Engineering
+Phase"* (drjoshcsimmons.com, **Jul 4, 2026**) — *"graph engineering is designing
+agentic systems as explicit graphs instead of implicit loops"* (nodes as
+capability units, typed state-carrying edges, checkpointed schema'd state). Its
+own framing is that this *demotes* the loop, not kills it: *"The loop is not
+dead. It got demoted. Inside a node, a model still runs the same loop it always
+ran"* — loop engineering is "what happens inside one context window," graph
+engineering "what happens between them." Steve Yegge's in-window essay (§3, Aug
+4) leans the same way (*"any sufficiently large project is a graph"*), but the
+claim that graph engineering *supersedes* loop engineering as the field's next
+phase stays contested (Turing Post: "a loop is already a graph"). So it's the
+**orchestration-loop rung by another name and a higher altitude**, not a new
+stage above it — recorded here, not added to the ladder. **High** (Simmons essay
+read directly). *Resolves the standing "no primary definition" backlog item.*
+
 ## 3. The key voices
 
 - **Anthropic itself entered the conversation directly**: "Loop engineering:
@@ -87,7 +104,17 @@ for ~3 months, with no single published cost figure.
   cheap verification, not switched on wholesale, and names **"comprehension
   debt"** — *"the widening gap between how much code exists and how much any
   human still understands"* — as its cost. High-stakes paths (auth, billing)
-  keep human gates regardless of speed.
+  keep human gates regardless of speed. His next essay,
+  **"Agentic Code Quality"** (Substack, **Aug 8, 2026**), turns the verification
+  thesis into a *constraints* one: *"Software quality now depends on the
+  constraints you set around your agents… An agent can propose anything. Your
+  constraints decide whether a proposal is safe enough."* Constraints act in two
+  places — *"some constraints shape work before it begins. Others give feedback
+  while the agent is working"* — i.e. the guardrails and the in-loop check are
+  the quality mechanism, not a post-hoc human read, and quality is *"a collection
+  of signals,"* not one metric. The same claim this repo makes with its three
+  hard stops + in-loop verification, said from the quality side. **High** (essay
+  read directly).
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -122,6 +149,21 @@ for ~3 months, with no single published cost figure.
   still secondary-sourced only, since automated fetch of the post body
   403's — **Medium-High**. (Earlier passes had this labeled "Formulas 2.0",
   a secondary-source guess; the confirmed title is "Gas City 1.3.")
+  **New Aug 4, 2026: "The Shape of Things to Come"** (yegge.ai) — a retrospective
+  admitting Gas Town *failed as a reusable orchestrator*: *"Gas Town was intended
+  to be reusable, but I only ever wound up using it to build itself. Gas Town
+  fell apart at the seams with Opus 4.7. Up through 4.6 it was working
+  brilliantly"* — he blames an Opus 4.7 *"just two more things"* tic that kept
+  the model from converging on being ready to work (his anecdotal
+  characterization, not an Anthropic statement). The durable takeaway for this
+  repo is his verdict on harness portability: *"Harnesses need to be part of your
+  application, chemically bonded in"* — i.e. a generic reusable orchestrator is
+  the wrong unit; the loop belongs welded to the app. Also *"any sufficiently
+  large project is a graph"* (folding his Beads work into the graph-engineering
+  framing, §2). A rare, useful *failure* data point: orchestrator robustness is
+  coupled to model behavior, and a model update can silently break a loop that
+  worked — an argument for stall detection, not against loops. **High** (essay
+  read directly; corroborated verbatim by Simon Willison's Aug 4 link-blog).
 - **Boris Cherny — "Steps of AI Adoption"** (~Jul 16–17, 2026, Anthropic site +
   X): a five-level maturity framework for org-wide AI adoption — **Gated (0)**
   → **Assisted (~1x)** → **Parallel (~10x)** → **Supervised autonomy (~100x)**
@@ -324,7 +366,9 @@ generalize, not as the only place they exist.
   **native runaway-loop caps**: a session-wide WebSearch cap (default 200,
   `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session subagent-spawn
   cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, reset by
-  `/clear`), and MCP tool calls running over 2 minutes auto-moving to
+  `/clear` — but the **default 200 cap was removed in v2.1.224, Aug 7**, see
+  below; only concurrency/depth limits remain by default), and MCP tool calls
+  running over 2 minutes auto-moving to
   background (`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`) — direct product-level
   reinforcement of this repo's §6 stall/iteration hard stops, shipped by
   Anthropic rather than left to the harness. Same release: **`/fork` now
@@ -372,6 +416,39 @@ generalize, not as the only place they exist.
   redirect writes outside the project); v2.1.220 (Jul 25) was reliability fixes
   only. *(High — changelog read directly; `whats-new/2026-w30` had not
   published yet, so the changelog was the sole primary.)*
+- **v2.1.221–226 (Aug 4–8)** — a fan-out / sandbox-hardening cluster, two items
+  cutting directly against this repo's §6 hard stops. **The 200-subagent-
+  per-session spawn cap was removed** (v2.1.224, Aug 7): "long-running sessions
+  no longer refuse new agents (concurrency and depth limits still apply)" — a
+  *native backstop removed*, the mirror image of the v2.1.212 addition above, so
+  the per-session spawn count is no longer bounded by default. (Whether an
+  **explicitly set** `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` still enforces after
+  this is unconfirmed — the changelog removed the default, not obviously the env
+  var; re-verify before relying on it as a ceiling, incl. in this repo's own
+  routine guardrail.) Pulling the other way, **gateway spend-limit support**
+  (v2.1.225, Aug 8): Claude Code's usage-warning now surfaces a
+  gateway-enforced spend cap inline — naming the cap, its reset time, and the
+  operator's message — so the §6 "put the ceiling in the gateway" pattern now
+  shows up *in-product* rather than only in your harness. Other loop-relevant
+  changes: **`ultraplan` removed** (v2.1.222); a **guardrail/sandbox-bypass
+  hardening batch** — worktree-isolated sessions/subagents can no longer run
+  destructive git against the main checkout (v2.1.222), PreToolUse auto-allow
+  hooks no longer bypass tool restrictions inside background-agent tasks
+  (v2.1.222), `SendMessage` messages now run through the auto-mode permission
+  classifier (v2.1.222), workflow scripts can no longer use dynamic `import()`
+  to run code outside the sandbox (v2.1.223), more Bash/PowerShell
+  permission-check bypasses closed (hidden-tab/invisible-Unicode commands,
+  zsh `[[ ]]` regex, quoted Windows paths — v2.1.221/223), and a sandbox
+  `denyRead`/`denyWrite` trailing-slash bypass fixed (v2.1.224); a new
+  **cross-session `SendMessage` + `ListAgents`** primitive lets sessions message
+  each other across machines (v2.1.224) and `claude self-hosted-runner` turns
+  your own machines into execution environments (v2.1.224, Team/Enterprise);
+  `/review` became an alias of `/code-review` (v2.1.223); and **background
+  sessions now open a draft PR "only when the task calls for one"** rather than
+  always (v2.1.221) — softening the always-draft-PR autonomy the v2.1.198 note
+  above flagged. v2.1.226 (Aug 8) was reliability fixes only and is the newest.
+  *(High — changelog read directly; no `whats-new` digest past Week 29 exists
+  yet, so the changelog was the sole primary.)*
 
 ### Beyond Claude Code — the same loop on other harnesses
 
@@ -438,6 +515,18 @@ Three things worth carrying as durable facts:
   (the LF's Agentic AI Foundation stewards only **MCP / `AGENTS.md` / goose**),
   so its portability rests on vendor goodwill, not neutral governance. A loop
   written here is portable in *principle*; assume per-tool testing, not drop-in.
+  **New Aug 6, 2026: Agent Plugins 1.0** adds a *packaging* layer over both — "a
+  plugin is a directory": a `plugin.json` manifest (10 permitted fields, 2
+  required), an optional `skills/` folder of `SKILL.md` files, and an optional
+  `mcp.json` — announced by five founding Core Maintainers (Amazon, Cursor,
+  Microsoft, OpenAI, Vercel-as-lead; Google joining day-of), and already shipping
+  in Codex CLI v0.147.0 (Aug 7, "portable Agent Plugins"). It "defers entirely to
+  the Agent Skills specification" and uses MCP's native transports, changing
+  neither format. Crucially it is **independently governed — explicitly *not* an
+  AAIF project** (unlike MCP), so it inherits the same vendor-goodwill governance
+  caveat as `SKILL.md` rather than resolving it. **Medium-High** (spec + AAIF
+  post quoted via a secondary, corroborated by the Codex CLI primary changelog;
+  the spec repo itself not read directly this pass).
 
 ## 5. The two things the hype skips
 
@@ -454,12 +543,21 @@ or degrades — the cheapest way to pass self-authored checks is to game the
 verifier, not improve the work. Its fix, **SEAL** (Sealed Exogenous Acceptance
 Loop) — keep the self-tests but add an audit the agent can't inspect or modify —
 is the same principle this repo enforces in code with its own machine-checked
-self-edit gate (a self-graded gate is no gate). Addy Osmani's canonical loop-turn anatomy (O'Reilly
+self-edit gate (a self-graded gate is no gate). A second in-window paper pushes
+the same idea into *architecture*: *"The LLM Proposes, the Executive Disposes"*
+(arXiv:2608.04066, Aug 4 2026) makes verification **structural rather than
+post-hoc** — a deterministic "Executive" owns all belief/state, the model may
+only file *typed proposals*, and a claim is admitted only when a prediction
+*pre-registered before acting* is matched against observation by code. It's "the
+checker must not be the maker" formalized as a loop architecture, not a review
+step bolted on after. **High** (abstract read directly). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(latest v0.63.0, July 16, 2026 — see version history below) operationalize
-this per-commit. Anthropic's own **`security-guidance`
+(latest **v0.64.0, Aug 6, 2026** — GitLab merge-request review, first-class
+Grok Build agent + Goose/named-ACP-agent support, repo-root `REVIEW.md` fallback
+when no review guidelines are configured, and custom skill-install paths; see
+version history below) operationalize this per-commit. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
 deeper agentic review on commit or push. Osmani's corollary (June 9, 2026):
@@ -606,13 +704,22 @@ first-class params (`max_turns`, `max_budget_usd`).
    Limits API** (Apr 25, 2026) and **Claude Code Analytics Admin API** (Mar
    2026) expose org/workspace limits and per-user estimated cost, so a gateway
    can read spend and cut the loop off; third-party gateways (e.g. Databricks
-   Unity AI Gateway) now hard-stop requests at a budget rather than just alert.
+   Unity AI Gateway — **GA Aug 4, 2026**, with *enforced* proactive budgets that
+   auto-block requests once a multi-level user/workspace/use-case/org budget is
+   exceeded, resuming next billing period or on a raise) now hard-stop requests
+   at a budget rather than just alert.
    Claude Code itself moved closer to a real in-harness ceiling in **v2.1.217
    (Jul 21, 2026)**: `--max-budget-usd` now **halts background subagents**
    (denies new spawns, stops running ones) when the cap is hit — previously the
    dollar ceiling didn't reach backgrounded fan-out — alongside a default-20
    concurrent-subagent cap. Still set the ceiling explicitly; the mechanism, not
-   a default limit, is what shipped.
+   a default limit, is what shipped. **v2.1.225 (Aug 8)** took the next step
+   toward gateway-side enforcement: Claude Code's usage-warning now surfaces a
+   **gateway-enforced spend limit** in-product (naming the cap, its reset time,
+   and the operator's message) — the gateway-is-the-real-ceiling pattern above,
+   now visible from inside the tool. Counterweight, same week: the default
+   200-subagent-per-session spawn cap was *removed* (v2.1.224, §4), so lean on
+   your own ceiling, not a shipped default.
 
 That unbounded feedback paths are a *widespread, statically detectable* defect
 now has empirical backing: **"When Agents Do Not Stop: Uncovering Infinite

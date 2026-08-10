@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
+Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -120,6 +120,44 @@ Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
   this repo's verification-gated-autonomy non-negotiables. — **High** (primary
   Substack fetched directly, verbatim quotes, date confirmed).
   https://addyo.substack.com/p/software-factories-light-and-dark
+- **Addy Osmani "Agentic Code Quality"** (Substack, **Aug 8, 2026**) — next in
+  the arc (Loop Engineering → Own the Outer Loop → Software Factories → this).
+  Quality for agent-generated code comes from *constraints built into the
+  system*, not post-hoc human review: *"Software quality now depends on the
+  constraints you set around your agents"*; *"An agent can propose anything. Your
+  constraints decide whether a proposal is safe enough"*; *"some constraints
+  shape work before it begins. Others give feedback while the agent is working"*;
+  quality is *"a collection of signals,"* not one metric. Maps onto this repo's
+  three-hard-stops + in-loop-verification thesis from the quality side. — **High**
+  (primary Substack read directly, verbatim quotes, date confirmed).
+  https://addyo.substack.com/p/agentic-code-quality
+- **Steve Yegge "The Shape of Things to Come"** (yegge.ai, **Aug 4, 2026**) — a
+  retrospective conceding Gas Town failed as a *reusable* orchestrator: *"Gas
+  Town was intended to be reusable, but I only ever wound up using it to build
+  itself. Gas Town fell apart at the seams with Opus 4.7. Up through 4.6 it was
+  working brilliantly"* (blames an Opus 4.7 *"just two more things"* convergence
+  tic — his characterization, not Anthropic's). Durable takeaway: *"Harnesses
+  need to be part of your application, chemically bonded in"* (a generic reusable
+  orchestrator is the wrong unit) and *"any sufficiently large project is a
+  graph"* (folds Beads into the graph-engineering framing). A useful *failure*
+  data point — orchestrator robustness is coupled to model behavior; a model
+  update can silently break a working loop. — **High** (essay read directly;
+  key quote corroborated verbatim by Simon Willison's Aug 4 link-blog).
+  https://yegge.ai/essays/the-shape-of-things-to-come/ ·
+  https://simonwillison.net/2026/Aug/4/steve-yegge/
+- **Josh C. Simmons "We Are Entering the Graph Engineering Phase"**
+  (drjoshcsimmons.com, **Jul 4, 2026**) — the first genuine *primary definitional*
+  essay for "graph engineering," resolving the long-standing "no primary
+  definition" backlog item. *"Graph engineering is designing agentic systems as
+  explicit graphs instead of implicit loops"* (nodes as capability units, typed
+  state-carrying edges, checkpointed schema'd state); frames it as *demoting* the
+  loop, not killing it: *"The loop is not dead. It got demoted. Inside a node, a
+  model still runs the same loop it always ran"* — loop engineering is "what
+  happens inside one context window," graph engineering "what happens between
+  them." Out-of-window (Jul 4) but confirmed this pass; the "successor to loop
+  engineering" claim remains contested (Turing Post: "a loop is already a
+  graph"). — **High** (essay read directly). See primer §2.
+  https://www.drjoshcsimmons.com/writing/we-are-entering-the-graph-engineering-phase
 - Boris Cherny at Meta @Scale (June 22, 2026): "Two years ago, we wrote source
   code by hand. We started to transition so agents write the code. And now
   we're transitioning to the point where agents are prompting agents that then
@@ -338,6 +376,33 @@ Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
   `sandbox.network.strictAllowlist`; `DirectoryAdded` hook; Opus 5 added (below).
   v2.1.220 (Jul 25): reliability fixes only.
   https://code.claude.com/docs/en/changelog
+- **Claude Code v2.1.221–226 (Aug 4–8, 2026)** — **High** (changelog read
+  directly; no `whats-new` digest past Week 29 exists yet, changelog sole
+  primary). v2.1.221 (Aug 4): sandbox credential-file `mode: "mask"` (Linux/WSL);
+  Bash permission-bypass fixes (zsh `[[ ]]` regex, invisible-Unicode/tab-hidden
+  commands) + PowerShell quoted-path bypass; background sessions now open a draft
+  PR **only when the task calls for one** (softening v2.1.198's always-draft-PR);
+  `/fork` creates its own worktree; WebSearch-at-`xhigh`/`max`-with-thinking-off
+  fix. v2.1.222 (Aug 4): **`ultraplan` removed**; worktree-isolated
+  sessions/subagents can no longer run destructive git against the main checkout;
+  PreToolUse auto-allow hooks no longer bypass tool restrictions in
+  background-agent tasks; `SendMessage` now runs through the auto-mode permission
+  classifier. v2.1.223 (Aug 6): `/review` → alias of `/code-review`; workflow
+  scripts can no longer use dynamic `import()` to escape the sandbox;
+  restricted-subagent-model warning; `CLAUDE_CODE_DISABLE_1M_CONTEXT` clamps
+  *every* native-1M model to 200K; owner-wildcard marketplace allow/block.
+  v2.1.224 (Aug 7): **removed the 200-subagent-per-session spawn cap** ("long-
+  running sessions no longer refuse new agents (concurrency and depth limits
+  still apply)"); cross-session `SendMessage` + `ListAgents` (sessions message
+  each other across machines, macOS/Linux); `claude self-hosted-runner`
+  (Team/Enterprise); `archive` plugin source (zip-over-HTTPS install, optional
+  SHA-256 pinning); sandbox `denyRead`/`denyWrite` trailing-slash bypass fixed.
+  v2.1.225 (Aug 8): **gateway spend-limit support** — usage-warning names the
+  cap, reset time, and operator message (requires the gateway on 2.1.225).
+  v2.1.226 (Aug 8): reliability fixes only (newest). NOTE: the subagent-nesting
+  depth-3 default is from v2.1.219 (Jul 24), **not** v2.1.221 — a research agent
+  misattributed it this pass; no depth-default change shipped Aug 4–8.
+  https://code.claude.com/docs/en/changelog
 - **Claude Opus 5** (`claude-opus-5`) shipped v2.1.219 (Jul 24, 2026) as the
   **default Opus model** — 1M context, 128k output, $5/$25 per MTok I/O
   (unchanged from Opus 4.8), fast mode $10/$50 (~2.5× faster), new `xhigh`
@@ -359,9 +424,16 @@ Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
   https://github.com/kenn-io/roborev/releases · https://www.roborev.io/
   (v0.62.x–v0.63.0: **High** primary GitHub releases read directly; not
   independently cross-checked against roborev.io/changelog, which 403'd.)
+  v0.64.0 (Aug 6, 2026): **GitLab merge-request support** in `roborev ci review`;
+  first-class **Grok Build** agent support + multiple named ACP agents and Goose;
+  falls back to a repo-root **`REVIEW.md`** when no review guidelines are
+  configured; custom skill-install paths; workspace-scoped agent-hook snoozing;
+  resume interrupted work after agent Stop hooks; recognizes passing CI synthesis
+  summaries. 18 changelog items; commit `bc0af33`. **High** (release page read
+  directly). https://github.com/kenn-io/roborev/releases/tag/v0.64.0
   Canonical repo is **`kenn-io/roborev`** (`roborev-dev/roborev` now redirects
-  to it — treat as a rename/move; confirmed 2026-08-03). Latest release is still
-  **v0.63.0 (Jul 16)** — nothing new through Aug 3.
+  to it — treat as a rename/move; confirmed 2026-08-03). Latest release is
+  **v0.64.0 (Aug 6)** — nothing newer through Aug 10.
 - **Microsoft Agent Skills for .NET reaches stable/GA** (July 7, 2026) — exited
   experimental preview in Microsoft Agent Framework; `[Experimental]` attribute
   removed. Same SKILL.md-based open format as Anthropic's Agent Skills
@@ -532,10 +604,17 @@ Verified as of 2026-08-03. Re-check before relying on version numbers or dates.
   https://thenextweb.com/news/microsoft-claude-code-retreat-ai-cost ·
   https://aiweekly.co/alerts/microsoft-drops-claude-code-after-budget-overrun
 - **Databricks Unity AI Gateway hard spend caps** (announced Data+AI Summit,
-  June 15–18, 2026): enforcement stops requests when budget reached (not just
-  alerts); granular controls by user/team/tool/use-case. — **Medium-High**
-  (Databricks blog confirmed via search; direct fetch 403'd).
-  https://www.databricks.com/blog/ai-governance-data-ai-summit-2026-whats-new-unity-ai-gateway
+  June 15–18, 2026; **reached GA Aug 4, 2026**): enforcement stops requests when
+  budget reached (not just alerts); GA adds *enforced* proactive budgets and hard
+  spend caps that auto-block requests once a **multi-level** (user/workspace/
+  use-case/org) budget is exceeded, resuming next billing period or on a limit
+  raise; Smart Routing still beta. Illustrative caps in the Jul 23 spend-controls
+  blog ($2K/user/mo eng, $1K/user/mo coding agent, $50K/mo prod workspace,
+  $200K/mo account) are examples, not defaults. — **High** for GA / **Medium-High**
+  for feature specifics (GA via startuphub secondary dated Aug 4; the spend-
+  controls feature blog itself is Jul 23, out of window).
+  https://www.startuphub.ai/ai-news/artificial-intelligence/2026/databricks-unity-ai-gateway-hits-ga ·
+  https://www.databricks.com/blog/introducing-ai-spend-controls-unity-ai-gateway
 - GitHub Copilot token-based billing (eff. Jun 1, 2026): reported costs jumping
   from $29/mo to $750/mo for heavy agentic use patterns. — **High** (GitHub
   official blog + TechCrunch).
@@ -668,6 +747,24 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   Claude Code `/goal` (distinct judge, evidence-based stop). Confirms the
   validator-model stop is an industry pattern, not a Claude feature. **High**.
   https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex
+- **Agent Plugins 1.0** (announced **Aug 6, 2026**; spec committed Jul 24) — a
+  cross-vendor *packaging* standard layered over Agent Skills + MCP: "a plugin is
+  a directory" = `plugin.json` manifest (10 permitted fields, 2 required) +
+  optional `skills/` folder of `SKILL.md` files + optional `mcp.json`. "Defers
+  entirely to the Agent Skills specification" and uses MCP's native transports,
+  changing neither format. Five founding Core Maintainers (Amazon, Cursor,
+  Microsoft, OpenAI, Vercel-as-lead; Google joining day-of). **Explicitly *not* an
+  AAIF project** (per AAIF's own post: "independently governed open
+  specification… not an AAIF project"), so it carries the same vendor-goodwill
+  governance caveat as `SKILL.md`, unlike MCP. Already shipping in Codex CLI
+  v0.147.0 (Aug 7). — **Medium-High** (spec + AAIF post quoted via a secondary,
+  corroborated by the Codex CLI primary changelog; spec repo not read directly
+  this pass — see re-verify backlog).
+  https://www.digitalapplied.com/blog/agent-plugins-1-0-open-standard-portable-ai-skills
+- **Codex CLI v0.147.0** (Aug 7, 2026) — adds portable **Agent Plugins** support,
+  opt-in MCP 2026-07-28, `--approve-for-me`, Bedrock caching, secret redaction.
+  No new loop/scheduling/budget-ceiling primitive. — **Medium** (releasebot
+  secondary). https://releasebot.io/updates/openai/codex
 - **Osmani "Loop Engineering" is explicitly tool-agnostic** — layered model
   (prompt → context → harness → loop), "Claude Code and Codex have landed on
   very similar primitives, so the loop shape is becoming tool-agnostic." **High**.
@@ -771,6 +868,19 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   while still passing self-tests). A formalization of this repo's "a self-graded
   gate is no gate" — cited in primer §5A. — **High** (abstract + HTML v1 read
   directly). https://arxiv.org/abs/2607.24300
+- **"The LLM Proposes, the Executive Disposes: A Self-Verifying Agent Instrument
+  that Dissociates Commitment Drift from Binding Drift in Long-Horizon Agents"**
+  — arXiv:2608.04066 (v1 **Aug 4, 2026**, in-window; Mohsen Arjmandi). Makes
+  verification **structural, not post-hoc**: a deterministic "Executive" owns all
+  belief/state, the LLM may only file *typed proposals*, and a claim is admitted
+  only when a prediction *pre-registered before acting* is matched against
+  observation by code — "the checker must not be the maker" formalized as a loop
+  architecture. On-thesis for primer §5A. — **High** (abs page + submission date
+  verified). https://arxiv.org/abs/2608.04066
+  (Two near-miss papers dated v1 **Jul 31** — arXiv:2608.02636 "Rethinking
+  Self-Evolving Agent Skills" and 2608.02645 "Verified Tool Calls Improve LLM
+  Agent Reliability Under Non-Atomic Failures" — are *out of window* despite 2608
+  IDs; noted so a later "August 2026" search doesn't double-count them.)
 
 ## Known caveats / things to re-verify
 
@@ -811,27 +921,21 @@ instead of deleting it or leaving it here indefinitely.
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
   no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
   re-verify if a transcript or recording surfaces.
-- **"Graph engineering" as a successor term to "loop engineering"** — the meme
-  is heating in secondaries but **still has no primary long-form definition** as
-  of 2026-07-27. This pass found: Steinberger has published only tweets (Jul 18
-  "did we shift to graphs yet?"; ~Jul 25 "am I a graph engineer now"), no essay;
-  Hamel Husain's X Article "Loop Engineering Is Dead. Enter Graph Engineering"
-  (Jul 18, pre-window) is an opinion piece, not a definition; **Turing Post
-  FOD#159 "Is Graph Engineering Real?" (Jul 20, read directly, High)** argues
-  the term spread with *no consensus definition* ("graph" used for control
-  graphs, knowledge graphs, execution traces, and improvement loops
-  interchangeably); Louis-François Bouchard (Towards AI) and others
-  push back on the "loop engineering is dead" framing. **2026-08-03 re-check:**
-  still no primary long-form definition from a key voice — Steinberger has only
-  ever tweeted (the graph tweets decode to Jul 8 + Jul 18); the in-window
-  artifacts are all secondary explainers (MarkTechPost "Prompt vs Loop vs Graph
-  Engineering," Jul 29; Eugeniu Ghelbur "field guide," theaioperator.io, Jul 21;
-  Turing Post's Jul 23 follow-up arguing "a loop is already a graph… which makes
-  the whole thing a bit ridiculous"). New lead to chase: **Josh Simmons (Jul 4)**
-  cited as the earliest documented use of the term. Net: a **contested, undefined
-  meme, not a defined successor discipline**. **Low.** Carry forward; promote to
-  the lineage ladder (primer §2) only if a primary essay actually defines the
-  term. https://www.turingpost.com/p/is-graph-engineering-real-why-everyone-is-talking-about-it
+- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal** (new
+  2026-08-10) — v2.1.224 (Aug 7) **removed the default 200-subagent-per-session
+  spawn cap** ("concurrency and depth limits still apply"). The changelog removed
+  the *default*, not obviously the env var — but whether *explicitly setting*
+  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=N` still enforces a per-session ceiling
+  is unconfirmed. This matters for §6 and for this repo's **own** routine
+  guardrail (`update-knowledge/SKILL.md` "Guardrails for this skill" leans on
+  this cap as a fan-out backstop). Re-verify against the primary changelog / a
+  live run before treating an explicit setting as a hard ceiling; flagged as a
+  routine self-improvement suggestion in the PR (protected region → human-only).
+- **Agent Plugins 1.0 spec not read directly** (new 2026-08-10) — the Aug 6
+  standard was confirmed via a secondary quoting the spec + AAIF post, plus the
+  Codex CLI v0.147.0 primary changelog. Read the primary spec repo directly next
+  pass to confirm the manifest field list, the five-maintainer roster, and the
+  "not an AAIF project" governance line first-hand.
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.
@@ -845,6 +949,12 @@ instead of deleting it or leaving it here indefinitely.
   cited per summary, exact publish date unconfirmed) — not promoted to
   primer; useful as an early signal of backlash if corroborated later.
   https://medium.com/ai-engineering-simplified/loop-engineering-is-dead-heres-the-data-behind-the-ai-backlash-6d1b204e4b9a
+
+_(Resolved and archived 2026-08-10: **"graph engineering" primary definition** →
+the Josh Simmons (Jul 4) lead confirmed as a genuine definitional essay, read
+directly this pass; recorded in primer §2, contested-successor framing noted, no
+longer an open verification item. See
+[`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-08-03: roborev repo identity → `kenn-io/roborev`;
 GuardFall → corroborated primary + corrected "500k" figure, see Guardrails &

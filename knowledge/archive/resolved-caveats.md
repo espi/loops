@@ -9,6 +9,22 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-08-10
+
+- **"Graph engineering" primary definition — resolved.** The long-tracked "the
+  meme is heating but has no primary long-form definition" caveat is closed: the
+  earliest-documented use lead (Josh Simmons, Jul 4) checks out as a genuine
+  *definitional* essay — Josh C. Simmons, "We Are Entering the Graph Engineering
+  Phase" (drjoshcsimmons.com, Jul 4, 2026), read directly this pass: *"graph
+  engineering is designing agentic systems as explicit graphs instead of implicit
+  loops"*, framing it as *demoting* the loop, not killing it (*"The loop is not
+  dead. It got demoted"*). Reinforced in-window by Steve Yegge's Aug 4 essay
+  (*"any sufficiently large project is a graph"*). Recorded in primer §2 as the
+  orchestration-loop rung at higher altitude, **not** a new lineage stage — and
+  its status as a *successor* to loop engineering remains contested (Turing Post:
+  "a loop is already a graph"), which is a framing debate, not an open
+  verification item. No further action.
+
 ## Archived 2026-08-03
 
 - **Subagent-nesting default — resolved to depth-3.** After the twice-flipped

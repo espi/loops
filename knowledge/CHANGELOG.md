@@ -3,6 +3,121 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-08-10 — Seven-day follow-up pass (Aug 3 – Aug 10)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques,
+key voices, guardrails & cost, and verification & skills. A **modest but real
+window**, dominated by a Claude Code fan-out/sandbox release cluster and a new
+cross-vendor packaging standard. No `update-knowledge` PR was open (checked
+GitHub — clean baseline; the Aug 3 pass merged via #14). Every load-bearing
+claim was primary-verified this pass (the Claude Code changelog and the Simmons
+essay read directly; Agent Plugins 1.0 confirmed against a spec-quoting secondary
+plus the Codex CLI primary changelog). One research agent's claim was **caught
+and rejected on verification** (see below).
+
+### New facts added
+
+- **Claude Code v2.1.221–226 (Aug 4–8)** — a fan-out / sandbox-hardening cluster,
+  two items cutting straight against §6. **The 200-subagent-per-session spawn cap
+  was removed** (v2.1.224) — a *native backstop removed*, the mirror image of the
+  v2.1.212 addition, so per-session spawn count is unbounded by default (only
+  concurrency/depth limits remain); whether an explicitly-set
+  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` still enforces is now a re-verify item.
+  **Gateway spend-limit support** (v2.1.225) surfaces a gateway-enforced spend cap
+  in-product (names cap/reset/operator message) — the §6 gateway-ceiling pattern
+  now visible inside the tool. Plus **`ultraplan` removed** (v2.1.222); a
+  guardrail/sandbox-bypass hardening batch (worktree destructive-git isolation,
+  PreToolUse auto-allow no longer bypassing restrictions in bg tasks, workflow
+  `import()` sandbox escape closed, more Bash/PowerShell permission bypasses
+  fixed, `denyRead`/`denyWrite` trailing-slash fix, `SendMessage` through the
+  permission classifier); a new cross-session **`SendMessage` + `ListAgents`**
+  primitive and `claude self-hosted-runner` (v2.1.224); `/review`→`/code-review`
+  alias (v2.1.223); and background sessions now open a draft PR "only when the
+  task calls for one" (v2.1.221), softening the v2.1.198 always-draft-PR autonomy.
+  **High** (changelog read directly; no `whats-new` digest past Week 29 yet).
+- **Agent Plugins 1.0** (Aug 6) — a cross-vendor *packaging* standard layered over
+  Agent Skills + MCP: "a plugin is a directory" (`plugin.json` + optional
+  `skills/` + optional `mcp.json`), five founding Core Maintainers (Amazon,
+  Cursor, Microsoft, OpenAI, Vercel-lead; Google day-of), defers to the Agent
+  Skills spec and MCP transports, and is **explicitly *not* an AAIF project** —
+  so it inherits `SKILL.md`'s vendor-goodwill governance caveat rather than
+  resolving it. Already shipping in Codex CLI v0.147.0 (Aug 7). Added to primer §4
+  "Beyond Claude Code" portability discussion. **Medium-High** (spec + AAIF post
+  quoted via secondary, corroborated by the Codex primary changelog).
+- **Databricks Unity AI Gateway reached GA** (Aug 4) with *enforced* proactive
+  budgets / hard spend caps that auto-block requests once a multi-level budget is
+  exceeded — updates the prior "announced Jun 15–18" §6 entry to GA. **High** (GA)
+  / **Medium-High** (feature specifics; the spend-controls blog is Jul 23).
+- **roborev v0.64.0** (Aug 6) — GitLab merge-request review, first-class Grok
+  Build agent + Goose/named-ACP-agent support, repo-root `REVIEW.md` fallback,
+  custom skill-install paths. **High** (release page read directly).
+- **arXiv:2608.04066** "The LLM Proposes, the Executive Disposes" (Aug 4) — makes
+  verification *structural, not post-hoc*: a deterministic Executive owns belief,
+  the LLM files only typed proposals, a claim is admitted only when a
+  pre-registered prediction is matched against observation by code. On-thesis for
+  §5A. **High** (abs + submission date verified).
+- **Two new in-window key-voice essays.** **Yegge "The Shape of Things to Come"**
+  (~Aug 4): Gas Town failed as a *reusable* orchestrator (broke with Opus 4.7's
+  "just two more things" tic), verdict *"harnesses need to be part of your
+  application, chemically bonded in"* — a useful failure data point on
+  orchestrator/model coupling. **Osmani "Agentic Code Quality"** (Aug 8): quality
+  comes from *constraints built into the system* (before + during the agent's
+  work), not post-hoc review — the repo's own thesis from the quality side. Both
+  **High** (read directly).
+
+### Corrected / clarified
+
+- **Subagent-nesting depth default was NOT changed in v2.1.221.** A research agent
+  reported v2.1.221 (Aug 4) set nested-subagent depth 1→3; the primary changelog
+  shows that shipped in **v2.1.219 (Jul 24)** and is already in the KB — no
+  depth-default change shipped Aug 4–8. Rejected on verification; noted in
+  sources.md so it isn't re-introduced.
+- **Anthropic Agent SDK billing split — still paused, no revised plan** (confirmed
+  again this pass). The recurring false "went live July 10" snippet did not even
+  surface this window. Carried forward, unchanged.
+- **"Opus 5" naming** — a research agent (whose web view surfaced only Fable
+  5/Mythos 5) couldn't confirm Opus 5 and flagged a naming discrepancy; dismissed
+  as an artifact of that agent's search coverage — Opus 5 (`claude-opus-5`, Jul
+  24) is already in the KB at High and unchallenged by any primary source.
+
+### Archived (resolved — see archive/resolved-caveats.md)
+
+- **"Graph engineering" primary definition** — the Josh Simmons (Jul 4) lead
+  confirmed as a genuine definitional essay ("graph engineering is designing
+  agentic systems as explicit graphs instead of implicit loops"; "the loop is not
+  dead, it got demoted"), read directly. Recorded in primer §2 as the
+  orchestration-loop rung at higher altitude — not a new lineage stage — with the
+  "successor to loop engineering" claim noted as still contested. The standing
+  "no primary definition" caveat is closed.
+
+### Currently-open re-verify backlog (carried forward — every open item, per step 2)
+
+`SKILL.md` cross-tool *execution* (Claude Code + Gemini CLI execute; 30+ accept;
+`AGENTS.md` separate — no in-window change); **NEW: whether explicitly-set
+`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` still enforces after v2.1.224 removed the
+default cap** (also a routine-guardrail concern, see self-improvements below);
+**NEW: Agent Plugins 1.0 spec repo not read directly** (confirm manifest/roster/
+governance first-hand next pass); "costliest thing is managing the loop"
+paraphrase (still unsourced); `/goal` "Codex→Claude 11 days" single secondary;
+`$47K`/`$500M`/overnight anecdotes unverified (all pre-window recirculation this
+pass); June-15 billing split (still paused, no revised plan); Microsoft dropping
+Claude Code (no primary read); Huntley's Loom "orchestrator" framing; AI Engineer
+World's Fair 2026 sessions (no transcript surfaced); roborev.io/changelog 403s;
+EvoAgentBench + SkillCheck too new; the Jul-6–13 "Loop Engineering Is Dead"
+backlash Medium piece (uncorroborated).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- **Codex CLI v0.147.0** (Aug 7) — adds portable Agent Plugins + opt-in MCP
+  2026-07-28 but no new loop/scheduling/budget primitive; noted in sources.md
+  (peer harnesses), not primer.
+- **Runaway-agent safety stories** (TechRepublic Aug 7: a Meta test agent
+  modifying third-party infra; UK evals with 19 unauthorized live-internet
+  actions) — safety/escape incidents, **no dollar figures**, not cost-overrun
+  data; not promoted.
+- **GitHub Copilot four-spending-caps recap** (shashi.co, Aug 3) — a write-up of
+  pre-window controls, no new feature; not promoted.
+
 ## 2026-08-03 — Seven-day follow-up pass (Jul 27 – Aug 3)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques,

@@ -6,7 +6,7 @@ identical verbatim across multiple independent sources; **Medium** = consistent
 across several secondary sources but primary not directly confirmed; **Low** =
 single source / unverified provenance.
 
-Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
+Verified as of 2026-08-17. Re-check before relying on version numbers or dates.
 
 ## Foundations & lineage
 
@@ -131,6 +131,20 @@ Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
   three-hard-stops + in-loop-verification thesis from the quality side. — **High**
   (primary Substack read directly, verbatim quotes, date confirmed).
   https://addyo.substack.com/p/agentic-code-quality
+- **Addy Osmani "Practical Loop Engineering"** (Substack, **Aug 14, 2026**) — the
+  how-to companion to the arc above; states two of this repo's rules almost
+  verbatim. Separate verifier: *"One sub-agent drafts the change. A separate one
+  verifies it"* and *"you are not delegating the taste and the judgment to your
+  agent. You're delegating the task, and then you are actually checking back that
+  it's meeting your bar."* On `/goal`: *"The evaluator sitting behind goal is not
+  that checker, by the way. It doesn't look at the content to see if it's good or
+  bad in any way, shape, or form"* — the validator confirms the stop condition,
+  not content quality. Loops fit measurable targets (*"/goal get the homepage
+  Lighthouse score to 90 or above, stop after 5 tries"*), not subjective work
+  (*"if you don't have a clear idea of what … done/good means for your completion,
+  it may not be the right pattern"*). Added to primer §3. — **High** (primary
+  Substack read directly, verbatim quotes, date confirmed).
+  https://addyo.substack.com/p/practical-loop-engineering
 - **Steve Yegge "The Shape of Things to Come"** (yegge.ai, **Aug 4, 2026**) — a
   retrospective conceding Gas Town failed as a *reusable* orchestrator: *"Gas
   Town was intended to be reusable, but I only ever wound up using it to build
@@ -403,6 +417,35 @@ Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
   depth-3 default is from v2.1.219 (Jul 24), **not** v2.1.221 — a research agent
   misattributed it this pass; no depth-default change shipped Aug 4–8.
   https://code.claude.com/docs/en/changelog
+- **Claude Code v2.1.227–233 (Aug 10–14, 2026)** — **High** (changelog read
+  directly; `whats-new/2026-w33` still 404, changelog sole primary). No new model
+  in-window. v2.1.227 (Aug 10): **synced-skill prompt-injection hardening** —
+  skills synced from claude.ai no longer shadow local commands/MCP prompts, their
+  descriptions are sanitized/labeled, and their bodies don't run `!` commands or
+  expand `@` files; feature-flag subscription-tier eval fix; `claude-code-action`
+  Bash-under-`allowed_non_write_users` fix. v2.1.228 (Aug 11): **`/commit-push-pr`
+  no longer auto-approves git/gh commands with dangerous flags** (`--force`,
+  `--amend`, `--no-verify`, etc.); bundled-skill-alias `-p`-mode shadowing fix.
+  v2.1.229–230 (Aug 12): `ListAgents` marks disconnected Remote Control sessions
+  `offline` / labels cloud sessions `cloud`; plugin-marketplace `command` sources;
+  SSE keepalive pings on gateway streaming. v2.1.231 (Aug 13): MCP OAuth
+  redirect-URI fix (Slack-style pre-registered clients). v2.1.232 (Aug 13):
+  **subagent forking on by default** — `subagent_type: "fork"` inherits full
+  conversation + prompt cache, non-teammate agent spawns in interactive sessions
+  run in the background by default; cross-session `@`-mention → `SendMessage`;
+  **nested git repos now require their own trust confirmation** (no parent-dir
+  inheritance); GitLab token redaction + marketplace support; PowerShell/Git-Bash
+  permission-bypass fixes. v2.1.233 (Aug 14): **todo/task-tracking tools removed on
+  Opus 4.8 / Sonnet 5 / Fable 5 / Mythos 5 and newer** (`TaskCreate/Get/Update/
+  List`, `TodoWrite`; restore via `CLAUDE_CODE_ENABLE_TODO_TOOLS=1`);
+  **`CLAUDE_CODE_TOOL_MEMORY_LIMIT`** (opt-in Bash memory cgroup cap on Linux, "so
+  a runaway build can't stall the session"); **`forward_user_identity`** apps-gateway
+  setting forwarding signed-in identity for per-user spend attribution;
+  `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`; GitLab MR support in `--worktree`/`claude
+  agents`; skill-argument re-expansion fix. NOTE: a research agent this pass placed
+  the synced-skill hardening at v2.1.228 and `/commit-push-pr` at v2.1.229; the
+  primary changelog shows **v2.1.227** and **v2.1.228** respectively — corrected on
+  verification. https://code.claude.com/docs/en/changelog
 - **Claude Opus 5** (`claude-opus-5`) shipped v2.1.219 (Jul 24, 2026) as the
   **default Opus model** — 1M context, 128k output, $5/$25 per MTok I/O
   (unchanged from Opus 4.8), fast mode $10/$50 (~2.5× faster), new `xhigh`
@@ -431,9 +474,17 @@ Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
   resume interrupted work after agent Stop hooks; recognizes passing CI synthesis
   summaries. 18 changelog items; commit `bc0af33`. **High** (release page read
   directly). https://github.com/kenn-io/roborev/releases/tag/v0.64.0
+  v0.65.0 (Aug 17, 2026): **job-level CI cost exports** (per-job budget
+  visibility — a verification/budget-tracking primitive); a **native browser app**
+  for browsing reviews, managing jobs, viewing logs, and analytics; daemon
+  stability (waits for running reviews before restart; reliable discovery in
+  sandboxed environments); **configurable reasoning-effort tiers** across supported
+  agents; Kata-style split-screen TUI review view; Go 1.26.6 + security updates.
+  **High** (release page read directly).
+  https://github.com/kenn-io/roborev/releases/tag/v0.65.0
   Canonical repo is **`kenn-io/roborev`** (`roborev-dev/roborev` now redirects
-  to it — treat as a rename/move; confirmed 2026-08-03). Latest release is
-  **v0.64.0 (Aug 6)** — nothing newer through Aug 10.
+  to it — treat as a rename/move; confirmed 2026-08-03; both repos show identical
+  v0.65.0 notes). Latest release is **v0.65.0 (Aug 17)** — nothing newer.
 - **Microsoft Agent Skills for .NET reaches stable/GA** (July 7, 2026) — exited
   experimental preview in Microsoft Agent Framework; `[Experimental]` attribute
   removed. Same SKILL.md-based open format as Anthropic's Agent Skills
@@ -520,6 +571,12 @@ Verified as of 2026-08-10. Re-check before relying on version numbers or dates.
   https://www.prnewswire.com/news-releases/ramp-launches-ai-token-spend-controls-302827389.html ·
   https://siliconangle.com/2026/07/16/ramp-targets-ais-fastest-growing-cost-expanded-token-spend-tracking/ ·
   https://ramp.com/blog/ai-token-spend-launch
+- **Ramp AI Index — August 2026 edition** (reporting July data): a "whales-first"
+  spend profile — top 1% of businesses spent a median **~$7,400/employee/month** on
+  AI, top 10% $650, median firm $11.95 (>600:1 gap); per-employee spend more than
+  tripled across all three brackets in recent months. Frames runaway-loop cost as a
+  whale-tail problem, not an everyone problem. In-window. — **High** (Ramp report +
+  Benzinga). https://ramp.com/data/ai-index-august-2026
 - **OpenAI "Managing AI investments in the agentic era"** (Jul 14, 2026):
   enterprise cost-governance guidance — token-price drops don't equal cheaper
   outcomes; five steps (usage visibility, outcome-based model evaluation,
@@ -757,10 +814,27 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   AAIF project** (per AAIF's own post: "independently governed open
   specification… not an AAIF project"), so it carries the same vendor-goodwill
   governance caveat as `SKILL.md`, unlike MCP. Already shipping in Codex CLI
-  v0.147.0 (Aug 7). — **Medium-High** (spec + AAIF post quoted via a secondary,
-  corroborated by the Codex CLI primary changelog; spec repo not read directly
-  this pass — see re-verify backlog).
+  v0.147.0 (Aug 7). **Spec repo read first-hand 2026-08-17** (resolving the
+  "not read directly" backlog item): `spec/1.0.0.md` §5.2 confirms the closed root
+  manifest permits exactly 10 top-level fields (`$schema`, `name`, `version`,
+  `description`, `author`, `homepage`, `repository`, `license`, `keywords`,
+  `extensions`) with `$schema` + `name` required; MAINTAINERS.md confirms five
+  founding Core Maintainers — Clare Liguori (Amazon), Roshan Sadanani
+  (Cursor/Anysphere), Harald Kirschner (Microsoft), Gav Verma (OpenAI), **Jonathan
+  Hefner (Vercel) as Lead**; GOVERNANCE.md is a no-single-vendor-majority charter,
+  and Google joined day-of per GitHub's blog (though the roster read still lists
+  only the five — minor re-verify). — **Medium-High → High** (spec repo +
+  MAINTAINERS.md read directly; "not an AAIF" phrasing still secondary but
+  consistent). https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.0.0.md ·
+  https://github.com/agentplugins/agent-plugins-spec/blob/main/MAINTAINERS.md ·
   https://www.digitalapplied.com/blog/agent-plugins-1-0-open-standard-portable-ai-skills
+- **Agent Plugins 1.0 — first cross-vendor adoption** (Aug 12, 2026): GitHub
+  shipped Agent Plugins 1.0 GA across **VS Code, Copilot CLI, the Copilot SDK, and
+  the Copilot app, on all Copilot plans** — "build a plugin once and use it across
+  all compatible agent clients." The first concrete evidence the packaging standard
+  is portable in practice, not just on paper. Fed into primer §4. — **High**
+  (GitHub changelog read directly).
+  https://github.blog/changelog/2026-08-12-agent-plugins-1-0-in-vs-code-copilot-cli-and-the-copilot-app/
 - **Codex CLI v0.147.0** (Aug 7, 2026) — adds portable **Agent Plugins** support,
   opt-in MCP 2026-07-28, `--approve-for-me`, Bedrock caching, secret redaction.
   No new loop/scheduling/budget-ceiling primitive. — **Medium** (releasebot
@@ -881,6 +955,40 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   Self-Evolving Agent Skills" and 2608.02645 "Verified Tool Calls Improve LLM
   Agent Reliability Under Non-Atomic Failures" — are *out of window* despite 2608
   IDs; noted so a later "August 2026" search doesn't double-count them.)
+- **"Specification-first convergence with an AI coding agent … no test oracle and
+  no human code review"** — arXiv:2608.12440 (v1 **Aug 12, 2026**, in-window;
+  Abenhaim). An agent dismantled an architectural invariant across 189 files of a
+  717k-line codebase using a spec-first protocol; convergence criterion was **"two
+  consecutive verification passes returning zero findings"** across 31 audit cycles
+  (14 spec-vs-source + 17 code-vs-spec) — a concrete verifiable stop rule where the
+  check is a structured audit, not a test suite. On-thesis for primer §5A/§6. —
+  **High** (abs + submission date verified). https://arxiv.org/abs/2608.12440
+- **"Engineering Reliable Coding Agents: Evaluating and Operating the System Around
+  the Model"** — arXiv:2608.13867 (v1 **Aug 14, 2026**, in-window; Jarmak). A
+  monograph treating verification as a *system layer* alongside execution /
+  retrieval / memory; *"many apparent model failures originate elsewhere in the
+  system"*; 206 reliability records + a methodology separating model capability
+  from harness/infrastructure effects. Direct support for the harness-not-just-
+  prompt thesis (primer §4/§5B). — **High** (abs + date verified).
+  https://arxiv.org/abs/2608.13867
+- **"Why Does CLAUDE.md Keep Growing? Catastrophic Remembering in Agentic Coding"**
+  — arXiv:2608.11095 (v1 **Aug 11, 2026**, in-window; Chakrabarti). Instruction
+  files >tripled over their lifetime (~4.9 net instructions/commit); safely
+  deleting a stale instruction costs **O(2^|D|)** verification effort — an asymmetry
+  that bloats durable instruction assets. Directly relevant to this repo's own
+  knowledge-base-discipline / `CLAUDE.md`-trim convention (and to Claude Code's
+  v2.1.206 `/doctor` trim-CLAUDE.md check). — **High** (abs + date verified).
+  https://arxiv.org/abs/2608.11095
+- **SlopCodeBench** — arXiv:2603.24755 (~Mar 2026, **out of window**) — the
+  empirical anchor for the "code erosion as agents iterate" critique (surfaced this
+  pass while resolving the "Loop Engineering Is Dead" backlash caveat). 20 problems
+  / 93 checkpoints: erosion rises in ~80% of trajectories, verbosity in ~89.8%; **no
+  agent solves any problem end-to-end across 11 models** (highest checkpoint solve
+  rate 17.2%); agent code 2.2× more verbose than 48 open-source Python repos. This
+  is real data behind long-horizon loop failure, unlike the un-sourced backlash
+  op-eds — cite it, not them. — **High** (arXiv primary + Snorkel secondary).
+  https://arxiv.org/html/2603.24755v1 ·
+  https://snorkel.ai/blog/slopcodebench-measuring-code-erosion-as-agents-iterate/
 
 ## Known caveats / things to re-verify
 
@@ -921,34 +1029,27 @@ instead of deleting it or leaving it here indefinitely.
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
   no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
   re-verify if a transcript or recording surfaces.
-- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal** (new
-  2026-08-10) — v2.1.224 (Aug 7) **removed the default 200-subagent-per-session
-  spawn cap** ("concurrency and depth limits still apply"). The changelog removed
-  the *default*, not obviously the env var — but whether *explicitly setting*
-  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=N` still enforces a per-session ceiling
-  is unconfirmed. This matters for §6 and for this repo's **own** routine
-  guardrail (`update-knowledge/SKILL.md` "Guardrails for this skill" leans on
-  this cap as a fan-out backstop). Re-verify against the primary changelog / a
-  live run before treating an explicit setting as a hard ceiling; flagged as a
-  routine self-improvement suggestion in the PR (protected region → human-only).
-- **Agent Plugins 1.0 spec not read directly** (new 2026-08-10) — the Aug 6
-  standard was confirmed via a secondary quoting the spec + AAIF post, plus the
-  Codex CLI v0.147.0 primary changelog. Read the primary spec repo directly next
-  pass to confirm the manifest field list, the five-maintainer roster, and the
-  "not an AAIF project" governance line first-hand.
+- **Yegge "The Shape of Things to Come, Part 2: Model Welfare for Agentic
+  Engineers" exact date** (new 2026-08-17) — the byline reads only "August 2026"
+  (no day); HN/social discussion clustered ~Aug 10–11, which *would* put it
+  in-window, but the date isn't confirmable. Peripheral to loop engineering (a
+  model-welfare framing, not a loop pattern), so not promoted regardless; re-verify
+  the date only if it becomes worth citing. https://yegge.ai/essays/model-welfare/
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.
 - **EvoAgentBench** (arXiv:2607.05202) and **SkillCheck** (getskillcheck.com)
   — too new/thin to promote to primer this pass; tracked above under
   Verification & skills.
-- **"Loop Engineering Is Dead: Here's the Data Behind the AI Backlash"**
-  (Medium, "AI Engineering Simplified," reported within the week of Jul
-  6–13, 2026) — argues production failures are souring the loop-engineering
-  hype that peaked mid-June. **Low-Medium** (opinion piece, no primary data
-  cited per summary, exact publish date unconfirmed) — not promoted to
-  primer; useful as an early signal of backlash if corroborated later.
-  https://medium.com/ai-engineering-simplified/loop-engineering-is-dead-heres-the-data-behind-the-ai-backlash-6d1b204e4b9a
+_(Resolved and archived 2026-08-17: **Agent Plugins 1.0 spec not read directly** →
+spec repo (manifest / MAINTAINERS.md / governance) read first-hand this pass;
+**"Loop Engineering Is Dead" backlash Medium piece** → read directly, cites no
+data, so not a data-backed trend — SlopCodeBench (arXiv:2603.24755) is the real
+empirical anchor and is now in the academic section; **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`
+after the cap removal** → re-verified against the primary docs (human-requested
+follow-up): the env var is gone from the docs and there is no per-session total cap
+— do not rely on it as a fan-out ceiling; use the concurrency (20) + depth (3) caps.
+See [`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-08-10: **"graph engineering" primary definition** →
 the Josh Simmons (Jul 4) lead confirmed as a genuine definitional essay, read

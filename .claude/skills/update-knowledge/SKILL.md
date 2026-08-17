@@ -222,10 +222,13 @@ backstops, not just this prose — keep them true:
 
 - **Iteration** — one trigger, one pass; the skill never re-invokes itself, and
   step 1 (extend an open PR instead of forking) is a de-facto no-duplicate-work
-  guard. The native `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` cap hard-bounds the
-  fan-out; keep it set (≈12) in the Routine env so the "~5 agents, no recursion"
-  below can't run away. Don't re-run yourself in a tight loop; scheduling is the
-  Routine's job.
+  guard. Bound the fan-out with the native caps that still exist —
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, concurrency) and
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, depth) — together with the
+  "~5 agents, no recursion" limit below. (The old per-session
+  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` total cap was removed in v2.1.224,
+  Aug 7 2026, and can no longer be relied on.) Don't re-run yourself in a tight
+  loop; scheduling is the Routine's job.
 - **Budget** — the account subscription usage limit + the Routine daily-run cap
   *reject* runs when exhausted, which is the real ceiling **only if metered
   overage is off** (else spend spills silently). See

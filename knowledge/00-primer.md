@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-08-10.
+> The canonical briefing for this repo. Last substantive update: 2026-08-17.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -113,8 +113,20 @@ read directly). *Resolves the standing "no primary definition" backlog item.*
   while the agent is working"* — i.e. the guardrails and the in-loop check are
   the quality mechanism, not a post-hoc human read, and quality is *"a collection
   of signals,"* not one metric. The same claim this repo makes with its three
-  hard stops + in-loop verification, said from the quality side. **High** (essay
-  read directly).
+  hard stops + in-loop verification, said from the quality side. His next essay,
+  **"Practical Loop Engineering"** (Substack, **Aug 14, 2026**), is the how-to
+  companion and states two of this repo's rules almost verbatim. On the separate
+  verifier: *"One sub-agent drafts the change. A separate one verifies it"* —
+  never let the agent that did the work grade its own homework. And, sharpest for
+  anyone using `/goal`: *"The evaluator sitting behind goal is not that checker,
+  by the way. It doesn't look at the content to see if it's good or bad in any
+  way, shape, or form"* — the validator model confirms the **stop condition** was
+  met, it is *not* a content-quality judge, so the deterministic check still has
+  to encode what "good" means. Loops fit *measurable* targets (*"/goal get the
+  homepage Lighthouse score to 90 or above, stop after 5 tries"*) and are the
+  wrong tool for subjective work (*"if you don't have a clear idea of what …
+  done/good means for your completion, it may not be the right pattern"*). Both
+  essays **High** (read directly).
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -421,11 +433,19 @@ generalize, not as the only place they exist.
   per-session spawn cap was removed** (v2.1.224, Aug 7): "long-running sessions
   no longer refuse new agents (concurrency and depth limits still apply)" — a
   *native backstop removed*, the mirror image of the v2.1.212 addition above, so
-  the per-session spawn count is no longer bounded by default. (Whether an
-  **explicitly set** `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` still enforces after
-  this is unconfirmed — the changelog removed the default, not obviously the env
-  var; re-verify before relying on it as a ceiling, incl. in this repo's own
-  routine guardrail.) Pulling the other way, **gateway spend-limit support**
+  the per-session spawn count is no longer bounded by default. (**Re-verified
+  2026-08-17:** `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` is now *gone from the
+  docs entirely* — the `sub-agents` page states *"There's no limit on the total
+  number of subagents Claude can spawn over a session,"* and the `env-vars`
+  reference no longer lists the variable. So **do not rely on it as a fan-out
+  ceiling**; the only native subagent backstops left are
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, *concurrency*) and
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, *depth*) — neither caps the
+  session's *total* lifetime spawns. A secondary claiming the var "can still be
+  set to raise the limit but can't be turned off" describes the *pre-removal*
+  behavior and is contradicted by the current docs. This lands on this repo's own
+  routine guardrail — see the note in `update-knowledge/SKILL.md`.) Pulling the
+  other way, **gateway spend-limit support**
   (v2.1.225, Aug 8): Claude Code's usage-warning now surfaces a
   gateway-enforced spend cap inline — naming the cap, its reset time, and the
   operator's message — so the §6 "put the ceiling in the gateway" pattern now
@@ -449,6 +469,30 @@ generalize, not as the only place they exist.
   above flagged. v2.1.226 (Aug 8) was reliability fixes only and is the newest.
   *(High — changelog read directly; no `whats-new` digest past Week 29 exists
   yet, so the changelog was the sole primary.)*
+- **v2.1.227–233 (Aug 10–14)** — a guardrail/subagent cluster; no new model, and
+  no new weekly digest (w33 still 404, so the changelog remains the sole primary).
+  **Subagent forking is now on by default** (v2.1.232, Aug 13): a
+  `subagent_type: "fork"` subagent inherits the full conversation and prompt
+  cache, and non-teammate agent spawns in interactive sessions run in the
+  background by default — a real change to how a fan-out loop behaves. **Todo/task-
+  tracking tools were removed on newer models** (v2.1.233, Aug 14):
+  `TaskCreate/Get/Update/List` and `TodoWrite` are gone on Opus 4.8 / Sonnet 5 /
+  Fable 5 / Mythos 5 and newer — a loop that tracks its own progress via todos must
+  restore them with `CLAUDE_CODE_ENABLE_TODO_TOOLS=1` on current models. Two items
+  land on §6: **`CLAUDE_CODE_TOOL_MEMORY_LIMIT`** (v2.1.233), an opt-in memory
+  cgroup cap for Bash commands on Linux "so a runaway build can't stall the
+  session" (a resource ceiling), and **`forward_user_identity`** (v2.1.233), an
+  apps-gateway setting forwarding the signed-in user's identity for **per-user
+  spend attribution**. **`/commit-push-pr` no longer auto-approves git/gh commands
+  with dangerous flags** (`--force`, `--amend`, `--no-verify`, etc.) (v2.1.228,
+  Aug 11) — a guardrail on the very PR-tending path this repo's routines use. And
+  **synced-skill prompt-injection hardening** (v2.1.227, Aug 10): skills synced
+  from claude.ai no longer shadow local commands/MCP prompts, their descriptions
+  are sanitized/labeled, and their bodies don't run `!` commands or expand `@`
+  files — a §5A "Friendly Fire" mitigation shipped by Anthropic. *(High — changelog
+  read directly. Note: a research agent misplaced the last two items by one version
+  — synced-skill hardening is v2.1.227 and `/commit-push-pr` is v2.1.228 per the
+  primary changelog, not v2.1.228/229; caught on verification.)*
 
 ### Beyond Claude Code — the same loop on other harnesses
 
@@ -524,9 +568,19 @@ Three things worth carrying as durable facts:
   the Agent Skills specification" and uses MCP's native transports, changing
   neither format. Crucially it is **independently governed — explicitly *not* an
   AAIF project** (unlike MCP), so it inherits the same vendor-goodwill governance
-  caveat as `SKILL.md` rather than resolving it. **Medium-High** (spec + AAIF
-  post quoted via a secondary, corroborated by the Codex CLI primary changelog;
-  the spec repo itself not read directly this pass).
+  caveat as `SKILL.md` rather than resolving it. The spec repo was **read
+  first-hand this pass** (resolving that backlog item): the root manifest is closed
+  and permits exactly 10 top-level fields (`$schema`, `name`, `version`,
+  `description`, `author`, `homepage`, `repository`, `license`, `keywords`,
+  `extensions`) with `$schema` + `name` required; MAINTAINERS.md confirms five
+  founding Core Maintainers (Amazon, Cursor/Anysphere, Microsoft, OpenAI, Vercel —
+  Jonathan Hefner as Lead), with Google joining day-of per GitHub's own blog; and
+  governance is independently-run, **not** an AAIF project. It reached its **first
+  cross-vendor adoption on Aug 12, 2026**: GitHub shipped Agent Plugins 1.0 GA
+  across **VS Code, Copilot CLI, the Copilot SDK, and the Copilot app, on all
+  Copilot plans** — "build a plugin once and use it across all compatible agent
+  clients," the first real evidence the packaging standard is portable in practice
+  and not just on paper. **High** (spec repo + GitHub changelog read directly).
 
 ## 5. The two things the hype skips
 
@@ -550,14 +604,27 @@ post-hoc** — a deterministic "Executive" owns all belief/state, the model may
 only file *typed proposals*, and a claim is admitted only when a prediction
 *pre-registered before acting* is matched against observation by code. It's "the
 checker must not be the maker" formalized as a loop architecture, not a review
-step bolted on after. **High** (abstract read directly). Addy Osmani's canonical loop-turn anatomy (O'Reilly
+step bolted on after. **High** (abstract read directly). Two more in-window papers
+land on the same nerve. **"Specification-first convergence with an AI coding
+agent"** (arXiv:2608.12440, Aug 12 2026) reports an agent dismantling an
+architectural invariant across 189 files of a 717k-line codebase with *no test
+oracle and no human code review*, using an explicit verifiable stop rule — *"two
+consecutive verification passes returning zero findings"* across 31 audit cycles —
+a worked example of §6's "single deterministic success check" where the check is a
+structured audit rather than a test suite. **"Engineering Reliable Coding Agents"**
+(arXiv:2608.13867, Aug 14 2026) is the harness-side companion: it treats
+verification as a *system layer* around the model (alongside execution / retrieval
+/ memory) and finds *"many apparent model failures originate elsewhere in the
+system"* — direct support for this repo's "engineer the harness, not just the
+prompt" premise. Both **High** (abstracts read directly). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(latest **v0.64.0, Aug 6, 2026** — GitLab merge-request review, first-class
-Grok Build agent + Goose/named-ACP-agent support, repo-root `REVIEW.md` fallback
-when no review guidelines are configured, and custom skill-install paths; see
-version history below) operationalize this per-commit. Anthropic's own **`security-guidance`
+(latest **v0.65.0, Aug 17, 2026** — adds **job-level CI cost exports** for
+per-job budget visibility, a native browser app for reviews/jobs/logs/analytics,
+daemon-stability fixes, and configurable reasoning-effort tiers across supported
+agents; the prior v0.64.0, Aug 6, added GitLab merge-request review and a repo-root
+`REVIEW.md` fallback; see version history below) operationalize this per-commit. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
 deeper agentic review on commit or push. Osmani's corollary (June 9, 2026):
@@ -661,7 +728,12 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   AgentGuard and the Rate Limits/Analytics Admin APIs below — notable because
   it's a finance-side tool reading spend across providers, not a harness-level
   guard. *(High — corroborated by PR Newswire, SiliconANGLE, and Ramp's own
-  blog.)*
+  blog.)* Its **August 2026 AI Index** (reporting July data) puts a shape on how
+  concentrated this spend is: the top 1% of businesses spent a median **~$7,400
+  per employee per month** on AI, the top 10% $650, and the median firm just
+  $11.95 — a >600:1 gap, with per-employee spend more than tripling across all
+  three brackets in recent months. The runaway-loop cost failure mode is a
+  whale-tail problem, not an everyone problem. *(High — Ramp report + Benzinga.)*
 - **Anthropic shipped Claude Enterprise spend controls** (July 2, 2026): per-model
   entitlements, spend-threshold alerts firing at 75%/90% of an org's limit, a
   per-user/per-group cost analytics dashboard, and Admin API endpoints for

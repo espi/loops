@@ -9,6 +9,45 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-08-17
+
+- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal — resolved.**
+  Opened 2026-08-10, strengthened, then re-verified 2026-08-17 as a human-requested
+  follow-up (PR #16). v2.1.224 (Aug 7) removed the default 200-per-session spawn
+  cap; this re-verify read the primary docs directly and found the variable is now
+  **gone from the docs entirely** — the `sub-agents` page states *"There's no limit
+  on the total number of subagents Claude can spawn over a session,"* and the
+  `env-vars` reference no longer lists it. So it **cannot be relied on as a fan-out
+  ceiling**. The only native subagent backstops left are
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, concurrency) and
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, depth) — neither caps total
+  lifetime spawns. The secondary claiming the var "can still be set to raise the
+  limit but can't be turned off" describes the pre-removal behavior and is
+  contradicted by the current docs. Primer §4 updated. Consequence for this repo's
+  own routine guardrail (`update-knowledge/SKILL.md` "Guardrails for this skill,"
+  which cited this cap as a fan-out backstop) is surfaced to a human in the PR —
+  the guardrail block is a protected region, so the wording fix is human-authored.
+  No further verification action.
+- **Agent Plugins 1.0 spec not read directly — resolved.** Opened 2026-08-10 when
+  the Aug-6 standard was confirmed only via a secondary quoting the spec + AAIF
+  post. This pass read the primary spec repo (`agentplugins/agent-plugins-spec`)
+  first-hand: `spec/1.0.0.md` §5.2 confirms the closed root manifest permits exactly
+  10 top-level fields with `$schema` + `name` required; MAINTAINERS.md confirms the
+  five founding Core Maintainers (Amazon / Cursor-Anysphere / Microsoft / OpenAI /
+  Vercel-as-Lead, Jonathan Hefner) and GOVERNANCE.md's no-single-vendor-majority
+  charter; Google joined day-of per GitHub's blog. sources.md upgraded to High. (One
+  minor residual: the roster read still lists only the five, not a Google seat —
+  noted inline, not a standing caveat.) No further action.
+- **"Loop Engineering Is Dead: Here's the Data Behind the AI Backlash" — resolved.**
+  Open since the Jul 13 pass as a possible early-backlash signal. Read directly this
+  pass: the Medium piece (AI Engineering Simplified, dated **Jul 4, 2026**) cites
+  **no** benchmarks, cost figures, or survey data — its only concrete claim (Uber's
+  budget) is unsourced. It's narrative, not a documented trend. The genuine
+  empirical anchor for the "code erosion as agents iterate" critique is
+  **SlopCodeBench** (arXiv:2603.24755, ~Mar 2026: erosion in ~80% of trajectories,
+  no agent solving any problem end-to-end across 11 models), now recorded in
+  sources.md's academic section as the thing to cite instead. No further action.
+
 ## Archived 2026-08-10
 
 - **"Graph engineering" primary definition — resolved.** The long-tracked "the

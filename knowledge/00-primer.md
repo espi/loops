@@ -433,11 +433,19 @@ generalize, not as the only place they exist.
   per-session spawn cap was removed** (v2.1.224, Aug 7): "long-running sessions
   no longer refuse new agents (concurrency and depth limits still apply)" — a
   *native backstop removed*, the mirror image of the v2.1.212 addition above, so
-  the per-session spawn count is no longer bounded by default. (Whether an
-  **explicitly set** `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` still enforces after
-  this is unconfirmed — the changelog removed the default, not obviously the env
-  var; re-verify before relying on it as a ceiling, incl. in this repo's own
-  routine guardrail.) Pulling the other way, **gateway spend-limit support**
+  the per-session spawn count is no longer bounded by default. (**Re-verified
+  2026-08-17:** `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` is now *gone from the
+  docs entirely* — the `sub-agents` page states *"There's no limit on the total
+  number of subagents Claude can spawn over a session,"* and the `env-vars`
+  reference no longer lists the variable. So **do not rely on it as a fan-out
+  ceiling**; the only native subagent backstops left are
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, *concurrency*) and
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, *depth*) — neither caps the
+  session's *total* lifetime spawns. A secondary claiming the var "can still be
+  set to raise the limit but can't be turned off" describes the *pre-removal*
+  behavior and is contradicted by the current docs. This lands on this repo's own
+  routine guardrail — see the note in `update-knowledge/SKILL.md`.) Pulling the
+  other way, **gateway spend-limit support**
   (v2.1.225, Aug 8): Claude Code's usage-warning now surfaces a
   gateway-enforced spend cap inline — naming the cap, its reset time, and the
   operator's message — so the §6 "put the ceiling in the gateway" pattern now

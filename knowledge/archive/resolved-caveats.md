@@ -11,6 +11,23 @@ rather than carried forward.
 
 ## Archived 2026-08-17
 
+- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal — resolved.**
+  Opened 2026-08-10, strengthened, then re-verified 2026-08-17 as a human-requested
+  follow-up (PR #16). v2.1.224 (Aug 7) removed the default 200-per-session spawn
+  cap; this re-verify read the primary docs directly and found the variable is now
+  **gone from the docs entirely** — the `sub-agents` page states *"There's no limit
+  on the total number of subagents Claude can spawn over a session,"* and the
+  `env-vars` reference no longer lists it. So it **cannot be relied on as a fan-out
+  ceiling**. The only native subagent backstops left are
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, concurrency) and
+  `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, depth) — neither caps total
+  lifetime spawns. The secondary claiming the var "can still be set to raise the
+  limit but can't be turned off" describes the pre-removal behavior and is
+  contradicted by the current docs. Primer §4 updated. Consequence for this repo's
+  own routine guardrail (`update-knowledge/SKILL.md` "Guardrails for this skill,"
+  which cited this cap as a fan-out backstop) is surfaced to a human in the PR —
+  the guardrail block is a protected region, so the wording fix is human-authored.
+  No further verification action.
 - **Agent Plugins 1.0 spec not read directly — resolved.** Opened 2026-08-10 when
   the Aug-6 standard was confirmed only via a secondary quoting the spec + AAIF
   post. This pass read the primary spec repo (`agentplugins/agent-plugins-spec`)

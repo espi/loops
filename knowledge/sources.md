@@ -1029,19 +1029,6 @@ instead of deleting it or leaving it here indefinitely.
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
   no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
   re-verify if a transcript or recording surfaces.
-- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal** (opened
-  2026-08-10; **strengthened 2026-08-17**) — v2.1.224 (Aug 7) **removed the default
-  200-subagent-per-session spawn cap** ("concurrency and depth limits still apply").
-  This pass confirmed the `sub-agents` doc now states outright *"There's no limit on
-  the total number of subagents Claude can spawn over a session"* and **no longer
-  surfaces the env var** anywhere official. So whether *explicitly setting* `=N`
-  still enforces a per-session ceiling is now **Low-confidence / unconfirmed** (one
-  secondary claims it's still honored when set; the docs contradict a per-session
-  total limit). This matters for §6 and for this repo's **own** routine guardrail
-  (`update-knowledge/SKILL.md` "Guardrails for this skill" leans on this cap as a
-  fan-out backstop). Re-verify against a live run before treating an explicit
-  setting as a hard ceiling; still flagged as a routine self-improvement suggestion
-  in the PR (protected region → human-only).
 - **Yegge "The Shape of Things to Come, Part 2: Model Welfare for Agentic
   Engineers" exact date** (new 2026-08-17) — the byline reads only "August 2026"
   (no day); HN/social discussion clustered ~Aug 10–11, which *would* put it
@@ -1058,8 +1045,11 @@ _(Resolved and archived 2026-08-17: **Agent Plugins 1.0 spec not read directly**
 spec repo (manifest / MAINTAINERS.md / governance) read first-hand this pass;
 **"Loop Engineering Is Dead" backlash Medium piece** → read directly, cites no
 data, so not a data-backed trend — SlopCodeBench (arXiv:2603.24755) is the real
-empirical anchor and is now in the academic section. See
-[`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
+empirical anchor and is now in the academic section; **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`
+after the cap removal** → re-verified against the primary docs (human-requested
+follow-up): the env var is gone from the docs and there is no per-session total cap
+— do not rely on it as a fan-out ceiling; use the concurrency (20) + depth (3) caps.
+See [`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-08-10: **"graph engineering" primary definition** →
 the Josh Simmons (Jul 4) lead confirmed as a genuine definitional essay, read

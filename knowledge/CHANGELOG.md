@@ -109,14 +109,17 @@ two changelog items by one version — **caught and corrected on verification**
   **SlopCodeBench** (arXiv:2603.24755, ~Mar 2026): erosion in ~80% of trajectories,
   no agent solving any problem end-to-end across 11 models — recorded in sources.md
   as the thing to cite when the backlash comes up (out of window, but the real data).
+- **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal** (opened
+  2026-08-10) — resolved via a **human-requested re-verify follow-up** on PR #16:
+  read the primary docs directly and found the variable is now gone from the docs
+  and there is no per-session total cap, so it can't be relied on as a fan-out
+  ceiling; use the concurrency (20) + depth (3) caps instead. Primer §4 updated;
+  the consequence for this repo's own routine guardrail is surfaced to a human (the
+  guardrail block is a protected region — wording fix is human-authored).
 
 ### Currently-open re-verify backlog (carried forward — every open item, per step 2)
 
-**`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal** (strengthened:
-the `sub-agents` doc now states *"There's no limit on the total number of subagents
-Claude can spawn over a session"* and no longer surfaces the env var — whether an
-**explicitly set** `=N` still enforces is now Low-confidence/unconfirmed; still a
-routine-guardrail concern, see self-improvements); `SKILL.md` cross-tool
+`SKILL.md` cross-tool
 *execution* (unchanged — Claude Code + Gemini CLI execute, 16+ tools accept the
 format, `AGENTS.md` separate); **NEW: Yegge "The Shape of Things to Come, Part 2:
 Model Welfare" exact date** (byline is month-only "August 2026", HN/social cluster

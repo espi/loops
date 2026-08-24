@@ -1,6 +1,6 @@
 # Loops: the primer
 
-> The canonical briefing for this repo. Last substantive update: 2026-08-17.
+> The canonical briefing for this repo. Last substantive update: 2026-08-24.
 > Companion: [`sources.md`](sources.md) (every claim's source + confidence),
 > [`CHANGELOG.md`](CHANGELOG.md) (dated updates).
 
@@ -126,7 +126,16 @@ read directly). *Resolves the standing "no primary definition" backlog item.*
   homepage Lighthouse score to 90 or above, stop after 5 tries"*) and are the
   wrong tool for subjective work (*"if you don't have a clear idea of what …
   done/good means for your completion, it may not be the right pattern"*). Both
-  essays **High** (read directly).
+  essays **High** (read directly). His next essay, **"Human judgment doesn't
+  leave the software factory. It relocates."** (Substack, **Aug 21, 2026**), argues
+  judgment moves *upstream* rather than disappearing — to problem selection,
+  architecture, and quality standards: *"Someone still decides when the evidence
+  is sufficient to ship."* Its operational contribution is a **"verification
+  budget"** — sequence cheap checks (lint, typecheck) early and expensive ones
+  (mutation/browser testing) late — the same cheap-signal-first ordering this repo
+  bakes into its in-loop check; and it names **"mental model debt,"** the gap that
+  opens when parallel agent sessions outrun a human's ability to hold their
+  context. **High** (read directly).
 - **Peter Steinberger (@steipete)** — the tweet that lit the fuse (~Jun 7 2026):
   *"you shouldn't be prompting coding agents anymore. You should be designing
   loops that prompt your agents."* Companion point: **wrap repeated or hard
@@ -469,8 +478,9 @@ generalize, not as the only place they exist.
   above flagged. v2.1.226 (Aug 8) was reliability fixes only and is the newest.
   *(High — changelog read directly; no `whats-new` digest past Week 29 exists
   yet, so the changelog was the sole primary.)*
-- **v2.1.227–233 (Aug 10–14)** — a guardrail/subagent cluster; no new model, and
-  no new weekly digest (w33 still 404, so the changelog remains the sole primary).
+- **v2.1.227–233 (Aug 10–14)** — a guardrail/subagent cluster; no new model.
+  (The **Week 33 digest** that 404'd at that pass has since published, covering
+  v2.1.225–233; it corroborates the changelog these items were sourced from.)
   **Subagent forking is now on by default** (v2.1.232, Aug 13): a
   `subagent_type: "fork"` subagent inherits the full conversation and prompt
   cache, and non-teammate agent spawns in interactive sessions run in the
@@ -493,6 +503,37 @@ generalize, not as the only place they exist.
   read directly. Note: a research agent misplaced the last two items by one version
   — synced-skill hardening is v2.1.227 and `/commit-push-pr` is v2.1.228 per the
   primary changelog, not v2.1.228/229; caught on verification.)*
+- **v2.1.234–241 (Aug 17–23)** — a quieter window whose most loop-relevant change
+  lands squarely on `/goal`. **`/goal` repeat check-ins on long-running background
+  work now back off** — 30 min, then 1 h, then every 2 h — instead of every 30 min
+  (v2.1.239, Aug 21; opt out via `CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0` per the Week
+  34 digest), and **`/goal` now restores its active goal** when a session is resumed
+  from the `claude --resume` picker (v2.1.239) — the persistence-across-restart
+  property (§5's "persistence" move) now covers the stop condition itself, not just
+  the work. On §6: **`--max-budget-usd`, `/cost`, and the status-line cost estimate
+  now include the 1.1× US-only-inference premium** for data-residency workspaces
+  (v2.1.239) — the ceiling now reflects the residency surcharge instead of
+  under-counting it. Also: a built-in **"Concise" output style** (v2.1.237, leads
+  with the result, keeps full content for errors/security/destructive
+  confirmations); **`ANTHROPIC_DEFAULT_MODEL`** (v2.1.236, sets the model new
+  sessions start on; a `/model` pick still overrides and persists); `/permissions`
+  and `/add-dir` can now be opened **while Claude is working** (Week 34); permission
+  dialogs' display text now matches the actual grant scope (v2.1.235); macOS
+  wildcard read-deny rules (e.g. `**/.env`) take precedence inside allowed read
+  regions and survive a rename (v2.1.236); and a **`/design`** research preview
+  (Week 34). **No new model** shipped (latest remains Opus 5, Jul 24). Both the
+  **Week 33 and Week 34** what's-new digests are now published (w33 had 404'd last
+  pass). *(High — changelog read directly and spot-verified this pass; the `/goal`
+  backoff was initially reported at v2.1.238/239 by a research agent and corrected
+  to v2.1.239 against the primary.)*
+  On the **Claude API** (not Claude Code itself, but the substrate loops run on):
+  **Agent Skills and the Skills API (`/v1/skills`) reached GA** (~Aug 19–20), and
+  the `skills-2025-10-02` beta header is no longer required — the "skills as a
+  durable, version-controlled asset" thesis now rests on a GA API primitive, not a
+  beta. Same batch took **computer use** to GA and added a **browser use** tool and
+  a GA **Files API**; the Anthropic **Python SDK v1.0** shipped Aug 20. *(Medium-High
+  — two research agents surfaced the Skills-API GA independently; primary Anthropic
+  release note not read directly this pass, dates given as ~Aug 19–20.)*
 
 ### Beyond Claude Code — the same loop on other harnesses
 
@@ -551,7 +592,14 @@ Three things worth carrying as durable facts:
   framework, a 12-month deprecation policy, and — most relevant to loops — a
   first-class **Tasks** extension (`io.modelcontextprotocol/tasks`) for *bounded*
   long-running async work. Governance is settled and neutral: MCP is a Linux
-  Foundation / AAIF project. Agent Skills (`SKILL.md`) portability is **less
+  Foundation / AAIF project. **New Aug 22, 2026: "The New MCP Roadmap"** (Soria
+  Parra & Delimarsky) sets post-`2026-07-28` priorities, two of them loop-relevant:
+  **maturing agentic messaging** (server-initiated events, hardening the Tasks
+  extension for long-running async work) and **progressive / lazy tool discovery**
+  so an agent isn't forced to load a huge tool catalog up front (a context-cost
+  lever for any tool-heavy loop); the others are HTTP-native transport unification,
+  agent identity / enterprise security (DPoP + Workload Identity Federation over API
+  keys), and SDK DX. No version targets named. **High** (roadmap post read directly). Agent Skills (`SKILL.md`) portability is **less
   settled**: the format is spreading fast (30+ tools accept it, and Claude Code
   and Gemini CLI both *execute* it — Gemini via an `activate_skill` tool), but
   cross-tool *execution* behavior still differs tool to tool, and the standard
@@ -616,15 +664,31 @@ structured audit rather than a test suite. **"Engineering Reliable Coding Agents
 verification as a *system layer* around the model (alongside execution / retrieval
 / memory) and finds *"many apparent model failures originate elsewhere in the
 system"* — direct support for this repo's "engineer the harness, not just the
-prompt" premise. Both **High** (abstracts read directly). Addy Osmani's canonical loop-turn anatomy (O'Reilly
+prompt" premise. Both **High** (abstracts read directly). Two in-window papers
+(Aug 21) extend the separate-verifier thread: **"AI-to-AI Code Reviews of GitHub
+Pull Requests"** (arXiv:2608.21311) documents the closed-loop case where an agent
+both *authors and reviews* PRs — cross-product AI-to-AI review is still only ~1.6%
+of agent-authored PRs but rising, a live measurement of what happens to
+verifier-independence when the maker and the reviewer are both models (the failure
+mode §5A warns about); and **"Natural-Language Workflows Are Not Software Yet"**
+(arXiv:2608.21341) introduces **Artic**, a compiler that turns an NL workflow
+description into an artifact-driven workflow with explicit data dependencies and
+**local verification obligations** attached to each step (+28pp task resolution,
+better run-to-run consistency) — verification wired into the workflow's structure
+rather than bolted on after, the same move as the "Executive" paper above. Both
+**High** (abstracts + submission dates verified). Addy Osmani's canonical loop-turn anatomy (O'Reilly
 Radar, June 22, 2026) names five moves: **discovery** → **handoff** →
 **verification** → **persistence** → **scheduling**; verification is the pivot
 that distinguishes a loop from a one-shot generation. Tools like **roborev**
-(latest **v0.65.0, Aug 17, 2026** — adds **job-level CI cost exports** for
-per-job budget visibility, a native browser app for reviews/jobs/logs/analytics,
-daemon-stability fixes, and configurable reasoning-effort tiers across supported
-agents; the prior v0.64.0, Aug 6, added GitLab merge-request review and a repo-root
-`REVIEW.md` fallback; see version history below) operationalize this per-commit. Anthropic's own **`security-guidance`
+(latest **v0.66.0, Aug 22, 2026** — the review daemon now **defers its own
+self-updates while reviews are in flight** so an upgrade can't interrupt work in
+progress, adds **global autofix guidelines** for consistent fix behavior across
+repos, improves **security-review precision** to cut low-confidence findings, and
+stops **zero-output reviews from posting erroneous CI failures**; the prior v0.65.0,
+Aug 17, added **job-level CI cost exports** for per-job budget visibility; see
+version history below) operationalize this per-commit. That self-update-vs-active-
+review deferral is a small but on-thesis instance of a verifier applying
+stall/interrupt discipline *to itself*. Anthropic's own **`security-guidance`
 plugin** (shipped Claude Code Week 22) embeds a three-tier check directly
 inside the coding session: fast pattern scan per edit → model review per turn →
 deeper agentic review on commit or push. Osmani's corollary (June 9, 2026):
@@ -681,7 +745,14 @@ tokens/call; a 20-step loop can cost ~10x a naive per-step estimate). Receipts:
   usage caps — treat the figure skeptically, but the failure mode is the point.
 - **Gartner** puts agentic AI at the "Peak of Inflated Expectations" (~17% of
   orgs have deployed agents) and predicts **>40% of agentic AI projects
-  canceled by end of 2027**.
+  canceled by end of 2027**. A fresh Gartner projection (via The Register, Aug
+  17, 2026) puts the trajectory the other way: routing knowledge work to agentic
+  reasoning models will push inference cost **more than fivefold by end of 2028**
+  — falling token prices are more than offset by agents' constant
+  reasoning/self-questioning, so the per-task bill climbs even as the per-token
+  price falls. The point for a loop author: cheaper tokens do not make an uncapped
+  loop cheap. *(Medium-High — secondary quoting a named Gartner analyst; primary
+  Gartner note not read directly.)*
 - **Microsoft** cancelled most internal Claude Code licenses in its Experiences
   & Devices division, effective June 30, 2026, after per-engineer costs reached
   $500–$2,000/month. Engineers redirected to GitHub Copilot CLI. *(Medium —
@@ -801,6 +872,17 @@ bounded, and introduces **IAL-Scan** — a static analyzer that builds an "Agent
 Loop Dependence Graph" and flags paths able to hit expensive ops without a bound,
 at **91.9% precision across 6,549 repos**. Independent evidence that hard stops
 #1/#2 guard against a real and common failure mode, not a hypothetical one.
+
+That the *enforcement* gap is still open in practice — not just the detection
+problem — has fresh survey data: **VentureBeat's VB Pulse** (Aug 20, 2026, 107
+enterprises) found **one in five (21%) cannot stop a runaway agent's spending in
+real time** — they rely on reactive monitoring with no intervention path; only 30%
+use native platform budget caps/throttling, 25% built custom gateway middleware,
+and 25% route to cheaper models under load. Org size barely moved the number (18%
+of 10k+-employee firms vs. 23% of smaller ones are reactive-only). This is exactly
+the alert-is-not-a-ceiling gap this section exists to close, measured in the field:
+most shops have detection or dashboards, a minority have a hard stop wired into the
+harness or gateway. *(High — article read directly.)*
 
 **Enforce these tool-agnostically, at the gateway.** The cleanest place to put
 the hard stops isn't inside any one agent — it's the **LLM gateway every agent

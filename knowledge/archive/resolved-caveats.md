@@ -9,6 +9,19 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-08-24
+
+- **Yegge "The Shape of Things to Come, Part 2: Model Welfare for Agentic
+  Engineers" exact date — resolved (not worth tracking).** Opened 2026-08-17 when the
+  byline read only "August 2026" and HN/social chatter clustered ~Aug 10–11, leaving
+  it ambiguously in- or out-of-window. This pass two independent research agents both
+  placed it at **~Aug 3, 2026** (HN submissions dated Aug 3) — out of the Aug 17–24
+  window and predating the 2026-08-17 pass, so it was never in-window. It is a
+  model-welfare framing (seats-vs-sessions, "consented handoff" replacing `/exit`),
+  peripheral to loop engineering rather than a loop pattern, so it was not promoted
+  regardless. Checked and closed; no further action.
+  https://yegge.ai/essays/model-welfare/
+
 ## Archived 2026-08-17
 
 - **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` after the cap removal — resolved.**

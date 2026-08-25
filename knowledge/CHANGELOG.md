@@ -3,6 +3,127 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-08-24 — Seven-day follow-up pass (Aug 17 – Aug 24)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques,
+key voices, guardrails & cost, and verification & skills. (The key-voices agent
+died mid-response on a connection error and was re-run cleanly — the retry is what's
+reflected below.) A **quieter-than-usual window** whose real substance is: a Claude
+Code release cluster with one genuinely loop-relevant `/goal` change, the Claude API
+Skills-API GA, a new MCP roadmap, a new Osmani essay, roborev v0.66.0, a sharp
+enforcement-gap survey, and a batch of in-window arXiv papers. No `update-knowledge`
+PR was open (checked GitHub — clean baseline; PR #16 merged, branch sits at that
+HEAD). The headline claim (the `/goal` check-in backoff) was **spot-verified against
+the primary changelog this pass** and a research agent's one-version-off attribution
+was corrected (see below).
+
+### New facts added
+
+- **Claude Code v2.1.234–241 (Aug 17–23)** — most loop-relevant change is on `/goal`,
+  all in **v2.1.239 (Aug 21)**: **repeat check-ins on long-running background work now
+  back off** (30 min → 1 h → every 2 h, was every 30 min; opt out
+  `CLAUDE_CODE_GOAL_CHECKIN_MINUTES=0`), and **`/goal` restores its active goal** on
+  `claude --resume` (the stop condition now persists across restart, not just the
+  work). §6-relevant: **`--max-budget-usd`/`/cost`/status-line estimates now include
+  the 1.1× US-only-inference premium** for data-residency workspaces. Plus a
+  **"Concise" output style** (v2.1.237), **`ANTHROPIC_DEFAULT_MODEL`** (v2.1.236),
+  `/permissions`+`/add-dir` openable while working, permission-dialog scope-matching,
+  macOS wildcard read-deny precedence, a **`/design`** research preview. No new model.
+  **Both Week 33 and Week 34 digests now published** (w33 had 404'd last pass).
+  Primer §4. **High** (changelog read + spot-verified).
+- **Claude API: Agent Skills / Skills API GA** (~Aug 19–20) — `/v1/skills` GA, the
+  `skills-2025-10-02` beta header retired; computer use GA, browser use tool, Files
+  API GA, Python SDK v1.0. "Skills as a durable asset" now rests on a GA primitive.
+  Primer §4. **Medium-High** (two agents surfaced it independently; primary release
+  note not read directly).
+- **MCP "The New MCP Roadmap"** (Aug 22) — post-`2026-07-28` priorities; two
+  loop-relevant: **maturing agentic messaging / hardening the Tasks extension** for
+  bounded long-running async work, and **progressive/lazy tool discovery** (a
+  context-cost lever for tool-heavy loops). Primer §4. **High** (read directly).
+- **Osmani "Human judgment doesn't leave the software factory. It relocates."**
+  (Aug 21) — next in the arc; judgment moves *upstream*, and its operational idea is
+  a **"verification budget"** (cheap checks early, expensive late) plus **"mental
+  model debt"** (parallel sessions outrun human context). Maps onto this repo's
+  cheap-signal-first verification. Primer §3. **High** (read directly).
+- **roborev v0.66.0 (Aug 22)** — the review daemon **defers its own self-updates
+  while reviews are in flight** (a verifier applying interrupt discipline to itself),
+  **global autofix guidelines**, **improved security-review precision**, and stops
+  **zero-output reviews from posting erroneous CI failures**. Primer §5A. **High**
+  (release read directly).
+- **VentureBeat "VB Pulse" survey (Aug 20)** — 107 enterprises; **21% cannot stop a
+  runaway agent's spend in real time**, 30% native caps, 25% custom gateway, 25%
+  cheap-model routing. The clearest current field measurement of the
+  alert-vs-enforcement gap §6 exists to close. Primer §6. **High** (read directly).
+- **Gartner "agentic AI costs to rise more than fivefold by end of 2028"** (via The
+  Register, Aug 17) — cheaper tokens don't make an uncapped loop cheap. Primer §5B.
+  **Medium-High** (secondary quoting Gartner).
+- **In-window arXiv cluster** (all submission dates verified on the abs pages).
+  Promoted to primer §5A: **AI-to-AI Code Reviews of GitHub PRs** (2608.21311, Aug
+  21 — verifier-independence when maker+reviewer are both agents) and **Artic /
+  "NL Workflows Are Not Software Yet"** (2608.21341, Aug 21 — artifact-driven
+  compilation with per-step *local verification obligations*, +28pp). Recorded in
+  sources.md (not primer, to stay lean): **A Jagged Frontier** (2608.18389, robustness
+  varies by harness → harness-is-a-variable), **Applying Anthropic Primitives / Harness
+  Paradigm** (2608.20622, a counter-pull to Yegge's "bonded in"), **When Agents
+  Coordinate** (2608.16801), **TRUSS** (2608.17588, safe skill generation), **Agent
+  Lightning v1.0** (2608.17528), **Terminal Agents survey** (2608.20485),
+  **Agent-Friendly Documentation** (2608.20195). Plus a borderline **Adversarial
+  Review** (2608.18167, v1 Aug 16, one day pre-window — the sharpest recent
+  separate-verifier paper, noted honestly-dated). All **High** on dates.
+- **Peer-CLI in-window releases** (sources.md, no new hard-stop primitive): Codex CLI
+  v0.148–0.149.1 (`codex agents` dashboard, `codex queue`); Goose v1.47.0 (an
+  "unrolled agent-loop state machine" refactor); Gemini CLI → **Antigravity CLI**
+  rename announced; LiteLLM v1.98.0 (cost-attribution headers/TPM reservations) and
+  OpenRouter Analytics API (spend *tracking*, not enforcement).
+
+### Corrected / clarified
+
+- **`/goal` check-in backoff version corrected on verification.** A research agent
+  reported it at "v2.1.238/239"; the primary changelog places it in **v2.1.239 (Aug
+  21)** — the recurring one-version-off trap, caught by spot-verifying the primary.
+- **Codex v0.149.0 "2021" date rejected.** A WebFetch of the release tag hallucinated
+  the year 2021; the GitHub releases index confirms **Aug 2026**. Fetch-model error,
+  not the primary.
+- **Anthropic Agent SDK billing split — still paused, no revised plan** (re-confirmed).
+  The recurring false "went live July 10" snippet resurfaced in aggregation again this
+  pass and was **again rejected** (no genuine primary). Carried forward, unchanged.
+- **`whats-new/2026-w33` now published** (had 404'd last pass); primer §4's "changelog
+  sole primary" parenthetical for the v2.1.227–233 cluster updated accordingly.
+
+### Archived (resolved — see archive/resolved-caveats.md)
+
+- **Yegge "Shape of Things to Come, Part 2: Model Welfare" exact date** (opened
+  2026-08-17) — resolved: two independent agents place it ~Aug 3, 2026 (HN Aug 3),
+  out of this window and predating the last pass, and it's a model-welfare framing,
+  not a loop pattern. Checked and determined not worth tracking further.
+
+### Currently-open re-verify backlog (carried forward — every open item, per step 2)
+
+`SKILL.md` cross-tool *execution* (Claude Code + Gemini CLI execute; 30+ accept;
+`AGENTS.md` separate — no in-window change, though Agent Skills is now a GA API);
+"costliest thing is managing the loop" paraphrase (unsourced); `/goal` "Codex→Claude
+11 days" single secondary; `$47K`/`$500M`/overnight anecdotes unverified (recirculation
+only this window); June-15 billing split (still paused, no revised plan; "July 10"
+snippet rejected again); Microsoft dropping Claude Code (no primary read); Huntley's
+Loom "orchestrator" framing (no datable in-window post); AI Engineer World's Fair 2026
+sessions (no transcript); roborev.io/changelog 403s; EvoAgentBench + SkillCheck too
+new (SkillCheck now at v3.29/v3.30 but month-dated only — can't confirm in-window);
+**NEW: LoopsBench** (arXiv:2608.00267, Jul 31, out of window but named after this
+repo's subject — read next pass before promoting).
+
+### Not promoted (evidence insufficient or peripheral)
+
+- **DeepSeek Harness v0.1** (developer preview Aug 13, pre-window; MIT "everything is
+  a plugin" meta-framework, ~135k GitHub stars in 4 days) — launch predates the Aug 17
+  pass; only its star-count momentum edges into the window. Watch, not promoted.
+- **Info-Tech "Pilot-Era Agentic AI Stacks…"** (Aug 19) — a six-layer enterprise-stack
+  blueprint; peripheral analyst context, sources.md only.
+- **SkillCheck v3.29/v3.30** — likely in-window but month-dated only; re-verify.
+- **Simon Willison link-blog "Conceptual integrity…"** (Aug 19) — commentary, not a new
+  loop-engineering primary; noted, not promoted.
+- **Gas Town/Gas City, OpenHands, Devin, Factory, LangGraph/ADK/CrewAI/AG2, Huntley's
+  Loom** — no verified in-window release or essay.
+
 ## 2026-08-17 — Seven-day follow-up pass (Aug 10 – Aug 17)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques,

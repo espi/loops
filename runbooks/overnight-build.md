@@ -28,7 +28,8 @@ Edit the CONFIG block in `run.sh`:
 ## 4. Run it where it can run unattended
 
 - **Headless local/sandbox:** `bash loops/<slug>/run.sh`
-- **Cloud (laptop closed):** Claude Code on the web with `--remote`, or the
+- **Cloud (laptop closed):** Claude Code on the web with `claude --cloud "<task>"`
+  (`--remote` still works as a deprecated alias), or the
   in-session `/ralph-loop` plugin. Cloud VMs are ephemeral and isolated; state
   must be committed to git to survive.
 

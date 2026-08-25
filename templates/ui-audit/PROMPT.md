@@ -3,7 +3,7 @@
   Self-contained: re-fed each iteration. The agent advances by reading on-disk
   state (PAGES.md, FINDINGS.md, PROGRESS.md) and the live app via the browser MCP.
   Copy this dir into your PROJECT repo (e.g. ./ui-audit/), fill PAGES.md, and run
-  per RUN.md / runbooks/ui-audit-overnight.md. Edit the [bracketed] parts.
+  per runbooks/ui-audit-overnight.md. Edit the [bracketed] parts.
 -->
 
 # Goal
@@ -104,4 +104,4 @@ When all of that holds, write `<promise>COMPLETE</promise>` and stop.
   commits are only for re-verified deterministic bugs. UX changes go in
   `ux(standard):` (doc-backed) or `ux(judgment):` (flagged, no backing).
 - Cost: this runs unattended. Stay efficient; one page per iteration; stop at the
-  caps set in RUN.md.
+  caps set in the launch invocation (see runbooks/ui-audit-overnight.md).

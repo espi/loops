@@ -24,7 +24,8 @@ it. Don't start until every box is checked.
 - [ ] You know the **expected cost order-of-magnitude** and where to watch it.
 
 ## Operational
-- [ ] You know the **stop command** (`Esc` for `/loop`, `Ctrl+C` for `/goal`,
+- [ ] You know the **stop command** (`Esc` for `/loop`, `/goal clear` for
+      `/goal` — `Ctrl+C` only stops a non-interactive `claude -p` goal —
       `/cancel-ralph`, or kill the bash process).
 - [ ] For laptop-closed runs: using a **cloud Routine / Claude Code on the web**,
       not session-scoped `/loop`.

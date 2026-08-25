@@ -38,7 +38,8 @@ own output**, not from hidden state.
 
 ## Operating it
 
-- Status: `/goal`  ·  Stop: `/goal clear` (aliases: stop, off, reset, cancel)
+- Status: `/goal`  ·  Stop: `/goal clear` (aliases: stop, off, reset, none,
+  cancel; `/clear` also removes the active goal)
 - Interrupt a run: `Ctrl+C`
 - Headless: `claude -p "/goal CHANGELOG.md has an entry for every PR merged this week"`
 - Requires the trust dialog accepted; unavailable if `disableAllHooks` /

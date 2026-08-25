@@ -139,7 +139,7 @@ weekly, with these differences:
 | Field | Value |
 |---|---|
 | **Name** | Monthly loops artifact audit |
-| **Trigger** | Schedule → Monthly (e.g. 1st of the month, 08:00 local) |
+| **Trigger** | Schedule → there is no Monthly preset (presets are hourly / daily / weekdays / weekly): pick the closest preset (Weekly), then run `/schedule update` from a local CLI session to set a monthly cron (e.g. 1st of the month, 08:00 local) |
 | **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12`; **Full/Custom** network for primary-doc checks; `claude/`-only branch pushes; overage off). See "Budget & caps" above. |
 
 Prompt (paste verbatim — points at the skill file, same anti-staleness reason as

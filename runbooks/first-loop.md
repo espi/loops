@@ -39,7 +39,8 @@ or the fully-headless `templates/ralph/run.sh` (caps in its CONFIG block).
 ## 4. Watch the first runs
 
 The first few runs are where cost surprises happen. Watch the meter; stop with
-`Esc` (`/loop`), `Ctrl+C` (`/goal`), or `/cancel-ralph`.
+`Esc` (`/loop`), `/goal clear` (`/goal` — `Ctrl+C` only stops a non-interactive
+`claude -p` goal), or `/cancel-ralph`.
 
 ## 5. Capture what you learned
 

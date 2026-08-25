@@ -27,8 +27,10 @@ stall=0
 last_head="$(git rev-parse HEAD 2>/dev/null || echo none)"
 
 cost_so_far() {
-  # Hook your real cost meter here (e.g. parse `claude cost`, or an SDK
-  # max_budget_usd run). Returns a dollar figure. Default 0 = meter not wired.
+  # Hook your real cost meter here (e.g. parse total_cost_usd from
+  # `claude -p --output-format json` output, read your gateway's spend API, or
+  # an SDK max_budget_usd run). Returns a dollar figure. Default 0 = meter not
+  # wired. (There is no `claude cost` subcommand; /cost is in-session only.)
   echo "${LOOP_COST_USD:-0}"
 }
 

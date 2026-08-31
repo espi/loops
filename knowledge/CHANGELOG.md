@@ -3,6 +3,169 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-08-31 — Seven-day follow-up pass (Aug 24 – Aug 31)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques, key
+voices, guardrails & cost, and verification & skills; all five returned cleanly. **No
+`update-knowledge` PR was open** (checked GitHub — clean baseline; PR #18 merged, branch
+sits at that HEAD). A **substantive window in every lane**, and unusually the headline is
+a *correction to this repo's own §6*: Anthropic ships real spend enforcement, and its
+default failure mode is fail-open. Four Claude Code attributions and the two biggest
+non-changelog claims were spot-verified against primary sources this pass.
+
+### The headline: a §6 correction, sourced verbatim
+
+- **Anthropic does ship enforcement, not only alerts — and it fails open by default.**
+  §6 previously read the 75%/90% figures as the whole Anthropic story; those are the
+  *warning* layer. Underneath sit the **Spend Limits API** (Enterprise; `user →
+  rbac_group → seat_tier → organization` resolution, a `"0"` cap blocking a member
+  outright) and **Claude apps gateway spend limits**, which genuinely block: *"the
+  gateway returns `429` on their next request and blocks them"* (`billing_error`,
+  `x-should-retry: false`), daily/weekly/monthly each enforced independently, with
+  client aborts billed on a floor estimate *"so aborting requests early doesn't evade a
+  cap."* **But**: the pre-check queries Postgres on a two-second timeout and *"if the
+  store is unreachable or times out, enforcement fails open by default: the request
+  proceeds, the gateway logs a warning."* You need
+  `enforcement.fail_closed_on_error: true` for *"no unmetered spend."* So the ceiling
+  degrades into an alert precisely when infrastructure is unhealthy — the same shape as
+  LiteLLM's `fail_closed_budget_enforcement`. **On both gateways the true ceiling is
+  behind a non-default flag.** Primer §6 + §5B corrected. **High** (primary doc read
+  directly and verbatim-verified this pass).
+
+### New facts added
+
+- **Claude Code v2.1.243–251 (Aug 25–28)** — seven releases, no new model, and nothing
+  touching `--max-budget-usd`/`max_turns`/subagent caps. Loop-relevant: **`/usage` gained
+  a Loops breakdown** (v2.1.243 — first *per-loop* cost attribution; visibility, not
+  enforcement); **a subagent stopping at `maxTurns` now returns output marked partial**
+  (v2.1.246) *"instead of appearing finished"* — closing a real false-"done" hazard;
+  **`/goal` idle sessions capped at three check-ins per goal** (v2.1.246 — a new cap
+  *on top of* the v2.1.239 back-off, not a restatement of it); and **`--restricted` /
+  `CLAUDE_CODE_RESTRICTED=1`** (v2.1.248), a one-flag blast-radius floor. Also
+  `modelPricing`, a `/usage` Spend limit bar, `PreModelSwitch`/`PostModelSwitch` hooks,
+  a Bash wildcard-before-subcommand warning, and a batch of unattended-run security
+  fixes. **Constraint this repo runs into**: v2.1.251's `/schedule` now states that
+  **locally configured MCP servers cannot be attached to cloud routines**. Primer §4.
+  **High** (changelog read directly; all four headline attributions spot-verified
+  verbatim). *Housekeeping that explains the recurring one-version-off trap:* **v2.1.242,
+  v2.1.244 and v2.1.249 do not exist** in the changelog.
+- **Sonnet 5's introductory pricing became permanent** — verified on 2026-08-31, the
+  stated last day of the promotion: *"The previously scheduled increase to $3/$15 per
+  million input/output tokens on September 1, 2026 will not occur."* The subscription
+  default model's cost basis is **not** rising 50%. Resolves an expiring fact in primer
+  §4; the old "through August 31, 2026" wording was removed rather than annotated.
+  **High** (primary pricing page).
+- **Anthropic weekly Claude Code limits move Sept 14** — +25% against the pre-promotion
+  baseline, but ≈**−17% against what users have today** once the temporary +50% boost
+  expires Sept 13, which Anthropic stated directly. Weekly limits *are* enforcement, and
+  long-running loops hit them first. Primer §6. **Medium-High** (secondaries consistent;
+  primary is a social post and the help-center page was not updated as of Aug 31 — on
+  the re-verify list).
+- **Two new key-voice essays, pointing opposite directions on the same axis.** Osmani's
+  **"Audit your Agent files"** (Aug 27) is the first in his arc to argue for
+  *subtracting* scaffolding: *"Your coding agent's configuration has a half-life"*;
+  *"installing a useful skill and keeping it forever are separate decisions"* (citing
+  Anthropic cutting >80% of Claude Code's system prompt, and a developer going 250
+  skills → 25). Yegge's **"Fences, not Sandboxes"** (Aug 24) rejects containment for
+  governance by law, with an enforcement lifecycle that ends at *"mechanical
+  enforcement."* Primer §3 records the tension explicitly: Yegge's *endpoint* is this
+  repo's position, but he arrives by escalation from soft norms, and a rule that hardens
+  only after re-violation is a bill already paid. Osmani **Medium-High**, Yegge **High**.
+- **Two independent long-horizon loop benchmarks now agree on the ceiling.**
+  **LoopsBench** (arXiv:2608.00267 — the standing backlog read, done this pass) resolves
+  **25.00%** of tasks; the independent in-window **LoopArena** (arXiv:2608.28281, Aug 28)
+  reports a best Strict Success Rate of **24.69%**. Both find that **verification and
+  regression management, not raw coding ability, is the binding constraint** — the
+  strongest empirical backing this repo's central claim has. Primer §5A. Both **High**.
+- **A dense verification arXiv cluster (Aug 26–28)**, all v1 dates *machine-verified*
+  via an explicit arXiv API date-range query rather than inferred from the ID prefix.
+  Promoted: **EvoUndo** (2608.28363 — of 600 self-evolution tasks, **197
+  capability-improving modifications fail recoverability verification and conventional
+  repair recovers 0 of 197**; the sharpest external argument yet for a CI-enforced rather
+  than self-graded self-edit gate); **post-edit re-verification** (2608.28147 —
+  verification-as-instruction lifts success 35/120 → 95/120, yet one model still
+  re-verified 1/24 when told to: asking beats silence and is nowhere near a harness
+  check); **layered supervision** (2608.26316 — *"no single guardrail carries the
+  supervision load alone"*; caveat: five practitioners); **MCR-Bench** (2608.27442 — LLM
+  review degrades significantly as rounds increase). Primer §5A.
+- **Skills-as-durable-asset gets numbers.** A study of Claude Code plugin marketplaces
+  (arXiv:2608.28497 — 8,351 plugins, 77,773 commits) finds that inside `skills/`
+  directories the instruction file and its scripts **co-evolve at above-chance rates with
+  78% of co-changes functionally coupled** — *"a new class of maintenance dependency"*;
+  read: a `SKILL.md` and its scripts are one versioned unit. A companion (arXiv:2608.25241)
+  finds agent-first repos **without** committed AI config grow cognitive complexity ~**2×**
+  faster, and that **73.8% of AI-config artifacts are committed once and never modified** —
+  the counterweight to Osmani's audit essay, and the case for scheduled refresh over good
+  intentions. Explicitly flagged as observational, **not causal**. Primer §4.
+- **roborev v0.67.0 (Aug 26)** — branch-scoped review experiments, label-based CI-review
+  skips, batched post-commit reviews. Recorded with an explicit **null result**: nothing
+  on budget, gating, or skill-invocation policy; the label skip is review *scoping*, not
+  a merge gate. Primer §5A. **High**.
+- **"Breaking Claude Code Opus 5 Auto Mode"** (Rehberger, Aug 27, via Willison) — *"Claude
+  detects the compromise, but Auto Mode blocks its cleanup command,"* the safety mechanism
+  becoming part of the failure; an **Aug 30 update reclassifies it** as a *"confused
+  environment attack"* rather than classic prompt injection. Primer §5A. **Medium-High**.
+- **Codex CLI v0.151.0 (Aug 29)** counted **nested subagent token usage toward root goal
+  budgets** — i.e. nested spend was previously escaping Codex's goal budgets, the same
+  hole Claude Code closed in v2.1.217. Plus `Interrupt` hooks in v0.150.0. `sources.md`.
+
+### Recorded but deliberately not promoted (keeping the primer lean)
+
+MCP's new **Transports WG**; LiteLLM's `v1.100.0-rc.1` per-window budget table and
+model-access-group budget enforcement (no stable release in-window); **CodeRabbit's
+Learnings write API** (durable review memory); GitHub Apps gaining **read+write**
+enterprise billing access (budgets become machine-settable); and a second tier of
+in-window papers — *Safety Does Not Compose* (non-decaying loop safety state), *When
+Context Gets Root* (escalation via ordinary `/goal`- and `/schedule`-shaped features),
+HarnessLens, GCPC, SPT, WikiSkill, openJiuwen, Logos, Credo.
+
+### Quiet lanes, stated rather than padded
+
+Gas Town/Gas City, Huntley/ralph/Loom, OpenHands, LangGraph/ADK/CrewAI/AG2, Devin,
+OpenRouter, Databricks, Cloudflare, AgentGuard, LoopGain, Helicone/Portkey, Agent
+Plugins, AAIF, Gartner/Forrester/IDC, and Steinberger/Cherny/Huntley all produced
+**nothing in-window**. Factory shipped four CLI releases with nothing guardrail-related.
+No new cost-overrun incident surfaced. No `whats-new` digest published for Week 35.
+
+### Corrections, rejections and traps caught
+
+- A research agent flagged the v2.1.246 `/goal` item as possibly a restatement of
+  v2.1.239's back-off; **spot-verification against the primary changelog confirms it is a
+  separate, new cap** (three check-ins per goal). The opposite of the usual error.
+- The **"Agent SDK billing split went live July 10"** claim resurfaced a **third time**.
+  Rejected again, and the paused status **upgraded Medium → High**: the Help Center
+  article was read directly and still reads *"We're pausing the changes… nothing has
+  changed."*
+- A summariser attributed *"27% reactive… n=573"* to the VentureBeat VB Pulse survey; the
+  article says **n=107, 21%**. The KB's existing figure stands.
+- **RedHub AI's "Why API Spending Limits Don't Stop Runaway Bills"** (Aug 28) — the only
+  in-window piece squarely on this thesis — was read and **rejected**: no provider named,
+  no primary source, no testing, mismatched dates, funnels to a $49 product.
+- **arXiv:2608.27086** carries no implementation, experiment or result by the authors'
+  own statement — logged as a position paper, **not** citable as evidence.
+- `/verify` + `/code-review` auto-invocation is **v2.1.215**, not late August — a naive
+  changelog grep misattributes it.
+
+### Archived
+
+**LoopsBench-not-yet-read** moved to `archive/resolved-caveats.md` (read, promoted,
+Low → High). The primer's expired "Sonnet 5 promo through Aug 31" wording was replaced
+rather than left alongside its correction, and §5B's "alerting layer, not confirmed to
+hard-stop" characterization was corrected in place.
+
+### Still-open backlog (carried forward)
+
+Twelve items carried unchanged (`SKILL.md` cross-tool *execution*; the Cherny slogan
+paraphrase; the `/goal` Codex-first timeline; the $47K and $500M anecdotes; the June 15
+billing split pending a revised plan; Microsoft dropping Claude Code; Huntley's Loom;
+AI Engineer World's Fair 2026; roborev.io/changelog 403s; EvoAgentBench + SkillCheck),
+plus **seven new**: `modelPricing` vs `--max-budget-usd` metering; the Sept 14 weekly
+limit change; Claude Managed Agents' session-runtime billing ship date; the
+secondary-only claim that `--restricted` is not an OS sandbox; a full read of
+arXiv:2608.27299; whether LiteLLM v1.99.0 GAs; and a batch of **unverified aggregator
+claims** (notably an alleged Hugging Face agent-escape incident) that must not be
+promoted on current evidence.
+
 ## 2026-08-24 — Seven-day follow-up pass (Aug 17 – Aug 24)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques,

@@ -9,6 +9,26 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-08-31
+
+- **"LoopsBench: From Harness Engineering to Loop Engineering in Coding Agent
+  Evaluation" (arXiv:2608.00267) not yet read — resolved (read, promoted).** Opened
+  2026-08-24 when the paper surfaced from a listing (title + date only, **Low**) as a
+  late catch from the Jul 27–Aug 3 window, flagged "read next pass before promoting."
+  Read in full 2026-08-31. It is a **benchmark, not a survey**: Microsoft-affiliated,
+  112 tasks over 8 languages and 9 domains, >5,300 development units, each task a
+  dependency DAG whose flow-aware runtime releases tests along the ready frontier and
+  **retains completed nodes as regression obligations** — verification made continuous
+  and cumulative rather than end-state. Best configuration resolves **25.00%** of tasks;
+  recorded agent plans recover only part of the true prerequisite DAG, and regression
+  events remain visible across every evaluated loop profile. Confidence upgraded
+  **Low → High**; moved into `sources.md`'s academic section proper and promoted to
+  primer §5A, paired with the independent in-window **LoopArena** (arXiv:2608.28281,
+  Aug 28, best Strict Success Rate **24.69%**) — two unrelated long-horizon loop
+  benchmarks a month apart converging on ~25% and both naming verification/regression
+  management, not coding ability, as the binding constraint. No further action.
+  https://arxiv.org/abs/2608.00267 · https://arxiv.org/abs/2608.28281
+
 ## Archived 2026-08-24
 
 - **Yegge "The Shape of Things to Come, Part 2: Model Welfare for Agentic

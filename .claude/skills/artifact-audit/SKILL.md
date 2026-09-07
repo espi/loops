@@ -89,8 +89,12 @@ drifted: make no commit and report "no artifact drift since <last audit>."
 A scheduled **one-shot** (one trigger → one audit pass → one PR → exit), not a
 `while`-loop. Same envelope as `update-knowledge`:
 
-- **Iteration** — one trigger, one pass, no self-re-invocation; the native
-  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` cap bounds the ~4-agent fan-out.
+- **Iteration** — one trigger, one pass, no self-re-invocation; bound the
+  ~4-agent fan-out with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20,
+  concurrency) and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, depth).
+  The old per-session `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` total cap was
+  **removed in v2.1.224 (Aug 7 2026)** and can no longer be relied on — there is
+  no native cap on a session's *total* lifetime spawns.
 - **Budget** — the subscription / daily-run cap is the ceiling, real only with
   metered overage off (see `runbooks/staying-current.md` → "Budget & caps").
 - **Stall** — N/A for a one-shot; the no-op exit is the termination.

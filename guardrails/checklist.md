@@ -9,6 +9,19 @@ it. Don't start until every box is checked.
       records blockers (default N=3).
 - [ ] **Budget ceiling** set as a *hard enforcement* stop (not just an alert).
 
+## Containment (required companion to the stop conditions)
+- [ ] **Network egress scoped** to the domains the loop needs, not full access
+      (`sandbox.network.strictAllowlist` denies the rest without prompting).
+- [ ] **No long-lived credentials reachable** — SSH keys, cloud creds and the
+      home directory isolated from the loop.
+- [ ] **Unattended runs deny by default** — `--permission-prompts none` on
+      headless hosts (v2.1.259+).
+- [ ] **Isolation is a container/VM**, not a flag. `--restricted` is a
+      permission gate, not a sandbox.
+- [ ] If the loop **clones or reviews untrusted repos**, you've read the
+      containment section of `guardrails/README.md` — attacks like GitSpawn fire
+      *before* any stop condition or verification step runs.
+
 ## Correctness
 - [ ] **Deterministic success check** exists (test/lint/typecheck) returning
       clear pass/fail.

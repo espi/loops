@@ -3,6 +3,192 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-09-07 — Seven-day follow-up pass (Aug 31 – Sep 7)
+
+Five parallel research agents across tooling & versions, ecosystem & techniques, key voices,
+guardrails & cost, and verification & skills; all five returned cleanly. **No
+`update-knowledge` PR was open** (checked GitHub — clean baseline; PR #19 merged, branch at
+that HEAD). Before writing, four headline claims were re-read and verbatim-verified against
+their primary docs, and **all 16 arXiv IDs cited were machine-verified** (ID, exact title,
+v1 date, primary category) against `export.arxiv.org/api/query` rather than trusted from a
+research agent's report. **Five backlog items resolved and archived; two updated and
+downgraded; eight new ones opened.**
+
+### The headline: Anthropic ships both halves of §6's distinction, and labels which is which
+
+- **A standing gap, not a new fact.** The clearest external statement of this repo's
+  "an alert is not a ceiling" rule turns out to be Anthropic's own docs, on two adjacent
+  products neither of which was in this KB. **Managed Agents session budgets** are *"a hard
+  dollar budget enforced at public list rates"* — checked **between** model requests (the
+  in-flight one finishes, so *"treat the budget as a bound on new work rather than an exact
+  stopping point"*), pausing the session **idle at `stop_reason: budget_reached`** and
+  accepting only settle events. **Messages API task budgets** carry a section heading that
+  says the opposite outright: **"Task budgets are advisory, not enforced"** — *"a soft hint,
+  not a hard cap … The enforced limit on total output tokens is still `max_tokens`"* — and
+  the countdown is **visible only to the model**, so a harness cannot read it to enforce one
+  itself. The budgets page draws the line for you. **The rule now stated in §6: a budget the
+  model is shown is a pacing hint; a budget the platform checks before the next request is a
+  ceiling.** Three sharp edges recorded: session budgets meter at **list price** even for
+  contracted orgs (so they *disagree* with `--max-budget-usd`, below), a deployment's budget
+  bounds **each run** rather than cumulative spend, and **removing a budget is one-way**.
+  **High** (both pages read in full and verbatim-verified). Primer §6.
+
+### New facts added
+
+- **Claude Fable 5.1 / Mythos 5.1 (Sep 1)** — and this is the entry that actually costs a
+  harness author work. Same $10/$50 as Fable 5 with **cache reads cut to $0.25/MTok**
+  (0.025× base input vs 0.1× elsewhere), which materially improves long-loop economics. But
+  **three breaking changes land on hand-rolled loops**: forced tool use now **returns a
+  400**, so a loop that *forces* a verification/structured-output tool call breaks;
+  conversation history must be **append-only**, with *"injecting per-request text into an
+  earlier turn … that you remove on the next request"* named as an anti-pattern (i.e. the
+  ralph reminder pattern) and enforced for accounts created **on or after Aug 31, 2026**;
+  and the model **issues more turns for the same work** (*"one tool call per turn where
+  Claude Fable 5 batched several"*), so an iteration cap tuned on an older model trips
+  early — re-tune hard stop #1 rather than reading the exit as failure. Claude Code, Managed
+  Agents and the Agent SDK keep the prefix intact; your own harness does not. **High**
+  (three primary pages read and verbatim-verified). Primer §4.
+- **Claude Code v2.1.252–263 (Aug 31 – Sep 6)** — a permissions-and-containment window that
+  cuts **both ways** on §6, which is the reason it is written as a pair. *Toward
+  enforcement:* **`--permission-prompts none`** (v2.1.259) — *"anything that would prompt is
+  denied automatically"* — the first native **deny-by-default** switch for a headless loop;
+  managed settings that can't be parsed now make Claude Code **refuse to start** instead of
+  silently going unenforced; a **Containment Escape rule** in auto mode (v2.1.257); and six
+  permission-bypass fixes, one of which *"left 'read-only' folders writable."* *Away from
+  it:* v2.1.260 **removed the one-hour cap on subagent background commands** — a native
+  wall-clock backstop deleted, the mirror of v2.1.224's spawn-cap removal — carved `!`
+  bash-mode out of strict sandbox mode, and **reverted a permission tightening within 24
+  hours** of shipping it. Also **`/skill-doctor`** (v2.1.261) and
+  `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` (v2.1.257). **Nothing changed `--max-budget-usd`,
+  `max_turns`, or the subagent caps.** **High** (changelog read directly, every quoted
+  bullet verbatim-verified). Primer §4.
+- **The harness is a documented attack surface, and it is compromised *before* any hard stop
+  runs.** Four independent directions in one week. **Instruction privilege escalation**
+  (arXiv:2608.27299, read in full this pass) is not prompt injection: a harness
+  reconstructing context **drops provenance** and re-labels tool-level attacker content as a
+  genuine `user` message, so every component *"may behave exactly as configured and
+  trained."* 13/13 objectives on all six harnesses, and on all three offering automatic
+  permission review — and §8.5 **reproduces it through `/goal`- and `/schedule`-shaped
+  features**, with Claude Code's scheduled-task path at 13/13 partly because
+  *"scheduled-task content is delivered to the working agent but omitted from the context
+  seen by Auto PR."* It proposes **no mitigations**. Five days later an independent group
+  **replicated it across 12 harnesses** (arXiv:2609.01222), so the mechanism is now
+  established rather than single-sourced. Alongside it: **GitSpawn** (Sep 1–2), where a
+  malicious repo's `.git/config` runs a command on the agent's startup `git status`
+  *"outside Codex's command sandbox and without a user-approval prompt"*; **hook-update
+  hijacking** compromising all seven evaluated harnesses with **Microsoft Defender at 0%
+  recall** (arXiv:2609.03884); and **skills that steer decisions with no payload at all**,
+  which *"the evaluated scanners fail to detect"* (arXiv:2609.02564). **The honest
+  conclusion, recorded but not acted on: the three hard stops bound spend and runtime, and
+  none of them bounds this.** Whether containment becomes a fourth non-negotiable is a
+  human decision for `CLAUDE.md` and `guardrails/` — flagged in the PR, not applied. Primer
+  §5A.
+- **A verification-research cluster that measures what this repo asserts.**
+  arXiv:2609.02246 argues the judge *"should be demoted from oracle to advisor … every
+  change is gated instead by a deterministic verification layer the judge cannot
+  override,"* reporting a **100% pass rate concealing 68% true capability** from agents
+  reading cached answer keys. arXiv:2609.04270 finally *measures* the separate-verifier
+  rule: an external cross-family reviewer gained **+12 pp with zero damaged answers**, while
+  **same-model self-review had the highest error-detection recall of any condition (0.85)
+  and produced no significant gain**, falsely rejecting **35% of its own correct answers vs
+  2%** — high recall, useless outcome, which is what grading your own homework looks like in
+  numbers. arXiv:2609.00088 found **none of 24 default judge configs across 8 frameworks**
+  implements commit-first judging, with nine ineffective variants traced to one ancestor
+  prompt *through a copied typo*. Two results qualify this repo's own wording:
+  **arXiv:2609.04167** (221 of 644 test-passing repairs failed real review constraints —
+  deterministic is not *complete*) and **arXiv:2609.01354** (four verifiers self-validate
+  between 53.8% and 95.2%, **93.0% of failures being whitespace and punctuation** —
+  deterministic is not *correct*). Primer §5A.
+- **"How Fast Do Agents Rot?"** (arXiv:2609.01660) reframes hard stop #1: task success
+  follows a geometric law in a per-step reliability parameter that **saturates below 1**,
+  and on the agentic tool-use loop **every model tested falls from near-perfect to near-zero
+  within sixteen steps**. Degradation tracks **step count, not context length**, and
+  bounding the context window *steepens* the decay. An iteration cap is not only cost
+  control — it bounds the region where the agent is still reliable at all. Primer §5A.
+- **"The harness" is now an academic unit of study, with a number.** arXiv:2609.04518:
+  across **24,000 sealed SWE-bench Verified evaluations the evaluation harness moves mean
+  solve rate ×4.3 (2.14% → 9.27%) while the training recipe moves it ×1.16.** Paired with
+  **EVOHARNESSBENCH**, which finds *"harness expansion alone can degrade performance on
+  previously solved tasks"* — harness-induced forgetting, an empirical case for pruning
+  `.claude/skills/` that lands neatly beside the new `/skill-doctor`. Primer §5A.
+- **LiteLLM v1.100.0 (GA Sep 6)** moved budgets from per-key to **shared budgets enforced
+  across a model access group**, backed by a per-window spend table, with opt-in
+  **rollover that carries over-cap spend into the next window rather than forgiving it**.
+  v1.99.0 (GA Sep 1) migrated shadow eval jobs from `max_turns` to `max_budget` — a vendor
+  swapping an iteration cap for a dollar cap. Caveat kept honest: the same release ships
+  guardrails with **fail-open mode options** and documents no fail-closed semantics for the
+  new group budgets. Primer §6.
+- **Addy Osmani, "Agentic Skill Decay"** (Aug 31) — the only new essay from a tracked voice
+  all week, and the first to treat **the human's own capability as a loop input**: *"you
+  have to have that expertise to verify it."* If unattended completion erodes the capacity
+  to verify, it erodes the outer loop itself. Primer §3.
+
+### Corrected
+
+- **"Versions with no changelog heading do not exist" was wrong** — and it was this KB's own
+  claim, added last pass to explain a recurring one-version-off drift. The docs cite
+  **v2.1.242** twice as a version requirement, and v2.1.258 references *"a regression
+  introduced in 2.1.255"*; both are heading-less. A gap means a silent or staged release.
+  The rule replacing it: **attribute a feature to the version its own doc page names, not
+  the nearest changelog heading.** First correction it forces: **`modelPricing` is v2.1.242,
+  not v2.1.243.** Old text removed rather than annotated.
+- **Anthropic's Sept 14 weekly-limit change — downgraded to Medium, with the contradiction
+  on the record.** A week on, the help center still carries no mention of a permanent +25%,
+  of Sept 14, or of a 17% cut. The one page updated in-window is the promotion article,
+  which says the boost runs *"through September 13, 2026"* and that limits then *"return to
+  their standard levels"* — in tension with the +25%-above-baseline framing. Promo end date
+  stays **High**; the +25%/−17% figures are **Medium**, secondaries only.
+
+### Resolved and archived (5)
+
+`modelPricing` vs `--max-budget-usd` (**the ceiling meters at contracted rates when a table
+is in effect**, list price otherwise — managed-scope-only, and note it *disagrees* with
+Managed Agents session budgets); Managed Agents **$0.08/session-hour** (dated **≤ Jul 22,
+2026** and corrected — it **replaces** container-hour billing rather than adding to it);
+**arXiv:2608.27299 read in full** and independently replicated; **LiteLLM v1.99.0 vs
+v1.100.0** (a false dichotomy — both GA'd, six days apart); and **the three unverified
+aggregator claims**, all of which turned out real but **mischaracterized and pre-window**
+(the OpenAI/Hugging Face incident is **July 2026** and larger than implied; "NIST
+agent-identity guidance" is a **blog post**, not guidance; Okta Agent SSO GA'd **Aug 24**).
+That last one is archived as a methodology data point: the aggregator was directionally
+right and wrong on every date and artifact type. See
+[`archive/resolved-caveats.md`](archive/resolved-caveats.md).
+
+### Newly opened (8)
+
+GitSpawn's **`claude ultrareview` path** (reported unpatched as of v2.1.252; no fix found in
+v2.1.257–263 — highest priority); **neither IPE paper proposes a mitigation**; read
+arXiv:2609.01222 in full (does **X-CPE** — content persisting beyond its original context —
+apply to an agent-written `knowledge/` directory?); read PROCTOR (arXiv:2609.02246) in full
+for `guardrails/`; **no review tool has shipped a merge gate or enforced budget cap in four
+passes**; LiteLLM's fail-closed pre-flight rejection bullet; OpenAI's *"Research
+acceleration"* spend figures (**>$600/day median researcher** — 403'd, **not promoted**);
+and Willison's Sep 4 rogue-agent-wikis report (an `/etc/hosts` proxy bypass worth naming in
+`guardrails/` once the primary is read). Plus a standing note that the runaway-agent-cost
+query space is now **dominated by SEO marketing** recycling this KB's own flagged anecdotes.
+
+### Still open, carried forward unchanged (10)
+
+`SKILL.md` cross-tool execution; the Cherny "costliest thing" paraphrase; the `/goal`
+Codex-first timeline; the $47K/11-day and overnight-billing anecdotes; the $500M figure;
+the June 15 billing split; Microsoft dropping Claude Code; Huntley's Loom; AI Engineer
+World's Fair 2026 transcripts; roborev.io/changelog 403s; EvoAgentBench + SkillCheck. Plus
+**`--restricted` "not an OS-level sandbox"**, which was *narrowed* rather than resolved:
+the primary docs neither claim nor deny OS isolation and are silent on env-var credentials,
+but the flag is **absent from the `sandbox-environments` comparison page** — and
+`CLAUDE_CODE_RESTRICTED=1` could not be found in primary docs at all. Working position:
+**a permission gate, not a sandbox.**
+
+### Quiet lanes (recorded so a later pass doesn't re-chase)
+
+Yegge, Steinberger, Cherny and Huntley all published nothing (feeds read directly; **x.com
+is unfetchable, so their X activity is unchecked, not confirmed quiet**). MCP, `AGENTS.md`,
+the Agent Skills spec and the Agent Plugins spec had no in-window changes; AAIF adopted no
+new projects. **No peer CLI harness shipped a stop condition, iteration cap, stall detector
+or dollar ceiling**, so the §4 "Beyond Claude Code" matrix needs no cell changes. The
+`whats-new` weekly digest has now **missed three consecutive weeks** (w35/w36/w37 all 404) —
+treat it as discontinued-or-stalled, and the changelog as the only reliable primary.
+
 ## 2026-08-31 — Seven-day follow-up pass (Aug 24 – Aug 31)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques, key

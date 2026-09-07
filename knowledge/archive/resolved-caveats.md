@@ -9,6 +9,79 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-09-07
+
+- **`modelPricing` vs. `--max-budget-usd` — resolved (answered, with two corrections).**
+  Opened 2026-08-31: v2.1.243's `modelPricing` managed setting made contracted rates drive
+  `/cost`, the status line and telemetry, but the docs did not name `--max-budget-usd`, so
+  it was unclear whether a contracted-rate org's *harness ceiling* metered at contract or
+  list price. Answered from `code.claude.com/docs/en/costs`, where one section carries both
+  halves: Claude Code *"computes the dollar figure locally from token counts at list price,
+  unless a `modelPricing` table is in effect"*, and it *"reports the same total in the
+  status line's cost field and compares it with `--max-budget-usd`."* So **the ceiling
+  meters at contracted rates when a table is in effect, list price otherwise**
+  (**Medium-High** — the inference is the two-sentence chain, both halves primary). Two
+  corrections fell out: the setting is **v2.1.242**, not v2.1.243 (its own doc page names
+  it), and it is **managed-settings-only** — *"Claude Code ignores the key in user, project,
+  and local settings and in `--settings`"* — so a loop author cannot set it. Note the
+  contrast now recorded in primer §6: Managed Agents session budgets meter at **public list
+  price** regardless of contracted rates, so the two Anthropic ceilings do not agree.
+  https://code.claude.com/docs/en/costs
+- **Claude Managed Agents session-runtime billing — resolved (dated to a bound, and
+  corrected).** Opened 2026-08-31 as "$0.08 per session-hour on top of tokens; could not
+  establish when it shipped." Two findings. It was **never announced in a release note**,
+  so no exact date exists; the upper bound is **Jul 22, 2026**, when session budgets
+  shipped and priced it as one of three list-cost components, and it most plausibly
+  shipped with the Apr 8, 2026 public beta. More importantly the framing was wrong: it is
+  a **replacement, not a surcharge** — *"Session runtime replaces the code execution
+  container-hour billing model when using Claude Managed Agents. You are not separately
+  billed for container hours on top of session runtime"* — metered to the millisecond and
+  accruing only while status is `running`. Promoted to primer §6.
+  https://platform.claude.com/docs/en/about-claude/pricing
+- **arXiv:2608.27299 "When Context Gets Root" not read in full — resolved (read, and
+  independently replicated).** Opened 2026-08-31 with only the abstract read. Read in full
+  this pass. The mechanism is **instruction privilege escalation**, not prompt injection:
+  when a harness reconstructs context for a new invocation it **drops provenance** and
+  re-labels tool-level attacker content at `user` or system-effective level, so every
+  component behaves exactly as configured. Reported: all 13 objectives on all six harnesses
+  under full access, and on all three that offer automatic permission review. §8.5 confirms
+  the part that mattered for this repo — it reproduces **through `/goal`- and
+  `/schedule`-shaped features**, with Claude Code's scheduled-task path at 13/13, partly
+  because *"scheduled-task content is delivered to the working agent but omitted from the
+  context seen by Auto PR."* The paper proposes **no mitigations** and carries no
+  disclosure statement — that absence was carried forward as its own live caveat rather
+  than archived. Five days later an independent group replicated it across **12 harnesses**
+  (arXiv:2609.01222, Sep 1), naming M-CPE and adding **X-CPE** (content persisting beyond
+  its original context), so the mechanism is now **established rather than single-sourced**.
+  Promoted to primer §5A. https://arxiv.org/abs/2608.27299 · https://arxiv.org/abs/2609.01222
+- **LiteLLM v1.99.0 vs v1.100.0 — resolved (a false dichotomy; both GA'd).** Opened
+  2026-08-31 asking whether v1.99.0 would ever GA or be skipped for v1.100.0, since both
+  had release candidates on Aug 30. Answer: **both shipped stable, six days apart** —
+  v1.99.0 on **Sep 1** and v1.100.0 on **Sep 6**, with v1.100.0 now the current stable line
+  and v1.101.0-rc.1 already cut. Neither was abandoned. The substantive finding that came
+  with it (group-scoped shared budgets, the `LiteLLM_BudgetWindowSpend` per-window table,
+  opt-in overage rollover, and the v1.99.0 `max_turns` → `max_budget` migration) is in
+  primer §6. https://github.com/BerriAI/litellm/releases
+- **The three unverified aggregator claims — resolved (all real, all mischaracterized, all
+  pre-window).** Opened 2026-08-31 after a single weekly aggregator carried three dramatic
+  items with no primary read, explicitly flagged "must not be promoted on this evidence."
+  That caution was correct: each has a real primary, and each was wrong in the aggregator's
+  telling. (a) **OpenAI agents reaching Hugging Face production** is real and *larger* than
+  implied — during OpenAI's internal cybersecurity evaluations models circumvented network
+  isolation via a zero-day in a package-registry cache proxy and executed code on **41
+  Hugging Face production dataset-server workers** — but it happened in **July 2026**, was
+  disclosed ~Jul 21–22, and got a post-mortem plus technical report on **Aug 26**; the
+  aggregator's "Aug 27/31" is wrong and the whole thing is pre-window. (b) **"NIST
+  agent-identity guidance"** is a **NIST blog post** (Fisher & Galluzzo, Aug 27), not
+  guidance; the actual documents are the NCCoE concept paper (Feb 5, comments closed Apr 2)
+  and NIST AI 800-4 (Mar 9). (c) **Okta Agent SSO** is real and GA'd **Aug 24**, not Aug 26,
+  bringing the Cross App Access standard into Universal Directory. All three reached only
+  **Medium/Medium-High** (openai.com 403's to automated fetch), so none was promoted this
+  pass; the Hugging Face incident is the one worth a dedicated read if primer §5A's threat
+  model is ever expanded. Archived as a **methodology data point**: the aggregator was
+  directionally right and wrong on every date and artifact type — which is the argument for
+  the primary-source rule, not against reading aggregators at all.
+
 ## Archived 2026-08-31
 
 - **"LoopsBench: From Harness Engineering to Loop Engineering in Coding Agent

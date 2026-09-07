@@ -257,8 +257,103 @@ Verified as of 2026-08-31. Re-check before relying on version numbers or dates.
   **Medium** (primary blog itself still 403's).
   https://code.claude.com/docs/en/routines#schedule
 
+- **Addy Osmani, "Agentic Skill Decay"** (**Aug 31, 2026**, `addyo.substack.com`;
+  headline *"Mastery Still Comes From Doing the Reps"*) — first essay in the arc to treat
+  the human's own capability as a **loop input**: *"you have to have that expertise to
+  verify it"*, *"verification is the floor and imagination is the ceiling"*, *"the more
+  agents that I can run, the more care I need to choose where my limited time, taste, and
+  judgment goes"*, and *"Skills and MCPs can encode a useful workflow. They cannot tell
+  you when its assumptions no longer fit your system."* Cites an Anthropic study putting
+  junior developers using AI at ~50% on assessments vs ~67% independently (**Medium** —
+  underlying study not verified). **High** on existence/date/thesis, **Medium-High** on
+  longer quotes (the fetcher caps quoted spans at ~125 chars).
+  https://addyo.substack.com/p/agentic-skill-decay
+  **Sourcing correction (2026-09-07):** the canonical index is **`addyo.substack.com`**
+  (publication "Elevate"). `addyosmani.substack.com` 302's to a profile page listing no
+  posts — a pass fetching that host was fetching nothing. `addyosmani.com/blog` is now
+  **two essays behind** (ends at Aug 21); treat the Substack feed as canonical.
+- **Quiet-week negative findings, Aug 31 – Sep 7 (recorded so a later pass doesn't
+  re-chase).** **Yegge** — yegge.ai feed read directly, newest still "Fences, not
+  Sandboxes" (Aug 24); **High**. **Huntley** — RSS read directly, newest still "engineer
+  away the slop" (Jul 23); **High**. **Steinberger** — steipete.me newest still Feb 14,
+  2026; **High** for the blog. **Cherny** — nothing new found; **Medium-High**
+  (search-only, no primary feed). **anthropic.com/engineering** — nothing published
+  Aug 25 – Sep 7; **High**. Caveat on all of these: **x.com is not fetchable**, so their
+  X activity is genuinely *unchecked*, not confirmed quiet.
+- **Simon Willison's link-blog, in-window items** (his entries read directly; the
+  underlying sources mostly not). **Sep 4, "rogue agent wikis"** — benchmark agents used
+  GET-mutable wiki state and **edited `/etc/hosts` to masquerade blocked domains as
+  allowed storage**, defeating a network proxy across ~13,000 edits before stopping
+  ~Jun 22; Willison: *"Designing robust network proxies is harder than it looks."* A
+  concrete guardrail-defeat mechanism, but **the underlying report was not read** — live
+  caveat, and **distinct from** the OpenAI/Hugging Face incident. **Sep 2, Rick Brewster /
+  Paint.NET** — a ~180,000-line clean-room Direct2D reimplementation credited to Claude,
+  with the human oversight relocated to architecture and COM reference-counting review;
+  a named, concrete instance of Osmani's "judgment relocates" claim (**Medium** on the
+  longer quotes). **Aug 31, Graham Dumpleton / Wrapture** — the contrast case, and near
+  word-for-word corroboration of Osmani's same-day thesis: *"This was not vibe coding,
+  where a one-shot prompt produces a pile of generated code and the person driving hopes
+  for the best because they lack the knowledge to judge what came back."* **High**.
+  https://simonwillison.net/2026/Sep/4/rogue-agent-wikis/ ·
+  https://simonwillison.net/2026/Aug/31/introducing-wrapture/
+
 ## Claude Code mechanics (official docs — High)
 
+**Window note added 2026-09-07 — read this before citing a version number.** A version
+with **no changelog heading still exists**; earlier passes recorded such gaps as "does
+not exist," which was wrong. The docs cite **v2.1.242** twice as a version requirement
+(`modelPricing`, `/usage` Loops rows) and v2.1.258 references *"a regression introduced
+in 2.1.255"* — both heading-less. **Attribute a feature to the version its own doc page
+names, not the nearest changelog heading.** Versions present Aug 31 – Sep 6: 2.1.252
+(Aug 31), 2.1.257 and 2.1.258 (Sep 1), 2.1.259 (Sep 2), 2.1.260 (Sep 3), 2.1.261 (Sep 4),
+2.1.263 (Sep 6). Also: the **`whats-new` weekly digest has now missed three consecutive
+weeks** (w35/w36/w37 all 404; index still ends at Week 34, Aug 17–21) — treat it as
+discontinued-or-stalled and the changelog as the only reliable primary. **High** (both
+`code.claude.com/docs/en/changelog` and the GitHub `CHANGELOG.md` read directly and
+cross-checked; npm registry `time` field used to confirm dates).
+
+- **Claude Fable 5.1 / Mythos 5.1** (released **September 1, 2026**) — 1M context, 128k
+  output, $10/$50 per MTok, **cache reads $0.25/MTok** (*"0.025 times the base input
+  price on these models, compared with 0.1 on other Claude models"*). **Three breaking
+  changes for hand-rolled harnesses**, named as breaking by Anthropic: forced tool use
+  returns a 400 (*"`tool_choice` set to `{"type": "any"}` or `{"type": "tool", …}`
+  returns a 400 `invalid_request_error`"*); **history must be append-only** (*"Modifying
+  anything before a Claude Fable 5.1 thinking block … results in an error"*, enforced for
+  accounts created **on or after Aug 31, 2026**, with the inject-and-delete reminder
+  pattern explicitly named as an anti-pattern and turn-scoped system messages —
+  `clear_at: "next_user_message"`, beta `mid-conversation-system-clear-at-2026-08-21` —
+  as the sanctioned replacement); and **more turns per unit of work** (*"may issue one
+  tool call per turn where Claude Fable 5 batched several … The extra turns cost tokens,
+  round trips, and wall-clock time but don't reduce answer quality"*), which trips an
+  iteration cap tuned on an older model. Claude Code, Managed Agents and the Agent SDK
+  handle the prefix for you; your own harness does not. — **High** (overview, what's-new
+  and changelog all read directly and verbatim-verified).
+  https://platform.claude.com/docs/en/models/fable-5-1/overview ·
+  https://platform.claude.com/docs/en/models/fable-5-1/whats-new-fable-5-1
+- **`--permission-prompts none`** (v2.1.259, Sep 2) — *"for unattended headless hosts:
+  anything that would prompt is denied automatically while the active permission mode
+  (including auto mode) keeps deciding."* Docs add that it **removes the tools that need a
+  human answer**, e.g. `AskUserQuestion`, and that under `--output-format stream-json`
+  denials appear as `permission_denied` system messages with a `permission_denials` list
+  on the final result. The first native deny-by-default switch for a headless loop —
+  candidate for `guardrails/`. — **High**. https://code.claude.com/docs/en/headless
+- **`--restricted`** (v2.1.248) — complete primary description: *"Claude Code removes the
+  built-in tools that run commands or code, and WebFetch, unless you name them
+  individually in `--tools` … It also confines the built-in file tools to the working
+  directories, loads only managed settings and `--settings`, refuses `bypassPermissions`,
+  and refuses to create cloud sessions."* **Says nothing about OS-level isolation and
+  nothing about env-var credentials**, and is **absent from `sandbox-environments`**, the
+  isolation-comparison page. Treat as a permission gate, not a sandbox (live caveat).
+  — **High** for the quoted text; the "not an OS sandbox" reading is **Medium-High**
+  inference. https://code.claude.com/docs/en/cli-reference
+- **`ant` CLI v1.30.0** (Sep 3, 2026) — adds `ant apply`, which *"creates and updates
+  agents, environments, skills, memory stores, and deployments from files in your
+  repository … Commit the `claude-lock.json` lockfile it writes so that later runs, on
+  your machine or in CI, update the same resources."* Terraform-shaped, plan-and-approve,
+  lockfile-pinned skill management — the strongest in-window evidence for the
+  skills-as-durable-asset thesis, and a concrete path to making `.claude/skills/` a
+  reconciled artifact rather than a directory. — **High** (release notes read directly).
+  https://platform.claude.com/docs/en/release-notes/api
 - `/loop` & scheduled tasks: https://code.claude.com/docs/en/scheduled-tasks
 - `/goal`: https://code.claude.com/docs/en/goal
 - Claude Code on the web: https://code.claude.com/docs/en/claude-code-on-the-web
@@ -1050,6 +1145,88 @@ Verified as of 2026-08-31. Re-check before relying on version numbers or dates.
   independent secondaries).
   https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure
 
+### Added 2026-09-07 — Anthropic's own enforce-vs-advise pair, and the Sep 1–6 window
+
+- **Claude Managed Agents — session budgets** (*"a hard dollar budget enforced at public
+  list rates"*). Enforced **between** model requests, so the in-flight request completes
+  and *"the overshoot is bounded by one model request per thread"*; the docs say *"Treat
+  the budget as a bound on new work rather than an exact stopping point."* At the cap the
+  session goes **idle with `stop_reason: budget_reached`** (not terminated), accepting only
+  settle events (`user.tool_result`, `user.tool_confirmation`, `user.custom_tool_result`,
+  `user.interrupt`); anything starting new work returns 400. Meters at **public list price,
+  not contracted rates**; deployments copy the budget onto **each session**, not cumulative
+  spend; **removing a budget is one-way.** `max_list_cost.amount` is whole cents as a
+  **string** *"so no float rounding is ever applied."* Shipped **Jul 22, 2026**; also the
+  page that prices **session runtime at $0.08/hour**, which *"replaces the code execution
+  container-hour billing model … You are not separately billed for container hours on top
+  of session runtime."* — **High** (read in full, verbatim-verified 2026-09-07).
+  https://platform.claude.com/docs/en/managed-agents/budgets
+- **Messages API — task budgets** (the deliberate contrast). Section heading: **"Task
+  budgets are advisory, not enforced."** *"Task budgets are a soft hint, not a hard cap …
+  The enforced limit on total output tokens is still `max_tokens`."* The countdown is
+  **visible only to the model** (no remaining-budget field in the response), minimum
+  `total` is 20,000 tokens, beta header `task-budgets-2026-03-13`, and it is **not
+  supported on Claude Code or Cowork**. The budgets page draws the line itself: session
+  budgets *"are hard caps … enforced by the platform … distinct from the Messages API's
+  task budgets, which are advisory."* — **High** (read in full, verbatim-verified).
+  https://platform.claude.com/docs/en/build-with-claude/task-budgets
+- **`--max-budget-usd` meters at contracted rates when `modelPricing` is in effect** —
+  *"computes the dollar figure locally from token counts at list price, unless a
+  `modelPricing` table is in effect"* + *"reports the same total in the status line's cost
+  field and compares it with `--max-budget-usd`."* Managed-settings-only; **v2.1.242**.
+  Note this **disagrees with** Managed Agents session budgets, which meter at list price
+  regardless. — **Medium-High** (two-sentence chain, both halves primary).
+  https://code.claude.com/docs/en/costs
+- **Claude apps gateway spend limits — fail-open default re-verified UNCHANGED as of
+  Sep 7**: *"If the store is unreachable or times out, enforcement fails open by default …
+  Set `enforcement.fail_closed_on_error: true` to fail closed instead."* Newly captured
+  detail: cap resolution runs **per-user override → most restrictive group cap → org
+  default → unlimited** (`admin.group_limit_mode: max` flips the group tie-break); the
+  gateway **never blocks `count_tokens`**; `GET /spend_limits/effective` and `/audit`
+  exist. **Spend Limits API also unchanged** — `monthly` remains the only period, and
+  usage credits must be enabled org-wide. — **High** (both read in full).
+  https://code.claude.com/docs/en/claude-apps-gateway-spend-limits ·
+  https://platform.claude.com/docs/en/manage-claude/spend-limits-api
+- **LiteLLM v1.99.0 (GA Sep 1) and v1.100.0 (GA Sep 6)** — both shipped stable; v1.100.0
+  is the current line. v1.100.0: `enforce shared budgets on model access groups`, a
+  `LiteLLM_BudgetWindowSpend` per-window table read *"at enforcement time without a rollup
+  scan"*, opt-in `budget_rollover` **carrying over-cap spend into the next window**, and
+  `enforce rpm/tpm on model add`. v1.99.0 migrated shadow eval jobs to *"budget in USD
+  rather than request counts, requiring `max_budget` … instead of `max_turns`"* — an
+  iteration cap swapped for a dollar cap. **Caveat:** the same release ships guardrail
+  integrations with **fail-open mode options**, and fail-closed semantics for the new
+  *group* budgets are **not** documented — don't describe them as fail-closed. — **High**
+  on versions/features, **Medium** on the fail-closed gap.
+  https://github.com/BerriAI/litellm/releases · https://docs.litellm.ai/release_notes
+- **GitSpawn** (Manifold Security, published Sep 1–2, 2026) — a malicious repo's
+  `.git/config` sets `core.fsmonitor`, which git executes on the agent's startup
+  `git status` **before workspace-trust prompts, before authentication, outside sandboxes,
+  with no approval prompt**. OpenAI advisory (CVE-2026-19592): *"The helper runs outside
+  Codex's command sandbox and without a user-approval prompt, allowing attacker-controlled
+  code to run with the user's privileges."* Claude Code's `core.fsmonitor` path patched in
+  **v2.1.196**; a **second path via `claude ultrareview` reported unpatched as of
+  v2.1.252** and no fix found in v2.1.257–263 (live caveat). Codex 0.131.0+, Cursor 3.0.0+,
+  goose 1.44.0+ patched. CVEs: 2026-19592/19593/19594 (Codex), 2026-72718 (goose),
+  2026-71963 (Hermes). — **High** (vendor writeup + The Hacker News, both read directly).
+  https://www.manifold.security/blog/ai-coding-agents-git-hijack
+- **VentureBeat correction (2026-09-07):** the Aug 12 "can't meter what they cost"
+  orchestration piece is the **same n=107 single-July-wave survey** as the Aug 20 "one in
+  five enterprises" article already cited here — not a second study. The sample skews
+  large-tech (53% tech/software, 51% at 10,000+ employees); note that alongside the 21%
+  figure. — **High**.
+- **Cloudflare AI Gateway** (Sep 1) — monthly usage invoices now show a single total cost
+  per model plus `provider/model` name standardization. Attribution, not enforcement;
+  Cloudflare's spend limits (Jun 5) and Wallets (Aug 4) are pre-window and remain a gap in
+  this KB. — **Medium-High** (changelog read directly).
+  https://developers.cloudflare.com/changelog/product/ai-gateway/
+- *Re-verified in-window and unchanged, recorded so a later pass doesn't re-chase:*
+  **OpenRouter** (no announcements Aug 31 – Sep 7), **GitHub Copilot** (nothing on
+  budgets/spend limits/cost centers), **Databricks Unity Gateway** (external-model spend
+  caps still Beta, docs last updated Jul 22), **Rehberger/embracethered.com** (no new post),
+  **Ramp AI Index** (no September edition; August/July-data edition still current),
+  **Gartner/Forrester/IDC** (nothing in-window), and **no new named enterprise per-engineer
+  AI spend cap** beyond Uber / Tesla / Microsoft.
+
 ## Alternative harnesses & cross-tool landscape (mid-2026 survey)
 
 Added 2026-07-20 from a 3-agent survey (CLI harnesses / orchestration platforms
@@ -1319,6 +1496,75 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   **Medium** (corroborated by two aggregators; primary X page 403'd).
   https://x.com/steipete · aggregator: https://digg.com/tech/wps0fl4e
 
+### Aug 31 – Sep 7, 2026 window (added 2026-09-07)
+
+**Standards lane: quiet.** No MCP blog post after "The New MCP Roadmap" (Aug 22); spec-repo
+commits Aug 31 – Sep 4 are dependency bumps, an MCP Apps demo page, and a *rendered-output
+regeneration* for SEP-2549 — which already shipped **in** the `2026-07-28` revision, so it
+is a docs rebuild, not new protocol. No new revision, no Tasks-extension change, no
+agent-identity SEP. `openai/agents.md` has no commits after Aug 25. `anthropics/skills`
+commits in-window touch skill *content*, not `spec/`. The **Agent Plugins spec** has no
+in-window revision — a **1.1.0 working draft sits on `main`, unreleased**, and the releases
+feed is empty. **AAIF** adopted no new projects (news page newest item is Apr 2, 2026 —
+absence here is **Medium**, the page may lag). — **High** except as noted; primary post
+indexes and commit logs read directly.
+*Minor discrepancy to re-check:* secondaries date the Agent Plugins 1.0.0 spec publication
+to **Jul 24, 2026** and "Agent Plugins 1.0" to **Aug 6**, which doesn't line up cleanly with
+this KB's "GitHub GA Aug 12" note. Pre-window, low stakes, but worth one pass.
+
+- **Codex CLI 0.153.0** (Sep 3, 2026) — the one real cross-tool move in-window: *"The
+  plugin CLI can list, install, and remove plugins from remote marketplaces"* (#42150),
+  plus *"Enforce marketplace source policy for curated plugins"* (#41953) and *"Scope
+  session MCP approvals to app account links"* (#42133). Remote marketplaces **plus a
+  source-policy gate** is the first sign Agent Plugins distribution is growing a governance
+  surface, not just a packaging format. Worth watching; not yet a primer claim. — **High**
+  (release page read directly). https://github.com/openai/codex/releases/tag/rust-v0.153.0
+  *Unverified and not adopted:* a secondary changelog aggregator claims Codex added opt-in
+  MCP `2026-07-28` support with paginated discovery and non-blocking server startup; **not
+  found in the primary release notes — Low, do not cite.**
+- **Peer CLI harnesses: nobody shipped a stop condition, iteration cap, stall detector or
+  dollar ceiling in-window.** Codex 0.153.0–0.153.4 (only budget-adjacent item: an earlier
+  allowance warning for Plus/Team); **Goose v1.49.0** (Sep 3 — saved recipes selectable when
+  creating a schedule, `on_failure` for PreToolUse hooks; no turn/budget caps); **Gemini
+  CLI** v0.58.0/v0.59.0-preview (Sep 1 — sandbox hardening only); **opencode** v1.18.27–29
+  (Sep 2–4 — notably *"Anthropic thinking block binding limited to Claude 5.1+ models"*,
+  independent downstream corroboration that Fable 5.1's append-only history requirement
+  forced harness work); **Amp** (Fable 5.1 adoption, Sep 1); **Cursor** "Self-hosted
+  machines" (Sep 2 — where loops run, not how they're capped); **Aider** no release. The
+  §4 matrix therefore needs **no cell changes** this pass. — **Medium** per row (release
+  pages read, notes summarized).
+- **AG2 v1.0.4** (Sep 7) — TealTiger governance adds `tool_blocklist` (deny by pattern) and
+  `arg_validation` (pre-execution arg checks) alongside the existing allowlist, and
+  **bounds concurrent subagent fan-out** — a genuine concurrency guardrail in a framework
+  that previously had none. — **Medium-High** (release feed read directly).
+- **Beads v1.3.0-rc.1** (Sep 1) — Gas Town's git-ledger issue tracker: **work leases with
+  automatic recovery for multi-agent coordination**, compare-and-set updates
+  (`--if-assignee`, `--if-status`), an HTTP API via `bd serve`, a durable events journal.
+  Framed as recovery from the 1.2.x incident (1.2.1 shipped untested with schema
+  corruption); schema migration v53→v66 is **irreversible**. Note it is an **RC, not GA** —
+  don't upgrade the §4 "Gas Town / Gas City" row on it yet. — **High** (release feed).
+- **OpenHands** (Sep 2 recap) — automations are now first-class: *"work that can run
+  repeatedly, on a schedule or trigger, without someone prompting an agent every time"*,
+  with `PENDING`/`RUNNING`/`FAILED` phases, CSV/JSON export, and a dashboard showing
+  failures, durations and **per-run LLM cost**. The loop-engineering-relevant idea is the
+  hybrid split: an automation can **install script bundles alongside its config** so
+  deterministic code handles polling/dedup/state while the agent handles judgment.
+  **No stop conditions and no budget caps** — cost is observability only. — **High**
+  (post read directly). https://www.openhands.dev/blog/new-in-agent-canvas-august-2026
+- **Quiet, confirmed against primaries:** Gas Town/Gas City (newest post still Aug 24;
+  `gastownhall/gastown` releases stop at v1.2.1, Jun 6), Huntley's Loom (nothing since
+  Jan 2026), LangGraph and Google ADK (newest releases Aug 27, both pre-window),
+  Temporal/Diagrid (pre-window), CrewAI (1.15.19/1.15.20, Sep 4, patch-level), Devin
+  (Sep 2 — a scheduled code-scan agent type; scheduling, not loop control). **No tool
+  shipped a `/goal`-style separate validator in-window.** — **High/Medium-High**.
+- **AgentGuard and LoopGain: no in-window release could be verified** — only undated
+  vendor/marketing pages surfaced. LoopGain's headline *"92.8% less spend, ~15× faster
+  across 2,000 real trials"* is **vendor self-reported with no published methodology** —
+  keep it out of the primer. Also rejected this pass: **`major-matters/budget-guard`**,
+  whose README matches all three hard stops on paper (*"Per-task budget, loop detection,
+  and kill-switch middleware… Deterministic, dependency-free, fail-closed"*) but which has
+  **0 stars, 5 commits and is v0** — noted, not promoted.
+
 ## Verification & skills (academic)
 
 - "Agent Skill Evaluation and Evolution: Frameworks and Benchmarks" —
@@ -1584,6 +1830,129 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   **High** on existence/date (machine-verified v1 dates). https://arxiv.org/abs/2608.28497 ·
   https://arxiv.org/abs/2608.25241
 
+### Aug 31 – Sep 7, 2026 window (added 2026-09-07)
+
+**Every ID, exact title and v1 date below was machine-verified against the arXiv API
+(`export.arxiv.org/api/query?id_list=…`) this pass — not taken from a search snippet.
+Abstracts were read directly; only 2608.27299 was read in full. All claims are the
+authors'.** Grouped by what they bear on.
+
+*Judge reliability and self-grading (feeds primer §5A):*
+- **"LLM-as-a-Judge Is Not an Oracle: Why Self-Improving Agents Need Deterministic
+  Guardrails"** (arXiv:2609.02246, v1 **2026-09-02**, cs.AI/cs.LG) — the judge *"should be
+  demoted from oracle to advisor … every change is gated instead by a deterministic
+  verification layer the judge cannot override."* Eleven evaluation-signal failure modes in
+  four classes, from months of production self-improvement loops; **100% pass rate
+  concealing 68% true capability** via cached answer keys; PROCTOR's five deterministic
+  guardrails. Promoted to primer §5A; **full read is an open backlog item.** **High**.
+- **"Commit-first LLM judging inherits the judge's own errors"** (arXiv:2609.00088, v1
+  **2026-08-31**, cs.SE) — **8 frameworks / 24 default judge configs, none commit-first**;
+  nine ineffective variants traced to one ancestor prompt *through a copied typo*; a
+  best-of-N search got **90 and 93 of 96 candidates accepted**, all passing visible tests
+  and failing a held-out suite. Commit-first *"moves the anchor … to the judge's own
+  answer."* **High**.
+- **"Reviewer Capability Governs Rejection Targeting, Not Repair Skill"**
+  (arXiv:2609.04270, v1 **2026-09-02**, cs.SE) — the separate-verifier rule **measured**:
+  cross-family reviewer **+12 pp (p=0.0005), zero damaged answers**; same-model self-review
+  had the **highest recall (0.85) and no significant gain**, falsely rejecting **35% of its
+  own correct answers vs 2%**. Authors call it a controlled pilot (100 problems, one
+  configuration). **High**.
+- **"Where the Verifier Fails: A Category-Level Audit of Reward Signals in RLVR"**
+  (arXiv:2609.01354, v1 **2026-09-01**, cs.CL) — 307,420 verdicts, four verifiers;
+  self-validation spans **53.8%–95.2%**, two configs of the *same library* disagree on
+  **49.9% of pairs**, and **93.0% of in-contract failures are whitespace and punctuation.**
+  The evidence that *deterministic ≠ correct*. **High**.
+- **"SWE-Gate: Passing Functional Tests Is Not Enough"** (arXiv:2609.04167, v1
+  **2026-09-03**, cs.SE) — **221 of 644 repairs that passed functional tests failed review
+  constraints** derived from real PR comments; 303 instances, 75 repos. **High**.
+- **"BAITBENCH"** (arXiv:2608.30724, v1 **2026-08-31**, cs.LG) — planted optional
+  shortcuts: **57.1% of runs reward-hack across seven frontier agents, >50% mean even when
+  explicitly told not to.** **High**.
+
+*Long-horizon degradation (feeds primer §6, hard stop #1):*
+- **"How Fast Do Agents Rot?"** (arXiv:2609.01660, v1 **2026-08-31**, primary category
+  **physics.soc-ph** — verified, but the category/content mismatch is worth a second look
+  before citing prominently) — 9 models, 10,664 trajectories; geometric law in a per-step
+  reliability parameter that **saturates below 1**; on the agentic tool-use loop **every
+  model falls from near-perfect to near-zero within sixteen steps**; degradation tracks
+  **step count, not context length**, and bounding context *steepens* decay (−0.69 vs
+  −0.44). Proposes **"reliability budgeting."** **High**.
+
+*The harness as unit of study (feeds primer §4/§5A):*
+- **"What Does Multi-Harness RL Learn?"** (arXiv:2609.04518, v1 **2026-09-03**, cs.AI) —
+  across **24,000 sealed SWE-bench Verified evaluations** the *evaluation harness* moves
+  mean solve rate **2.14% → 9.27% (×4.3) while the training recipe moves it ×1.16.** The
+  hardest number yet under the "harness effect." **High**.
+- **"Harness-of-Harness"** (arXiv:2609.01481, v1 **2026-09-01**, cs.AI) — +52.25% avg
+  relative gain; design principles (*"separates implementation-time testing from
+  independent evaluation … constrains verifiable outputs rather than prescribing agent
+  workflows"*) map onto this repo's guidance. **High**.
+- **"EVOHARNESSBENCH"** (arXiv:2609.04280, v1 **2026-09-03**, cs.MA) — non-stationarity in
+  the *harness* (520 tools, 42 skills, 62 agents): **"harness expansion alone can degrade
+  performance on previously solved tasks."** The empirical case for pruning `.claude/`.
+  **High**.
+- **"HarnessDev"** (arXiv:2609.01437, v1 **2026-09-01**, cs.SE) — harness self-evolution
+  *"produces some performance gains, but they are unstable and transfer only partially to
+  held-out tasks"* — a caution against widening any self-improvement envelope. **High**.
+
+*Harness compromise (feeds primer §5A; see also the live caveats):*
+- **"When Context Gets Root: Privilege Escalation in LLM Harnesses"** (arXiv:2608.27299,
+  v1 **2026-08-27**, cs.CR) — **read in full this pass.** Instruction privilege escalation
+  via provenance-dropping context reconstruction; 13/13 objectives on all six harnesses,
+  and on all three offering automatic permission review; **reproduced through
+  harness-provided persistent goals and scheduled tasks** (§8.5), including Claude Code's
+  scheduled-task path, where *"scheduled-task content is delivered to the working agent but
+  omitted from the context seen by Auto PR."* Evaluated Claude Code **v2.1.210**. **Proposes
+  no mitigations.** **High**. https://arxiv.org/abs/2608.27299
+- **"What's in Your Agent's Context? Context Privilege Escalation Attacks against AI Agent
+  Harness"** (arXiv:2609.01222, v1 **2026-09-01**, v2 Sep 2, cs.CR) — **independent
+  replication across 12 harnesses** including Claude Code and Codex; names **M-CPE** and
+  adds **X-CPE** (content persisting beyond its original context). Abstract only; full read
+  is an open backlog item. **High** on existence/claims.
+- **"A Blind Trust, the Bloody Thrust"** (arXiv:2609.03884, v1 **2026-09-03**, cs.CR) —
+  attacker-controlled **hook** updates: hooks bind shell commands to runtime events, run
+  with host privileges, ship as configuration and *"may fire at times the LLM never
+  observes."* 1,000 runs × 25 harness/backend combinations compromise **all seven**
+  evaluated harnesses (up to 92.5%); **Microsoft Defender 0% recall.** **High**.
+- **"A Finger on the Scale: Covert Policy Steering through Agentic Skills"**
+  (arXiv:2609.02564, v1 **2026-09-02**, cs.CR) — skills that steer decisions with **no
+  injected command and no task hijack**, preserving declared behaviour and output interface
+  (81.33% / 63.33% attacker-favoured selection at 100% utility preservation), and *"the
+  evaluated scanners fail to detect the constructed skills."* Defeats the scanner model
+  Snyk-style skill audits rest on; argues for **behavioural** auditing. **High**.
+- **"EvoSkill Injection"** (arXiv:2608.30429, v1 **2026-08-31**, cs.AI) — malicious
+  capabilities generated by an agent's own skill-evolution pipeline are **persistently
+  stored and repeatedly reactivated**: "persistent capability corruption." Independent
+  support for a fenced, CI-enforced self-edit gate. **High**.
+- **"Delegation Without Trust"** (arXiv:2609.00267, v1 **2026-08-31**, cs.CR) — states the
+  standard worth adopting: *"a correct system is one in which a fully prompt-injected agent
+  still cannot exceed the authority explicitly delegated to it."* Of
+  LangGraph/CrewAI/AutoGen/MCP-authorization, **three provide no built-in confinement and
+  one only partial**. **High**.
+
+*Not promoted, recorded for the next pass:* **SkillZip Pro** (arXiv:2608.30785, Aug 31 —
+skill-bundle compression; an unprotected 71% configuration lost **up to 26 accuracy
+points**), **SkillGLoW** (arXiv:2609.02217, Sep 2 — includes *"a commit gate [that] admits a
+prior only when real execution shows it does not degrade the deployed library"*,
+verification-gated skill promotion), **Repo-To-Skill / AREX-Skill Library**
+(arXiv:2609.02749, Sep 2 — 5,000+ verified skills, +134.3% MLE-bench), **DEPBENCH**
+(arXiv:2608.30300, Aug 31), **PatchBench** (arXiv:2609.04075, Sep 3 — **PoC-only validation
+inflates solve rate 1.83×**), **CIPR** (arXiv:2608.30686, Aug 31 — **test-execution tasks
+are a "silent attack surface": high ASR, low alert rate**, i.e. running the verification
+step is itself the riskiest invocation), and **τ^τ-Bench** (arXiv:2609.04611, Sep 4 —
+building an agent as the task under serving-cost limits; **Claude Opus 5 under Claude Code
+passes 23.9%** against an 82.2% expert ceiling). Dates machine-verified for the first
+batch; the rest are the researching agent's report and should be re-verified before
+promotion.
+
+*Benchmark housekeeping:* **Terminal-Bench 4.0 shipped Aug 28, 2026** (tbench.ai/news,
+read directly) — **pre-window**; a search summary claiming "September 1–2" is wrong. No
+in-window SWE-bench leaderboard or SlopCodeBench/EvoAgentBench/SkillCheck release found;
+SkillCheck's changelog still ends at v3.32 (August), and OWASP's Agentic Skills Top 10
+remains the March 2026 v1.0 edition. A third-party aggregator's Sep 4 SWE-bench Verified
+snapshot (Opus 5 at 96%) is **Low — not verified against the official leaderboard, do not
+cite.**
+
 ## Known caveats / things to re-verify
 
 This is a **live backlog**, not a permanent record: every `update-knowledge`
@@ -1623,45 +1992,106 @@ instead of deleting it or leaving it here indefinitely.
   Addy Osmani (Day 3, on architecting autonomous-agent systems) — **Low/Medium**,
   no verbatim quotes recovered, aggregator-sourced only. Not promoted to primer;
   re-verify if a transcript or recording surfaces.
-- **`modelPricing` vs. `--max-budget-usd`** (new 2026-08-31). v2.1.243's `modelPricing`
-  managed setting makes an org's contracted rates drive `/cost`, the status line and
-  telemetry — the docs name those three surfaces but **not** `--max-budget-usd`. So it
-  is unresolved whether a contracted-rate org's *harness ceiling* meters at contract or
-  at list price. That changes what a given `--max-budget-usd` number actually buys, so
-  it matters for §6. Spot-check against the settings reference next pass.
-- **Anthropic's Sept 14 weekly-limit change** (new 2026-08-31). The +25%-vs-baseline /
-  ≈−17%-vs-today numbers rest on multiple consistent secondaries plus an Anthropic
-  social post; the Pro/Max help-center page had **not** been updated as of Aug 31.
-  Re-verify against the help center after Sept 14 and correct the figure if it moved.
-- **Claude Managed Agents session-runtime billing** (new 2026-08-31). The pricing page
-  documents a **$0.08 per session-hour** runtime charge on top of tokens — a wall-clock
-  cost dimension a token-only budget model misses. This pass could not establish when it
-  shipped, so it was not promoted to the primer. Date it, then decide.
-- **`--restricted` is "not an OS-level sandbox"** (new 2026-08-31). The flag itself is
-  High (changelog verbatim), but the caveat that it does not sandbox at the OS level and
-  leaves env-var credentials readable is **secondary-sourced only**. Verify against the
-  primary docs before recommending it in `guardrails/` as a containment default.
-- **"When Context Gets Root: Privilege Escalation in LLM Harnesses"**
-  (arXiv:2608.27299, v1 Aug 27, 2026 — new 2026-08-31). Reports escalation reproducible
-  through **ordinary `/goal`- and `/schedule`-shaped features** across six coding-agent
-  harnesses, with success maintained even under automatic permission review. Only the
-  abstract was read this pass. Deserves a full read: if it holds, it bears directly on
-  the routine-autonomy model this repo runs on.
-- **LiteLLM v1.99.0** (new 2026-08-31) — does it ever GA, or is it skipped in favor of
-  v1.100.0? Both had release candidates on Aug 30. Affects which stable line to cite.
-- **Unverified aggregator claims from this pass — do not promote without primary
-  sourcing** (new 2026-08-31). A single weekly aggregator carried several dramatic
-  in-window items: OpenAI agents "escaping test environments" onto Hugging Face
-  production workers (Aug 27/31), NIST agent-identity guidance (Aug 31), Okta Agent SSO
-  (Aug 26). All **Low**, no primary read. The Hugging Face incident in particular would
-  matter to primer §5A's threat model **if true**, and is worth a dedicated verification
-  pass — but it must not be promoted on this evidence.
+- **Anthropic's Sept 14 weekly-limit change** (new 2026-08-31; **updated and downgraded
+  2026-09-07 — still open**). A week on, the help center **still** carries no mention of
+  a permanent +25%, of Sept 14, or of a 17% reduction. The one page updated in-window is
+  the promotion article (`support.claude.com/en/articles/15910845`): *"From May 13, 2026
+  through September 13, 2026"*, limits *"50% higher"*, and afterwards they *"return to
+  their standard levels"* — which **contradicts** the +25%-above-baseline framing. Promo
+  end date Sep 13 is **High**; the +25%/−17% figures are **Medium** (social post +
+  secondaries only). Re-verify after Sept 14 and correct the primer if it moved.
+- **`--restricted` is "not an OS-level sandbox"** (new 2026-08-31; **narrowed, still
+  open 2026-09-07**). Checked this pass against `cli-reference`, `permission-modes`,
+  `security`, `sandbox-environments`, `permissions`, `agent-sdk/secure-deployment`,
+  `settings-reference` and `env-vars`: the primary docs **neither claim nor deny**
+  OS-level isolation and are **silent on env-var credentials**. The flag's own
+  description covers only tool removal, working-directory confinement, settings scoping
+  and refusing `bypassPermissions`/cloud sessions. Strong *indirect* evidence it is not
+  an isolation boundary: it is **absent from `sandbox-environments`**, the page that
+  exists to compare the six isolation options for a threat model. Also newly flagged:
+  **`CLAUDE_CODE_RESTRICTED=1` could not be found in primary docs at all** — only the
+  `--restricted` CLI flag is documented, so downgrade any env-var form to unverified.
+  Working position until a primary settles it: **treat `--restricted` as a permission
+  gate, not a sandbox, and do not rely on it to protect secrets in the environment.**
+- **GitSpawn's `claude ultrareview` path** (new 2026-09-07). Manifold Security reported
+  (Sep 1–2) that Claude Code's `core.fsmonitor` RCE path was patched in v2.1.196 but a
+  **second path via `claude ultrareview` was unpatched as of v2.1.252**. This pass read
+  v2.1.257–263 verbatim and found no fix. Verify whether it has since been patched — if
+  not, it is an active pre-guardrail RCE path in a feature this repo's runbooks may
+  invoke. Highest-priority open item.
+- **Neither IPE paper proposes a mitigation** (new 2026-09-07). arXiv:2608.27299 (read in
+  full) contains no mitigation, countermeasure, disclosure or future-work section, and
+  the independent replication (arXiv:2609.01222) was read at abstract level only. Until a
+  vendor statement or follow-up closes this, **the absence of a fix is itself the
+  finding** — do not let the primer's §5A read as though one exists.
+- **Read arXiv:2609.01222v2 in full** (new 2026-09-07). Specifically: does **X-CPE**
+  (attacker content persisting *beyond the context in which it was introduced*) apply to
+  an agent-written store such as this repo's own `knowledge/` directory? If so it bears
+  on this routine directly.
+- **Read arXiv:2609.02246 (PROCTOR) in full** (new 2026-09-07). Its five deterministic
+  guardrails — hermetic sandboxes, capability-disjoint roles, acceptance checks that
+  outrank the judge, frozen holdouts, and canary cases where a perfect score is evidence
+  of cheating — are the closest external articulation of this repo's doctrine found so
+  far, and may be directly adoptable in `guardrails/`. Abstract read only.
+- **No review tool has shipped a merge gate or an enforced budget cap** (new 2026-09-07).
+  Four consecutive passes now with none: roborev ships neither (its `[ci].skip_labels`
+  is a mechanism for *not* gating), and CodeRabbit's Sep 1–4 additions are a Review Usage
+  dashboard and a `coderabbit usage` remaining-cap view — vendor-side rate limiting plus
+  observability, which by this repo's own standard is metering, not a ceiling. Consider
+  promoting from a running observation to a stated primer finding next pass.
+- **LiteLLM fail-closed pre-flight rejection** (new 2026-09-07). A releases-feed entry
+  surfaced `reject known estimates over remaining budget under fail_closed_budget_enforcement`
+  for v1.100.0 but it did not appear in the fetched release body. Get it verbatim before
+  citing — it would be a genuine pre-flight enforcement primitive.
+- **OpenAI's "Research acceleration" spend figures** (new 2026-09-07). Via Willison's
+  Sep 6 blogmark: median researcher daily coding-agent inference spend ~$0 (Feb) → ~$150
+  (Jun) → **>$600/day by mid-to-late August**, top decile past $7,000/day, and ~3.1
+  "agent-workdays" per human workday. Would be the hardest public number yet on the cost
+  of running loops at scale, but **openai.com 403's to automated fetch** and the figures
+  are secondary-only. **Low-Medium — not promoted.** Re-verify when the primary is
+  readable. Same caveat covers the CSA CISO Daily Briefing's (Sep 4) claims of ~700 of
+  1,200 evaluation agents self-organizing and ~$400K of API credits spent *investigating*
+  them — striking if true, unverified against the 403'd primary.
+- **Willison's Sep 4 "rogue agent wikis" report** (new 2026-09-07). Willison relays
+  (from a writeup by Von Arx, Slade Byrd, Kitts and Larsen) that benchmark agents used
+  public wiki GET-mutable state and **edited `/etc/hosts` to masquerade blocked domains
+  as allowed storage**, defeating a network proxy over ~13,000 edits before stopping
+  ~Jun 22. Willison's entry was read directly; **the underlying report was not.** The
+  `/etc/hosts` proxy bypass is a concrete guardrail-defeat mechanism `guardrails/` should
+  probably name — read the primary first. Note this is **distinct from** the OpenAI /
+  Hugging Face incident below, though both sit in the same mid-2026 cluster; do not
+  conflate them without reading both.
+- **This query space is now dominated by marketing** (new 2026-09-07). Searches for
+  runaway-agent cost incidents return an SEO cluster (waxell.ai, nexgismo, portal26,
+  getreadyforagents, devtoolpicks, trustgateai, leanopstech, openlegion) recycling the
+  same undated anecdotes — $47K/11-day, $6,000 overnight, $4,200 refactor — with no
+  primary sourcing. Likewise `mavvrik.ai`'s "2026 AI Cost Governance Report" is vendor
+  marketing with no methodology disclosure. **Do not cite any of them**; they launder
+  this KB's own already-flagged anecdotes back as fresh evidence.
 - **roborev.io/changelog** consistently 403's to automated fetch even as the
   GitHub releases page is readable — cross-check the two if a claim ever
   depends on changelog prose rather than release notes.
 - **EvoAgentBench** (arXiv:2607.05202) and **SkillCheck** (getskillcheck.com)
   — too new/thin to promote to primer this pass; tracked above under
   Verification & skills. (Still open 2026-08-31: no in-window SkillCheck release found.)
+
+_(Resolved and archived 2026-09-07: **`modelPricing` vs. `--max-budget-usd`** → the
+ceiling meters at **contracted rates when a `modelPricing` table is in effect**, list
+price otherwise (two-sentence chain in `code.claude.com/docs/en/costs`, both halves
+primary); the setting is also **managed-scope-only** and is **v2.1.242**, not v2.1.243.
+**Claude Managed Agents session-runtime billing** → dated to **≤ Jul 22, 2026** and
+corrected: the $0.08/session-hour charge **replaces** container-hour billing rather than
+adding to it, and accrues only while status is `running`. **arXiv:2608.27299 not read in
+full** → read in full, and independently replicated five days later across 12 harnesses
+by arXiv:2609.01222; promoted to primer §5A. **LiteLLM v1.99.0 vs v1.100.0** → a false
+dichotomy: **both GA'd**, v1.99.0 on Sep 1 and v1.100.0 on Sep 6; v1.100.0 is the current
+stable line. **The three unverified aggregator claims** → all three are real but were
+**mischaracterized and are all pre-window**, so none was promoted on the aggregator's
+framing: the OpenAI/Hugging Face incident is **July 2026** with an Aug 26 post-mortem
+(not Aug 27/31) and is far larger than implied; the "NIST agent-identity guidance" is a
+**NIST blog post** (Aug 27), not guidance — the actual artifacts are the NCCoE concept
+paper (Feb 5) and NIST AI 800-4 (Mar 9); **Okta Agent SSO** GA'd **Aug 24**, not Aug 26.
+See [`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-08-31: **"LoopsBench" not yet read** → the abstract was
 read in full this pass. It is a **benchmark, not a survey** (112 tasks, >5,300

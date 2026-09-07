@@ -20,6 +20,69 @@ the ceiling has to live in your loop harness.
 Plus, always: **verification inside the loop** — one deterministic check
 (test/lint/typecheck) the agent runs itself, declaring done only on pass.
 
+## Containment — the required companion (not a fourth hard stop)
+
+The three hard stops bound what a loop **spends** and **how long it runs**. None
+of them bounds **what an attacker-supplied input can make the harness do** — and
+in 2026 that gap stopped being theoretical. Containment is therefore a
+**required section of every loop's setup**, deliberately *not* numbered as a
+fourth hard stop: the three are single, checkable numbers, while containment is
+a posture made of several settings. Keeping the list at three preserves its
+force; skipping this section is still incomplete.
+
+**Why it's required.** Two mechanisms, both documented in 2026, land *before*
+any of the three hard stops or the verification step can run:
+
+- **GitSpawn** (Sep 2026) — a malicious repo's `.git/config` sets
+  `core.fsmonitor`, which git executes during the agent's startup `git status`:
+  before the workspace-trust prompt, outside the command sandbox, with no
+  approval prompt. Triggered by *cloning the target repo*.
+- **Instruction privilege escalation** (arXiv:2608.27299, replicated
+  independently across 12 harnesses by arXiv:2609.01222) — a harness
+  reconstructing context drops provenance and re-labels attacker text that
+  arrived as a *file the agent read* into a genuine `user` message. It
+  reproduces through `/goal`- and `/schedule`-shaped features, and automatic
+  permission review does not stop it.
+
+This repo's model is "loops run *from here* against other repositories," i.e.
+**we clone untrusted code by design.** That is exactly the premise both attacks
+need. See `knowledge/00-primer.md` §5A.
+
+**The standard to hold** (arXiv:2609.00267): *"a correct system is one in which a
+fully prompt-injected agent still cannot exceed the authority explicitly
+delegated to it."*
+
+### Containment defaults
+
+- [ ] **Network egress is scoped.** Allowlist the domains the loop actually
+      needs rather than granting full access. In Claude Code,
+      `sandbox.network.strictAllowlist` denies non-allowlisted hosts without
+      prompting. Note that a proxy is not sufficient on its own — agents have
+      been observed editing `/etc/hosts` to masquerade blocked domains as
+      allowed ones.
+- [ ] **No long-lived credentials in the environment.** Assume anything in env
+      vars is readable by whatever the loop runs. Isolate SSH keys, cloud
+      credentials and the home directory; prefer short-lived tokens.
+- [ ] **Unattended runs deny by default.** Use `--permission-prompts none`
+      (Claude Code v2.1.259+) on headless hosts: *"anything that would prompt is
+      denied automatically while the active permission mode (including auto
+      mode) keeps deciding."* It also removes the tools that need a human answer
+      (e.g. `AskUserQuestion`), and under `--output-format stream-json` denials
+      surface as `permission_denied` messages with a `permission_denials` list
+      on the final result — so a harness can *see* what it blocked. This is the
+      single cheapest containment win available today.
+- [ ] **The blast radius is a container/VM, not a flag.** `--restricted`
+      (v2.1.248+) removes command-running tools and confines file tools to the
+      working directory — but the primary docs describe it only as tool removal
+      and settings scoping, say **nothing** about OS-level isolation, and it is
+      **absent from Anthropic's own `sandbox-environments` comparison page**.
+      Treat it as a *permission gate, not a sandbox*, and don't rely on it to
+      protect secrets. For real isolation use a container, VM, or Claude Code on
+      the web's ephemeral VMs.
+- [ ] **Review of untrusted code is a privileged operation.** "Have an agent
+      review it" is not a free safety check when the reviewer is the attack
+      surface (cf. the "Friendly Fire" disclosure, primer §5A).
+
 ## Enforce them tool-agnostically (not just in Claude Code)
 
 The three hard stops are a *discipline*, not a Claude Code feature — the same
@@ -37,13 +100,23 @@ Claude Code"). Two enforcement locations, both agent-independent:
   (`BudgetGuard`/`LoopGuard`/`TimeoutGuard`) and **LoopGain** (convergence early
   stop + rollback; adapters for LangGraph/CrewAI/AutoGen/Claude Agent SDK) ship
   the three stops as a kill-switch you drop into any loop.
-- **Native in Claude Code** (v2.1.212, Jul 17 2026): a session-wide WebSearch
-  cap (default 200, `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`), a per-session
-  subagent-spawn cap (default 200, `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`,
-  reset by `/clear`), and MCP calls running >2 min auto-moved to background.
-  Product-level backstops against runaway loops — they complement the three
-  hard stops, they don't replace them (none is a dollar ceiling, and the
-  defaults are far above a sane per-loop cap — set them lower explicitly).
+- **Native in Claude Code**: a session-wide WebSearch cap (default 200,
+  `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`, v2.1.212), MCP calls running
+  >2 min auto-moved to background, a **concurrent**-subagent cap (default 20,
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`) and a subagent **depth** cap (default
+  3, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). Product-level backstops — they
+  complement the three hard stops, they don't replace them (none is a dollar
+  ceiling, and the defaults sit far above a sane per-loop cap — set them lower
+  explicitly).
+  **Corrected 2026-09-07 — do not rely on `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`.**
+  This file previously recommended it as a per-session spawn cap with a default
+  of 200. That cap was **removed in v2.1.224 (Aug 7, 2026)** and the variable is
+  now gone from the docs entirely; the `sub-agents` page states *"There's no
+  limit on the total number of subagents Claude can spawn over a session."* The
+  concurrency and depth caps above are the only native subagent backstops left,
+  and **neither bounds a session's total lifetime spawns** — so that ceiling is
+  yours to enforce. A native backstop being deleted is exactly why the three
+  hard stops live in your harness rather than in a vendor default.
 
 Confidence on specific gateway/library flags is **Medium** — verify against live
 docs before relying on one (see `knowledge/sources.md`). The principle is firm;

@@ -9,6 +9,62 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-09-14
+
+- **AI Engineer World's Fair 2026 sessions — resolved, and the item was wrong on its own
+  premise.** Opened 2026-07-20 as: Yegge's *"Harness Engineering"* fireside with **Guy
+  Podjarny**, and reportedly an Osmani Day-3 session, aggregator-sourced with no verbatim
+  quotes. Rewritten before archiving, because filing it verbatim would preserve two errors:
+  1. **Osmani's WF26 session exists and is recorded** — *"The engineer of the future is the
+     person who is able to choose what is worth doing"*, 18:26,
+     `ai.engineer/talks/n97BCfyFIvw-engineer-future-person-able-choose-what-worth`. Its
+     session page carries substantive content (*"the coding agent is the model plus the
+     harness around it"*; loop engineering as *"designing systems that kept prompting,
+     checking, and remembering, and deciding what happened next"*; *"distrust without
+     bandwidth"*; the rule *"Explain it or don't ship it"*). **Medium** that these are exact
+     spoken words rather than the page's write-up — YouTube 302s to a bot-check, so the
+     recording itself was not read.
+  2. **Yegge's only WF26 talk is *not* "Harness Engineering."** It is *"Agentic Security:
+     Permissions, Provenance, and the Agent Supply Chain"*, 22:32
+     (`ai.engineer/talks/yWS0udrIOc8-agentic-security-permissions-provenance-agent`) —
+     guardrail-adjacent (*"slop squatting"*, *"Functional success does not establish
+     dependency trust"*, prompt injection as *"the new XSRF"*).
+  3. **The "Harness Engineering fireside" was not a World's Fair session at all** — it was a
+     Tessl / AI Native Dev side event in SF (`luma.com/7f31tcht`, "Harness Engineering:
+     Building Reliable AI Systems", marked Past Event), and the counterpart was **Dru Knox**
+     of Tessl, not Guy Podjarny (Tessl's founder, who hosts their podcast — the likely source
+     of the conflation). **The Luma page carries no recording or transcript**, so the
+     original item's actual ask — "re-verify if a transcript or recording surfaces" — is
+     answered: none exists for that event.
+  Archived rather than carried: the artifacts either exist and are now cited, or are
+  confirmed not to exist. Neither talk was promoted to the primer (both are restatements of
+  positions already recorded there from written primaries).
+- **LiteLLM "fail-closed pre-flight rejection" — resolved, as a correction.** Opened
+  2026-09-07 from a releases-feed fragment: *"reject known estimates over remaining budget
+  under `fail_closed_budget_enforcement`"*. **That phrasing exists nowhere in LiteLLM's docs
+  or repository** and must not be cited. The real primitive is **budget reservation**, a
+  different and better-documented feature: *"LiteLLM estimates the request's maximum cost
+  from the request body and the model's pricing. It temporarily reserves that amount against
+  the applicable budget. If the reservation would exceed the budget, LiteLLM rejects the
+  request before sending it to the provider."* It is **on by default**
+  (`disable_budget_reservation` is the opt-out), and `fail_closed_budget_enforcement` is a
+  separate counter-degradation backstop returning `503`, not an estimate check. Recorded in
+  primer §6 with its documented gap (routes without token pricing fall back to
+  non-atomic recorded-spend enforcement; open issue #35524). The docs are **undated**, so it
+  is a pre-existing primitive newly verified, not an in-window change.
+  https://docs.litellm.ai/docs/proxy/users
+- **"Read arXiv:2609.01222v2 in full" and "Read arXiv:2609.02246 (PROCTOR) in full" —
+  both resolved.** Both read in full this pass and promoted to primer §5A with verbatim
+  quotes; each left a *narrower* successor question on the live backlog (whether X-CPE's
+  mechanism reaches this repo's `knowledge/` directory in practice, and whether to adopt
+  PROCTOR's canary-case guardrail), so the reading task itself is closed rather than
+  silently re-opened.
+- **AgentGuard identity — resolved by disambiguation.** Three unrelated projects share the
+  name. The one matching this KB's `BudgetGuard`/`LoopGuard`/`TimeoutGuard` API is
+  **`bmdhodl/agent47`** (pip `agentguard47`), which shipped v1.3.0 on Sep 12 2026;
+  `dipampaul17/AgentGuard` and the Java `nelsoncc/agent-guard` are different projects.
+  Recorded in primer §6 so a later pass doesn't cite the wrong one.
+
 ## Archived 2026-09-07
 
 - **`modelPricing` vs. `--max-budget-usd` — resolved (answered, with two corrections).**

@@ -3,6 +3,163 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-09-14 — Seven-day pass (Sep 7–14): Anthropic ships the three hard stops as a CLI flag set
+
+Five parallel research agents (tooling & versions, ecosystem & techniques, key voices,
+guardrails & cost, verification & skills); all five returned. **No `update-knowledge` PR was
+open** — the one open PR (#21) touches `guardrails/`, `runbooks/` and
+`update-knowledge/SKILL.md` but **not** `knowledge/`, so the merged baseline was clean. Every
+load-bearing claim below was re-read against its primary by the lead rather than relayed from
+an agent's report; `plugin-evals`, `settings-reference`, `env-vars`, `workflows`,
+`code-review`, the changelog, the Sept-14 support article, `docs.litellm.ai`, the Anthropic
+threat-intel report and `rubyhack.ai` were all fetched and verbatim-checked directly. **Four
+backlog items resolved and archived, five narrowed or corrected, eleven opened.**
+
+### The headline: the doctrine shipped as `claude plugin eval`
+
+- **Claude Code v2.1.269 (Sep 11)** added the first first-party command carrying **all three
+  hard stops plus a deterministic gate** in one interface: `max_turns` (default 10),
+  `timeout_seconds` (default 300), and **`--max-cost-usd`** — *"Checked before each run
+  starts. Once spent, nothing further starts; runs already in flight finish, so spend can
+  pass the ceiling by those runs"* — the same bounded-overshoot semantics this KB recorded
+  for Managed Agents session budgets, now as a flag, with **exit code 2 + `partial: true`**
+  distinguishing a budget stop from a quality failure. The gate is `--threshold` (default
+  `1.0`, *"Any case below it makes the command exit 1"*). Its anti-self-grading design is the
+  striking part: three runs per case, a **no-plugin ablation arm** (*"If a case scores 1.0
+  both with and without the plugin, the plugin isn't what made it pass"*), **case definitions
+  hidden from the agent**, and the explicit instruction to *"suspect the judge before the
+  plugin."* That is four of PROCTOR's five deterministic guardrails (below), arrived at
+  independently and shipped. **One trap recorded**: a usage-limit hit mid-suite is scored ~0
+  and *"isn't marked `partial`, so the result can look like a regression"* — budget
+  exhaustion masquerading as quality loss. **High** (doc read in full). Primer §4.
+- **`maxEffortLevel` (v2.1.267)** is a second real ceiling, on effort: applied *"before each
+  request, so it holds on every provider,"* and *"the lowest applies, so a cap set in one
+  scope can't be raised from another."* **High.**
+
+### …and, in the same release, a documented ceiling got an undocumented escape hatch
+
+- **`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (1–256, v2.1.269)** is **changelog-only** —
+  absent from both `env-vars` and `workflows` (both fetched in full and grepped), while
+  `workflows` still presents *"Up to 16 concurrent agents"* and *"1,000 agents total per run
+  | Prevents runaway loops"* as the caps. A runaway-loop ceiling with an undocumented 16×
+  bypass. Existence **High**, semantics **unverified** — new backlog item.
+
+### Two corrections to this knowledge base
+
+- **"No review tool ships an enforced budget cap" was wrong** — an error of coverage across
+  four passes, not a fact about the world. **Anthropic Code Review** has a work-stopping
+  monthly spend cap (*"Code Review posts a single comment on the PR explaining that the
+  review was skipped"*), present since at least Jul 12 2026, and **Greptile**'s Flex Usage
+  Limits (projected-spend, pre-flight) since Apr 30 2026. The **merge-gate half stands and is
+  now stronger than an absence**: Anthropic states it as design — *"The check run always
+  completes with a neutral conclusion so it never blocks merging through branch protection
+  rules."* **High** (both primaries read directly).
+- **The LiteLLM backlog quote was not real.** *"reject known estimates over remaining budget
+  under `fail_closed_budget_enforcement`"* appears nowhere in LiteLLM's docs or repo. The
+  actual primitive is **budget reservation** — *"If the reservation would exceed the budget,
+  LiteLLM rejects the request before sending it to the provider"* — genuine admission
+  control, **on by default**, with a documented hole where cost can't be estimated.
+  `fail_closed_budget_enforcement` is a separate counter-degradation backstop. Undated, so
+  not an in-window change.
+- Smaller: `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` is **not** "gone from the docs" as recorded
+  on 2026-08-17 — `env-vars` now carries an explicit tombstone (*"Removed in v2.1.224 and now
+  a no-op"*). Same guidance, better documentation. And `docs/en/release-notes` now 404s; the
+  live path is `/docs/en/changelog`.
+
+### The uncomfortable one: this repo's `knowledge/` directory may be an X-CPE target
+
+arXiv:2609.01222 was **read in full** (a standing backlog item). Its X-CPE definition is not
+file-specific — it covers any *"context source that is more persistent for the agent"* — and
+its Attack Vector A-7 exploits `@`-import chains from `CLAUDE.md`. **This repo reaches the
+same edge by prose**: `CLAUDE.md` tells every arriving agent to read `knowledge/00-primer.md`,
+and this routine writes web-sourced research there for a later run to read back — σ_session →
+σ_project. The paper doesn't test this configuration, so the transfer is **inference, not a
+result (Medium)** — but the honest consequence is that **the human PR review is not a
+formality; it is the only control between web-sourced text and a persistent context source.**
+That sharpens the existing rule that a routine self-edit is never justified by web-sourced
+research. Flagged for a human; nothing applied to `guardrails/` by this routine. The same
+paper also **half-resolves** the "neither IPE paper proposes a mitigation" caveat — it carries
+a disclosure section claiming OpenAI and Anthropic acknowledged the findings and that Codex,
+Gemini CLI and Cline shipped fixes, but **names no versions, dates or CVEs**, so a vendor-side
+artifact is now its own backlog item. arXiv:2608.27299 is unchanged.
+
+### Other new facts
+
+- **Adversaries run this repo's pattern, and Anthropic documents it first-hand.** Its
+  **Sep 10** threat-intelligence report describes *"agent swarms, where a lead AI agent
+  decomposed reconnaissance and post-exploitation work and dispatched it to many subagents
+  running in parallel"*, *"A fleet of thirteen standing collection AI agents ran on a
+  scheduled job"*, *"The workflow iterated over edits of the exploit code until success"*, and
+  scheduled jobs harvesting cloud storage *"with no human involvement."* Scheduling, fan-out,
+  iterate-until-verified, durable cross-run state — §2's four orchestration-loop properties,
+  pointed the other way. **High.**
+- **Two harnesses shipped unbounded-horizon loops the same week.** The **OpenAI Agents API**
+  entered public beta (~Sep 10) — the Codex harness as a managed service, whose only
+  documented limit is `max_concurrent_subagents: 4`, with **no turn cap, stop condition or
+  spend ceiling**. **Cursor "Projects"** (Sep 10) *"delegates tasks to thousands of
+  subagents"*, runs laptop-closed and on schedules/PR/Slack triggers, and documents **no
+  iteration cap, stall detection or spend ceiling**. A clean natural experiment against
+  `claude plugin eval`: ceilings are not yet a market norm.
+- **The "rogue agent wikis" primary arrived.** `rubyhack.ai` (**Sep 11**, same authors) —
+  RubyGems swarm from May 5 2026, 2,000+ malicious packages, `.yardopts` RCE in documentation
+  builds, and the vendor-confirmed link: *"The June agents were accessing 49 of the same files
+  as the wiki agents, which OpenAI has confirmed were theirs."* Only the narrower
+  `/etc/hosts` detail stays open.
+- **Verification papers, Sep 7–14.** The sharpest is arXiv:2609.10969: *"a cross-model vote
+  over shared evidence approves 62.9% of unsafe proposals, versus 22.9% with an independent
+  source. The source effect is 40.9 percentage points, compared with 11.3 for model
+  diversity"* — **independent evidence matters ~4× more than an independent model**, which
+  cuts against "add a second model as a checker." arXiv:2609.11076 (SaltBench) contributes a
+  framing this KB lacked for hard stop #3: ***"a budget stop is a halt, never a failure."***
+  Plus arXiv:2609.12039, arXiv:2609.12216 (hash-pinned *evaluation identity*, a primitive this
+  repo lacks), arXiv:2609.08371 (CapScope — the first in-window mitigation in the harness-
+  privilege class, 3/75 vs 33–47/75), arXiv:2609.07360 (the harness as *"a dependency layer…
+  with no lockfile, no install-time check, and no vocabulary for what a component may do"*),
+  and arXiv:2609.12001 (*"the scanned artifact is not the executed artifact"* — 34.7% of a
+  live agent's commands carried a consequence class its skill doc never contained).
+- **The skills-as-durable-asset evidence is a near-null, honestly reported.**
+  arXiv:2609.12742 finds +4.9 pp for one optimizer and +0.1 pp for another, and says the gain
+  *"cannot be separated from the agent's run-to-run variance."* It also names why prior
+  results looked better: *"the synthetic tasks prior work builds are small enough that a
+  capable agent saturates them with no document at all."* Fair summary: plausibly valuable,
+  **not yet measurably so**.
+- **PROCTOR read in full** — its five guardrails are now quoted verbatim, and cited as a
+  well-argued **position, not evidence**: single author, one model family, single-run pass
+  rates, most suites under 20 cases, proposed judge *"a design, not a result,"* and **no
+  public artifact**.
+- **Anthropic's own Sep 8 cost guidance contains no ceiling** — optimization and visibility
+  only, which is the cleanest illustration of why the ceiling must be yours. Two loop-design
+  constraints in it: a blocking subagent can outlive the prompt cache, and effort set too low
+  makes *"the answer look finished, but it's built on partial information."*
+- **AgentGuard v1.3.0 (Sep 12)** is a catalogue of ways a ceiling silently isn't one: a
+  zero-call budget that *"previously LangChain could log the exception and continue"*, and
+  NaN/infinite/negative inputs rejected *"so non-finite values cannot bypass a cost ceiling."*
+  Name disambiguated to `bmdhodl/agent47`.
+
+### The Sept 14 limit change: re-checked on its own effective date, still uncorroborated
+
+Anthropic's help center **still** says limits *"return to their standard levels"* after Sep 13
+and mentions **neither Sept 14 nor a permanent +25% nor any reduction**, on the day the change
+was said to take effect; the article is untouched (*"Updated over a week ago"*). No
+Anthropic-controlled surface carries it, and the only primary is an X post returning **HTTP
+402**. Downgraded further and kept on the backlog. The general point is worth more than the
+percentage: weekly subscription limits are real enforcement, loops hit them first, and this
+ceiling moved with its only authoritative statement on social media.
+
+### Quiet, and recorded so a later pass doesn't re-chase
+
+No new model or pricing change; no in-window change to `--max-budget-usd`, `--max-turns`,
+`--permission-prompts`, `--restricted`, `/loop`, `/schedule`, Routines capability, `/usage` or
+`/skill-doctor`; nothing new from Osmani, Yegge, Steinberger, Cherny or Huntley; nothing from
+roborev, Greptile, LangGraph, Factory, Helicone, Portkey, LoopGain, the MCP blog/spec, AAIF or
+the Agent Skills spec; no Gartner/Forrester/IDC publication; no primary-sourced cost-overrun
+incident. The `whats-new` digest has now missed **four** consecutive weeks — treat it as
+discontinued. Two structural blind spots opened as backlog items: **x.com returns HTTP 402** to
+this routine (and Steinberger, Osmani and Anthropic's limit announcement all publish there),
+and **`export.arxiv.org/api/query` returned "Rate exceeded"** for the whole pass, so arXiv
+verification used OAI-PMH plus abs submission history instead — with a warning not to
+substitute OAI's `<created>` field for the v1 date.
+
 ## 2026-09-07 — Seven-day follow-up pass (Aug 31 – Sep 7)
 
 Five parallel research agents across tooling & versions, ecosystem & techniques, key voices,

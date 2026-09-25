@@ -12,6 +12,10 @@
 set -euo pipefail
 
 # ---- CONFIG (edit me) ------------------------------------------------------
+# NOTE: models that take more turns per unit of work (e.g. Fable 5.1-class
+# long-horizon models) trip iteration/stall caps tuned on older models earlier.
+# An early stop on such a model is a re-tuning signal, not proof of failure
+# (see knowledge/00-primer.md §4, Fable 5.1 breaking changes).
 PROMPT_FILE="PROMPT.md"
 MAX_ITERATIONS=20                 # hard stop #1: iteration cap
 MAX_BUDGET_USD=10                 # hard stop #3: dollar ceiling (enforced below)
@@ -19,6 +23,8 @@ STALL_LIMIT=3                     # hard stop #2: bail after N no-progress passe
 COMPLETION_MARKER="<promise>COMPLETE</promise>"
 SUCCESS_CHECK="${SUCCESS_CHECK:-false}"   # e.g. "pytest -q" / "npm test"
 # Agent command. --dangerously-skip-permissions only for sandboxed/headless use.
+# Narrower alternative (v2.1.259+): --permission-prompts none denies anything
+# that would prompt instead of skipping permissions wholesale.
 AGENT_CMD=(claude -p --dangerously-skip-permissions)
 # ---------------------------------------------------------------------------
 

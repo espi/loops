@@ -3128,6 +3128,25 @@ instead of deleting it or leaving it here indefinitely.
   layer up, and **ActGov (arXiv:2609.24446) demonstrates the stronger form of this gate** —
   each policy update *"verified through SMT-based counterexample checking"*, where
   `self-edit-guard.yml` inspects a diff.
+  **⚠️ And one route is now ANSWERED — the answer is no (found 2026-09-28).**
+  `.github/workflows/self-edit-guard.yml` triggers on `pull_request: branches: [main]`, and
+  `branches:` filters on the **base** branch — so **the guard does not run on a PR stacked onto
+  another `claude/**` branch.** That is not an edge case: the skill's steps 1 and 7 *prescribe*
+  stacking whenever a prior pass is unmerged (*"extend its branch rather than fork"*), so **the
+  machine half of the envelope is systematically absent in exactly the mode the routine is told to
+  use** — the case on the current three-deep stack (#22 → #23 → #25). A `self-edit:` commit could
+  reach `main` through a stack having never passed the scope, cap or protected-region checks.
+  Nothing was bypassed when this was found (that pass made no self-edit), and **human merge remains
+  the enforcement floor** exactly as the workflow's own comment says — but that is the distinction
+  `CLAUDE.md` exists to draw: on a stacked PR the machine-enforced half **silently degrades to the
+  human-review half, and nothing in the PR surfaces that it has.** Same mechanism SaltBench
+  described: *"a probe written in the sandbox's language cannot see a hole in the layer above it"* —
+  the guard inspects diffs competently, it just is not wired to the event carrying them here.
+  **Fix is a human call** (the gate's own trigger is human-authored only): drop the `branches:`
+  filter so it runs on every PR — which matches the file's existing instinct, since it already
+  deliberately omits a `paths:` filter *"so a scope-violating `self-edit:` commit cannot dodge the
+  check by not touching SKILL.md"*, and a base-branch filter is the same class of dodge one level
+  up — or add `claude/**` alongside `main`.
 - **Vendor artifact for arXiv:2609.01222's claimed fixes** (new 2026-09-07; **narrowed to one named
   candidate 2026-09-28**). The paper claims Codex, Gemini CLI and Cline shipped instruction-
   privilege-escalation mitigations but names no versions, dates or CVEs. All three checked

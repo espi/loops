@@ -9,6 +9,71 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-09-21
+
+- **Anthropic's "Sept 14 weekly-limit change" — resolved on a primary surface after four
+  passes, and the lesson is about this routine.** Opened 2026-08-31, re-checked and
+  *downgraded* on 09-07 and again on 09-14, each time recording a sharper "contradiction"
+  because the help-center article said limits would *"return to their standard levels."*
+  It resolved by the article being **rewritten**: now titled *"Claude Code May–August 2026
+  weekly limits promotion"* and stating *"starting September 14, 2026, weekly limits in
+  Claude Code are 25% higher than they were before the promotion"* for Pro, Max, Team and
+  seat-based Enterprise. **The +25% and the Sep 14 date are High and first-party.** Two
+  residues kept in the live files rather than here: Anthropic still states **no −17% figure**
+  (that arithmetic is the outlets'), and the article's closing line pre-announces *"a lot more
+  in the works around usage, visibility, and control."* Archived because the fact is settled;
+  the methodological note — **four passes compounded "not yet updated" into "contradicted"** —
+  is recorded in primer §6 where it can actually change behaviour.
+- **The `/etc/hosts` proxy bypass — underlying primary found and read.** Opened 2026-09-07
+  when the mechanism was known only through Willison's relay; narrowed 09-14 when the same
+  authors' `rubyhack.ai` was read but the *earlier* wiki writeup still wasn't. Resolved:
+  **`collusion.wiki`** (Von Arx, Slade Byrd, Kitts, Larsen; Nightingale Collective,
+  **Sep 4, 2026**) read directly. Mechanism recorded in primer §5A — a suffix-matched
+  `NO_PROXY` exception, a self-written `/etc/hosts` entry, a `Host:` header override. Also
+  **corrected a number this KB had wrong**: ~18,000 posts in total, of which ~13,000 fell in
+  the peak week; the KB had been carrying the peak-week figure as the total.
+- **`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` undocumented — resolved, and the alarming
+  reading was wrong.** Opened 2026-09-14 as "a documented runaway-loop ceiling with an
+  undocumented 16× escape hatch." It is now documented on **both** `env-vars` and `workflows`,
+  and it lifts **only the concurrency cap**: the separate *"1,000 agents total per run |
+  Prevents runaway loops"* row is unchanged. Raising it changes the rate, not the ceiling.
+- **Spend-limit-bar version conflict — resolved in favour of v2.1.251.** Opened 2026-09-14
+  when the gateway doc said v2.1.251 and the changelog said v2.1.259. The changelog has been
+  fixed: the bullet now sits in the **2.1.251** block (verified by walking headings against
+  line numbers in the raw file). Both first-party sources agree.
+- **Agent Plugins canonical repo URL — the backlog item was stale on arrival.** Opened
+  2026-09-14 claiming `github.com/agent-plugins/spec` 404s and the URL needed recovering. The
+  correct URL — `github.com/agentplugins/agent-plugins-spec` — **was already recorded in
+  `sources.md` itself**, ~740 lines above the backlog entry, and the entry even admitted the
+  Aug-2026 material was "written from a spec repo read first-hand." The 404 came from a wrong
+  guess inside the backlog entry. Archived with a process note: **a backlog item should be
+  checked against the live file before being written**, or it invents work.
+- **Graphite's independence — resolved: it is a Cursor product.** Opened 2026-09-14. Confirmed
+  against Cursor's own post (**Dec 19, 2025**): *"Graphite has entered into a definitive
+  agreement to be acquired by Cursor,"* integration live Mar 2026. Current docs present the
+  reviewer as generic **"AI Reviews"** and no longer use the **Diamond** name.
+- **`export.arxiv.org/api/query` "Rate exceeded" — resolved; the Atom API recovered.** Opened
+  2026-09-14 after a full pass of failures forced an OAI-PMH fallback. All arXiv metadata this
+  pass was verified against the Atom API directly. **Carry the gotcha, not the outage**: the
+  endpoint now returns **HTTP 301 with an empty body unless redirects are followed**, so a
+  bare `curl` looks identical to a silent failure — use `curl -sSL`. The OAI `<created>`
+  warning still stands for the fallback path only; Atom's `<published>` **is** the v1 date
+  (cross-checked against an abs submission history this pass, and they agreed).
+- **"Read in full next pass: arXiv:2609.12216, 2609.10969, 2609.11076" — all three read.**
+  Promoted to primer §5A. Each left a narrower successor item in the live backlog rather than
+  closing silently: GuardrailLoop's eval-hash pinning and its duplicated-protected-key hazard,
+  VP-Control's lineage-as-failure-domain rule, and SaltBench's probe-the-fence-in-every-tool's-
+  language lesson.
+- **"Promote 'no review tool ships a merge gate' to a primer finding?" — resolved as a
+  correction: don't, because it is false.** Opened 2026-09-07, narrowed 09-14 when the
+  *budget-cap* half turned out to be wrong. The remaining merge-gate half is also wrong:
+  **CodeRabbit ships a work-stopping merge gate** via **required-reviewer semantics**
+  (Request Changes Workflow + error-mode Pre-Merge Checks), with an audited override that can
+  exclude the PR author. It was missed because prior passes looked for a *check-run* gate.
+  The correct framing — a market **split**, not an absence — is now in primer §5A. Both halves
+  of this item turned out to be coverage errors, which is worth remembering the next time an
+  absence starts to look like a finding.
+
 ## Archived 2026-09-14
 
 - **AI Engineer World's Fair 2026 sessions — resolved, and the item was wrong on its own

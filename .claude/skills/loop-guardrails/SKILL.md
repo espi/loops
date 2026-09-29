@@ -42,11 +42,26 @@ For the given loop (file path, command, or config), verify all of:
    if the task needs human judgment / design decisions / one-shot ops / prod
    debugging — those are anti-patterns for autonomous loops.
 
+6. **Containment.** The four above bound what the loop *spends*, *how long it
+   runs*, and whether it *checks its own work*. None of them bounds what an
+   attacker-supplied input can make the harness do — and the known mechanisms
+   fire *before* any of them run. Check the containment block in
+   `guardrails/checklist.md`: scoped network egress, no long-lived credentials
+   reachable, `--permission-prompts none` for unattended headless runs, and real
+   isolation (container/VM — `--restricted` is a permission gate, not a
+   sandbox). Weight this heavily if the loop **clones, reads, or reviews
+   untrusted repositories**, which is the premise both GitSpawn and instruction
+   privilege escalation need. Rationale and sources: `guardrails/README.md` →
+   "Containment", `knowledge/00-primer.md` §5A.
+   Unlike 1–3 this is a posture, not a single number, so report it as
+   ✅ / ⚠️ partial / ❌ rather than pass-fail, and say which specific control is
+   missing.
+
 ## Output
 
-Report a checklist: ✅ present / ❌ missing for each of the five, with the exact
-line or flag that satisfies it. For each ❌, apply the fix (edit the file or
-rewrite the command) and show the diff. End with the corrected, runnable loop
-and a one-line cost expectation.
+Report a checklist: ✅ present / ❌ missing for each of the six (containment may
+also be ⚠️ partial), with the exact line or flag that satisfies it. For each ❌,
+apply the fix (edit the file or rewrite the command) and show the diff. End with
+the corrected, runnable loop and a one-line cost expectation.
 
 Pull default thresholds from `guardrails/budget.env`.

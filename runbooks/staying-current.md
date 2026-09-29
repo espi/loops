@@ -76,7 +76,7 @@ Routines can't be created from inside a Claude Code *web* session (the
 | **Trigger** | Schedule → Weekly (e.g. Monday 08:00 local) |
 | **Environment / network** | Needs web research. **Trusted** (default) lets `WebSearch` work but blocks `WebFetch` to arbitrary domains; set **Full** (or **Custom** allowing `code.claude.com`, `platform.claude.com`, `github.com`, `simonwillison.net`, `anthropic.com`) so it can read primary docs. |
 | **Branch pushes** | Leave default (`claude/`-prefixed only) — this forces a PR instead of touching `main`. The skill opens its PR from a `claude/knowledge-update-*` branch, so it stays inside this restriction; **do not** enable "Allow unrestricted branch pushes" (that would remove the floor). |
-| **Env vars** | `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12` (hard-caps the ~5-agent fan-out against runaway recursion); optionally `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=100`. |
+| **Env vars** | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=6` and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` (bound the ~5-agent fan-out and forbid recursion); optionally `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=100`. **Corrected 2026-09-07:** this row previously said `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12` — that variable was **removed in v2.1.224** and setting it now does nothing. There is no native per-session *total* spawn cap any more; concurrency + depth are what remain. |
 | **Connectors** | None required; remove extras. The PR is opened as your GitHub identity. |
 
 ### Budget & caps
@@ -86,8 +86,10 @@ Routines can't be created from inside a Claude Code *web* session (the
 they only hold if the Routine is configured to let them:
 
 - **Iteration:** the weekly schedule bounds how often it fires; the skill never
-  re-invokes itself; `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` (above) hard-caps
-  the fan-out. Keep the schedule **weekly**, not hourly.
+  re-invokes itself; the concurrency and depth caps (above) bound the fan-out.
+  Note they bound *width and recursion, not lifetime total* — no native
+  per-session spawn cap exists since v2.1.224. Keep the schedule **weekly**,
+  not hourly.
 - **Budget:** the account subscription usage limit + the per-account daily
   routine-run cap *reject* runs when exhausted — a real ceiling **only if
   metered overage / usage credits is OFF** for the account (otherwise spend
@@ -140,7 +142,7 @@ weekly, with these differences:
 |---|---|
 | **Name** | Monthly loops artifact audit |
 | **Trigger** | Schedule → there is no Monthly preset (presets are hourly / daily / weekdays / weekly): pick the closest preset (Weekly), then run `/schedule update` from a local CLI session to set a monthly cron (e.g. 1st of the month, 08:00 local) |
-| **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12`; **Full/Custom** network for primary-doc checks; `claude/`-only branch pushes; overage off). See "Budget & caps" above. |
+| **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=6` and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`; **Full/Custom** network for primary-doc checks; `claude/`-only branch pushes; overage off). See "Budget & caps" above. |
 
 Prompt (paste verbatim — points at the skill file, same anti-staleness reason as
 the weekly):
@@ -179,6 +181,59 @@ run `/artifact-audit` on demand rather than waiting.
   `self-edit:` commit, or a red `self-edit-guard` check, as a stop-and-look.
   Each applied edit is its own commit with a `git revert` written down — drop
   it wholesale if you don't want it, without unpicking the knowledge changes.
+
+## Threat model: what these routines can reach, and why that's survivable
+
+Written down 2026-09-07 because the research these routines *do* now describes an
+attack on the shape these routines *are*. Previously this reasoning existed only
+in reviewers' heads.
+
+**The exposure.** `update-knowledge` is a scheduled, unattended job that reads
+the open web, runs with no permission prompts, and can write to a repository.
+Two 2026 results land on exactly that:
+
+- **Instruction privilege escalation** (arXiv:2608.27299, read in full;
+  independently replicated across 12 harnesses by arXiv:2609.01222). A harness
+  reconstructing context for a new invocation drops provenance and re-labels
+  content that arrived at *tool* level — a fetched web page, say — as a genuine
+  `user` message. It reproduces **through `/goal`- and `/schedule`-shaped
+  features**, automatic permission review does not stop it, and on Claude Code
+  specifically *"scheduled-task content is delivered to the working agent but
+  omitted from the context seen by Auto PR"* — the reviewer never sees the
+  injected instruction. **Neither paper proposes a mitigation.**
+- **The web-research channel is the entry point.** Primer §5A already treats it
+  as a prompt-injection surface ("Friendly Fire"); the papers above make it a
+  *privilege* surface too.
+
+**Why the routine is still safe to run.** Not because the attack doesn't apply —
+it does — but because the defenses are structural, sit outside the agent's own
+judgement, and don't depend on the agent correctly noticing it has been
+manipulated:
+
+1. **It never merges.** A human reviews and merges every PR. An escalated agent
+   can propose text; it cannot land it.
+2. **The blast radius is `knowledge/`.** `guardrails/`, `budget.env`,
+   `CLAUDE.md`, `.claude/settings*` and the gate itself are outside the
+   auto-edit envelope — so the routine cannot widen its own permissions,
+   disable its own caps, or rewrite the rule that stops it.
+3. **The fence is machine-checked, not self-graded.** `self-edit-guard` enforces
+   scope, protected regions and the per-pass cap in CI. A compromised agent
+   asserting "this edit is in scope" changes nothing.
+4. **Branch pushes are `claude/`-prefixed only**, so it physically cannot touch
+   `main`.
+
+**What would invalidate this.** Treat any of these as a stop-and-rethink, not a
+config tweak:
+
+- Enabling unrestricted branch pushes, or making the routine able to merge.
+- Widening the auto-edit envelope beyond `update-knowledge/SKILL.md`, or
+  removing `self-edit-guard` as a check.
+- Giving the routine connectors or credentials that reach beyond this repo.
+- Granting it broader network access than the primary-doc allowlist needs.
+
+The load-bearing point: **the routine's autonomy is bounded by things it cannot
+edit.** That is the property to preserve — every item above is a way of
+accidentally trading it away. See `guardrails/README.md` → "Containment."
 
 ## Self-guardrails
 

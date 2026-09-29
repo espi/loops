@@ -83,6 +83,25 @@ Treat search snippets skeptically. Only promote a claim to **High** if a primary
 source was read directly or it appears verbatim across independent sources.
 Anything you cannot verify against a primary source: mark **Low** and add it to
 the "things to re-verify" section of `sources.md` rather than the primer.
+
+**Verify a research agent's report; don't relay it.** A subagent's summary is not
+a primary source — it is a claim *about* one. Before promoting anything it
+returned, re-check it yourself. Two classes are mandatory:
+
+- **Every arXiv citation** must be machine-verified against the arXiv API
+  (`https://export.arxiv.org/api/query?id_list=<id>`) for its **ID, exact title,
+  v1 `published` date, and primary category**. Report only what the API returns.
+  Past passes have carried a misdated ID and a hallucinated one; this check is
+  cheap and catches both. Attribute a paper's findings to its authors, never
+  assert them as fact.
+- **Every version number and attribution** must be checked against the doc page
+  for the feature itself, not the nearest changelog heading. A version with no
+  changelog entry still exists (silent/staged releases), so absence of a heading
+  proves nothing.
+
+Beyond those, re-read the primary for any claim you are about to make load-bearing
+— a correction to this knowledge base, a headline finding, or anything that
+changes guidance — and quote it verbatim rather than paraphrasing a summary.
 <!-- self-edit:protected:end:verification -->
 
 ### 5. Diff and draft

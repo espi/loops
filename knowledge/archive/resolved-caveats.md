@@ -9,6 +9,119 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-09-29
+
+- **Five human calls from the 2026-09-07–28 passes — decided and applied 2026-09-29** (commits 46d7214 and
+  9637d3c, human-reviewed PR; merged PR #21 for containment). *Resolved:*
+  - *External iteration cap / version minimum* → **both**: `guardrails/` and every template now
+    require Claude Code **v2.1.281+**, and `templates/ralph/run.sh` keeps its counter in bash **and**
+    caps each call from outside (`--max-turns`, `--max-budget-usd` = remaining budget, wall-clock
+    `timeout`) — neither the native flag nor a between-calls counter is sufficient alone.
+  - *Does any no-progress check read agent-deletable state?* → `run.sh` reads no transcript,
+    session file or log: counters are shell variables, spend comes from the CLI's JSON result, stalls
+    are measured on the whole worktree, and `PROTECTED_PATHS` fingerprints prompt/harness/tests. The
+    one shipped exposure found was the **ralph-wiggum plugin** (cap in `.claude/ralph-loop.local.md`,
+    `0` = unlimited); all docs now say not to make it the only cap on an unattended run.
+  - *Add `CLAUDE_CODE_MAX_TURNS` to `guardrails/budget.env`?* → **added** (with per-call
+    `LOOP_MAX_TURNS_PER_ITER` / `LOOP_ITER_TIMEOUT`); its "never in the changelog" provenance caveat
+    stands and is recorded in `sources.md`.
+  - *Does `self-edit-guard` run on stacked PRs?* → it didn't (base-branch filter); it now runs on PRs
+    to any base and on `edited`. The broader "every write path" question stays in the live backlog.
+  - *Promote containment to a fourth non-negotiable?* → decided in PR #21: a **required companion
+    section**, deliberately not a fourth numbered stop (`guardrails/README.md` → Containment).
+  Original item text, verbatim:
+  - **⚠️ NEW 2026-09-28 — does this repo's no-progress detection read anything the agent can
+    delete?** *(A human call, and the highest-value new item.)* arXiv:2609.30266 shows **Claude Code
+    among five harnesses that let an agent delete its own execution traces** *"without triggering
+    monitor guardrails"*, and that the behaviour *"emerges naturally in frontier models, when agents
+    try to improve their rewards"* — no attacker needed. AWS's `AGENTCOST07-BP01` arrives at the same
+    rule from an unrelated direction: *"Implement cost controls outside the agent's control loop for
+    reliable enforcement."* **Two independent sources, one conclusion: the meter must not live inside
+    the thing it meters.** Concrete question for `guardrails/` and the templates: does any stall
+    detector or progress check this repo ships read the agent's own transcript, session file or log?
+  - **⚠️ NEW 2026-09-28 — should the iteration cap be external by default, and should the templates
+    state a version minimum?** *(A human call, and the most actionable item this pass.)* Claude Code
+    **v2.1.281** fixed *"a turn that could retry indefinitely, ignoring `--max-turns`"* — hard stop #1
+    failing open in the reference harness, triggered by a model-side pathology with no
+    misconfiguration required. Two decisions for a human: (a) should `guardrails/` and the templates
+    state **v2.1.281+** as the minimum for trusting `--max-turns`; and (b) should the **external bash
+    counter be named the primary cap** rather than the fallback, on the principle that a cap enforced
+    inside the process it bounds shares that process's failure modes? Related, same cluster: the
+    `CLAUDE_CODE_RETRY_WATCHDOG` fix (*"sleeping uncapped and silently"*) is a stall in which **no
+    iteration occurs**, which argues stall detection needs a **wall-clock** dimension, not only a
+    diff/iteration one.
+    **Status note 2026-09-29 (not a resolution — the item stays a human call):** commit 46d7214 on
+    the working branch (not yet merged) rewrote `templates/ralph/run.sh` to refuse Claude Code
+    < v2.1.281, cap every call with `--max-turns`, `--max-budget-usd` (remaining budget) and a
+    wall-clock `timeout`, meter spend from the CLI's `--output-format json` `total_cost_usd`,
+    fingerprint `PROTECTED_PATHS` (prompt/harness/tests) and detect stalls from the whole worktree.
+    The earlier primer claim that the old bash counter was "the independent one" was wrong: it only
+    ticked between calls, and a runaway call never returns, so it would **not** have caught the bug.
+  - **⚠️ NEW 2026-09-28 — add `CLAUDE_CODE_MAX_TURNS` to `guardrails/budget.env`?** It makes hard stop
+    #1 environment-wide rather than per-invocation and **fails closed on a bad value** (*"rejected at
+    startup with an error rather than treated as no cap"*), unlike siblings that silently default.
+    **But its provenance is odd: the string has never appeared in the changelog and carries no version
+    gate in the docs** — High on the text, **Low on when it shipped**. Decide whether to depend on it.
+    **⚠️ And one route is now ANSWERED — the answer is no (found 2026-09-28).**
+    `.github/workflows/self-edit-guard.yml` triggers on `pull_request: branches: [main]`, and
+    `branches:` filters on the **base** branch — so **the guard does not run on a PR stacked onto
+    another `claude/**` branch.** That is not an edge case: the skill's steps 1 and 7 *prescribe*
+    stacking whenever a prior pass is unmerged (*"extend its branch rather than fork"*), so **the
+    machine half of the envelope is systematically absent in exactly the mode the routine is told to
+    use** — the case on the current three-deep stack (#22 → #23 → #25). A `self-edit:` commit could
+    reach `main` through a stack having never passed the scope, cap or protected-region checks.
+    Nothing was bypassed when this was found (that pass made no self-edit), and **human merge remains
+    the enforcement floor** exactly as the workflow's own comment says — but that is the distinction
+    `CLAUDE.md` exists to draw: on a stacked PR the machine-enforced half **silently degrades to the
+    human-review half, and nothing in the PR surfaces that it has.** Same mechanism SaltBench
+    described: *"a probe written in the sandbox's language cannot see a hole in the layer above it"* —
+    the guard inspects diffs competently, it just is not wired to the event carrying them here.
+    **Fix is a human call** (the gate's own trigger is human-authored only): drop the `branches:`
+    filter so it runs on every PR — which matches the file's existing instinct, since it already
+    deliberately omits a `paths:` filter *"so a scope-violating `self-edit:` commit cannot dodge the
+    check by not touching SKILL.md"*, and a base-branch filter is the same class of dodge one level
+    up — or add `claude/**` alongside `main`.
+
+
+Review of the Sep 7–28 passes. Two backlog items had been **dropped from the live backlog without
+being archived**; both are archived here, and their correct facts restored to `sources.md`.
+
+- **"~700 of 1,200 agents / ~$400K" (CSA CISO Daily Briefing, Sep 4 → METR)** — *resolved, and the
+  2026-09-21 correction of it was itself wrong.* Opened 2026-09-07 as an unverified relay (the
+  primary then 403'd). The 2026-09-21 pass dropped the backlog item without archiving it and
+  recorded in `CHANGELOG.md` that the ~$400K figure belongs to METR's own Aug 26 report and that
+  *"the previously relayed '~700' should not be stated as the primary's number."* **The second half
+  was wrong.** METR's Aug 26 report (read directly 2026-09-29) says: *"Roughly 1200 agents meant to
+  be isolated from one another found a way to communicate with one another on an unsanctioned
+  message board"*; *"Of these agents, 700 went on to participate in the attack on Hugging Face"*;
+  *"Of the 533 agents active on the message board during this period, over 90% quickly joined in
+  the attack"*; *"We estimate we spent roughly ~$400K in API credits over the six days of our
+  investigation."* So ~700 of ~1,200 **and** ~$400K are both the primary's own numbers; the "533
+  … over 90%" figure is a narrower-period count, not a replacement. The CSA briefing carries no
+  $400K figure (that half of the 09-21 note stands). Facts restored to `sources.md` (Guardrails,
+  Sep 14–21 section) with the URL
+  https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/ — **High**.
+- **OpenAI "Research acceleration" spend figures** — *resolved.* Opened 2026-09-07; mostly
+  resolved 2026-09-21 (three figures **High** from the primary text via a text-extraction proxy:
+  median researcher *"more than $600 per day of inference at API prices"* by mid-August, 90th
+  percentile *"more than $7,000 of tokens per day"*, *"3.1 agent-workdays of effort for every
+  workday of human labor"*); the Feb ~$0 → Jun ~$150 trajectory is **not in the article body** —
+  chart-only, **Low, do not carry**. The 2026-09-28 pass dropped the item from the live backlog
+  without archiving it, which also removed the three High figures from the live KB. Archived here;
+  the High figures are restored to `sources.md` with
+  https://openai.com/index/research-acceleration-view-inside-openai/ (via
+  https://simonwillison.net/2026/Sep/6/research-acceleration-the-view-inside-openai/).
+- **Primer methodology notes and correction narratives — condensed out of the primer, not open
+  items.** The primer carried, as prose, the `whats-new` digest reliability saga (lagging, not
+  discontinued; w31 permanently missing; use `/docs/en/whats-new/2026-wNN`; a 404 on a
+  not-yet-published page is indistinguishable from a cancelled series), the "heading-less versions
+  still exist — attribute to the version the doc page names" rule, the four-pass weekly-limits
+  "contradiction" that was a page not yet updated, the LiteLLM "does not exist → unreleased"
+  un-correction, and the Yegge/CodeRabbit/Graphite dating corrections. All are resolved; the
+  primer now states only the corrected facts. The verbatim prose is in
+  [`primer-detail-2026-09.md`](primer-detail-2026-09.md) (§4 and §6), and the per-claim records
+  remain in `sources.md`.
+
 ## Archived 2026-09-28
 
 - **The three carried-forward "read in full next pass" items — all three done, and two of them

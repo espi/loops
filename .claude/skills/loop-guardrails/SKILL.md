@@ -17,12 +17,19 @@ Audit a loop for safety and fix gaps. The standard is `guardrails/checklist.md`.
 For the given loop (file path, command, or config), verify all of:
 
 1. **Max iteration count.** Is there a hard cap on iterations/turns?
-   - bash ralph → a counter that breaks the `while` loop
-   - `/ralph-loop` → `--max-iterations N`
+   - bash ralph → a counter that breaks the `while` loop, **plus** per-call
+     `claude -p --max-turns N` and a wall-clock `timeout` (a counter between
+     calls can't stop a call that never returns)
+   - `/ralph-loop` → `--max-iterations N` — but its count lives in
+     `.claude/ralph-loop.local.md` in the agent's worktree and `0` means
+     unlimited, so for an unattended run flag it ⚠️ unless something outside the
+     agent's reach also caps the run
    - Agent SDK → `max_turns` / `maxTurns`
    - `/goal` → bounded by the validator, but confirm the condition is actually
      reachable and provable from the agent's surfaced output
-   If missing, add it. Default cap: 20.
+   Anything relying on `--max-turns`/`max_turns` needs **Claude Code v2.1.281+**
+   (earlier versions could retry a turn indefinitely, ignoring it). If missing,
+   add it. Default cap: 20.
 
 2. **No-progress / stall detection.** Does the loop bail when it stops making
    progress (no git diff, repeated identical tool calls, unchanged test state)
@@ -37,6 +44,11 @@ For the given loop (file path, command, or config), verify all of:
 4. **Verification inside the loop.** Is there a single deterministic success
    check (test/lint/typecheck) the agent runs *itself*, declaring done only on
    pass? If the loop trusts the model's self-assessment of correctness, fix it.
+   Then check the check can't be forged: if the agent can edit the tests, the
+   prompt, or the harness, the loop must detect it (fingerprint them, as
+   `templates/ralph/run.sh` does with `PROTECTED_PATHS`) or run them read-only.
+   The same rule applies to 1–3: no counter or budget may live in a file the
+   agent can write.
 
 5. **Right tool for the job.** Loops are for well-defined, checkable work. Flag
    if the task needs human judgment / design decisions / one-shot ops / prod

@@ -32,13 +32,19 @@ every project you point a loop at.
 
 Every loop this repo produces or documents MUST carry all three hard stops:
 
-1. **Max iteration count** (`--max-iterations`, `max_turns`, or a bash counter).
+1. **Max iteration count** (a bash counter, `max_turns`, or `--max-turns` on
+   Claude Code v2.1.281+ — plus a per-call cap, since a counter between calls
+   can't stop a call that never returns).
 2. **No-progress / stall detection** (bail if N iterations make no change).
-3. **Token or dollar budget ceiling** (`max_budget_usd` or an external meter).
+3. **Token or dollar budget ceiling** (`max_budget_usd` / `--max-budget-usd` or
+   an external meter).
 
 A cost *alert* is not *enforcement* — Anthropic's billing layer has soft alerts
-but does not auto-disable. The ceiling must live in the loop harness. Never
-commit or recommend an uncapped loop. See `guardrails/`.
+but does not auto-disable. The ceiling must live in the loop harness. And the
+meter must not live inside the thing it meters: no stop or success check may
+read state the agent can write (the `ralph-wiggum` plugin's iteration count, for
+one, sits in a worktree file). Never commit or recommend an uncapped loop. See
+`guardrails/`.
 
 ## Verification is part of the loop, not an afterthought
 

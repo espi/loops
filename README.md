@@ -57,8 +57,11 @@ bakes in guardrails.
 ## The one rule
 
 **Never run an uncapped loop.** Every loop gets all three hard stops — a max
-iteration count, no-progress detection, and a token/dollar budget ceiling. The
-billing layer will *not* save you (soft alerts only). See
+iteration count, no-progress detection, and a token/dollar budget ceiling.
+Anthropic now ships some real spend enforcement (Enterprise Spend Limits API,
+gateway spend limits, Managed Agents session budgets), but the gateway layer
+fails open by default and none of it reaches a plain Claude Code loop
+automatically — the ceiling still has to live in your harness. See
 [`guardrails/`](guardrails/).
 
 ## Staying current

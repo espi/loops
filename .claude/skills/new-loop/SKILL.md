@@ -27,7 +27,7 @@ that returns clear pass/fail (e.g. `pytest test/users`, `npm test`,
 | Pattern | Use when | Mechanism |
 |---|---|---|
 | **`/goal`** (default) | Iterate-to-completion on a well-scoped task with a provable success condition. | `/goal` with a separate validator model (defaults to Haiku). Requires Claude Code v2.1.139+. |
-| **ralph** (`/ralph-loop` or bash) | Long autonomous build where each iteration should reset context to anchor files. | Official `ralph-wiggum` plugin, or `templates/ralph/run.sh`. |
+| **ralph** (`/ralph-loop` or bash) | Long autonomous build where each iteration should reset context to anchor files. | Official `ralph-wiggum` plugin (`--max-iterations` defaults to **unlimited** — always set it), or `templates/ralph/run.sh`. |
 | **`/loop`** | Recurring maintenance on an interval (babysit PRs, poll a deploy). | Bundled `/loop` skill (v2.1.72+); cron-backed, session-scoped; recurring tasks expire after 7 days. |
 
 Default to `/goal` for "do this task once, correctly." Use ralph for
@@ -55,8 +55,11 @@ Create `loops/<slug>/` (slug derived from the task) containing:
 2. **No-progress detection** — instruct the loop to bail if N consecutive
    iterations produce no git diff / no test-state change (default N=3), and
    document blockers instead of looping forever.
-3. **Budget ceiling** — set `MAX_BUDGET_USD` (ralph/SDK) or remind the user of
-   the session budget. State the expected cost order-of-magnitude.
+3. **Budget ceiling** — set `MAX_BUDGET_USD` (ralph `run.sh` / Agent SDK
+   `max_budget_usd`), or pass `--max-budget-usd` on the Claude Code invocation
+   (since v2.1.217 it also halts background subagents at the cap). A reminder
+   about the session budget is an alert, not a ceiling. State the expected
+   cost order-of-magnitude.
 
 Pull the exact defaults from `guardrails/budget.env`. Reference
 `guardrails/checklist.md` and confirm every box is satisfied before finishing.

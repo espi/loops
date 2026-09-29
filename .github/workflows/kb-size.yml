@@ -1,0 +1,30 @@
+name: kb-size
+
+# Keeps knowledge/00-primer.md a briefing, not a log. The update-knowledge
+# routine is told to respect this budget (SKILL.md step 5), but a budget the
+# agent grades itself on is no budget — the same reason a cost alert is not a
+# ceiling — so the limit is checked here. Raising it is a human decision: edit
+# MAX_PRIMER_LINES below in a human-authored PR, with the reason in the commit.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  primer-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check primer length
+        env:
+          MAX_PRIMER_LINES: "750"
+        run: |
+          lines=$(wc -l < knowledge/00-primer.md)
+          echo "knowledge/00-primer.md: $lines lines (limit $MAX_PRIMER_LINES)"
+          if [ "$lines" -gt "$MAX_PRIMER_LINES" ]; then
+            echo "::error file=knowledge/00-primer.md::Primer is $lines lines, over the $MAX_PRIMER_LINES-line budget. Move per-release detail, paper digests and backlog status to knowledge/sources.md or knowledge/archive/ (see update-knowledge SKILL.md step 5)."
+            exit 1
+          fi

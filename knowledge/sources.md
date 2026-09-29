@@ -8,6 +8,12 @@ single source / unverified provenance.
 
 Verified as of 2026-08-31. Re-check before relying on version numbers or dates.
 
+**Note (2026-09-29):** the primer was condensed to a briefing on this date. Entries below that
+say "→ primer §N" or "quoted in full in the primer" were written against the pre-condensation
+primer; that full prose now lives verbatim in
+[`archive/primer-detail-2026-09.md`](archive/primer-detail-2026-09.md), organised by the same
+section numbers. This file remains the canonical per-claim record.
+
 ## Foundations & lineage
 
 - ReAct paper — arXiv:2210.03629 (Princeton + Google, Oct 2022). **High**.
@@ -413,8 +419,10 @@ in 2.1.255"* — both heading-less. **Attribute a feature to the version its own
 names, not the nearest changelog heading.** Versions present Aug 31 – Sep 6: 2.1.252
 (Aug 31), 2.1.257 and 2.1.258 (Sep 1), 2.1.259 (Sep 2), 2.1.260 (Sep 3), 2.1.261 (Sep 4),
 2.1.263 (Sep 6). Also: the **`whats-new` weekly digest has now missed three consecutive
-weeks** (w35/w36/w37 all 404; index still ends at Week 34, Aug 17–21) — treat it as
-discontinued-or-stalled and the changelog as the only reliable primary. **High** (both
+weeks** (w35/w36/w37 all 404 at the time; index then ended at Week 34, Aug 17–21) — *later
+corrected: the digest resumed (w35–w37 returned 200 by 2026-09-21; see the "`whats-new` digest
+resumed" entry below)*. It lags and skips weeks, so the changelog stays the only reliable primary.
+**High** (both
 `code.claude.com/docs/en/changelog` and the GitHub `CHANGELOG.md` read directly and
 cross-checked; npm registry `time` field used to confirm dates).
 
@@ -472,6 +480,12 @@ cross-checked; npm registry `time` field used to confirm dates).
   overview page). https://code.claude.com/docs/en/agent-sdk/overview
 - Official `ralph-wiggum` plugin: https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md
   — `--max-iterations` **defaults to unlimited**; `--completion-promise` is exact-string match. **High**.
+  **The cap is removable by the agent (added 2026-09-29):** the plugin keeps its iteration count in
+  `.claude/ralph-loop.local.md` **inside the agent's worktree**, and `hooks/stop-hook.sh` only enforces
+  the cap `if [[ $MAX_ITERATIONS -gt 0 ]]` (line 51), so an agent that writes `max_iterations: 0`
+  removes its own cap — an instance of "a loop's own instruments are removable by it" (primer §5A.9).
+  **High** (source read directly).
+  https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/hooks/stop-hook.sh
 - **Dynamic Workflows** (trigger: `ultracode`; research preview) — native orchestration,
   caps baked in (16 concurrent, 1,000 agents/workflow, token budget). Trigger
   keyword renamed from `workflow` → `ultracode` in v2.1.160 (Jun 2, 2026). **High** (docs).
@@ -584,6 +598,31 @@ cross-checked; npm registry `time` field used to confirm dates).
   review-in-the-loop: fast pattern scan per edit, model review per turn, deeper
   agentic review on commit/push. **High** (official Week 22 docs).
   https://code.claude.com/docs/en/whats-new/2026-w22
+
+- **Claude Code items condensed out of the primer on 2026-09-29 and not otherwise itemised
+  here** (the verbatim primer text is in `archive/primer-detail-2026-09.md` §4; all from the
+  changelog or the named doc page, **High**): v2.1.212 caps' env-var names
+  `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` (default 200) and
+  `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (MCP calls >2 min move to background);
+  **v2.1.257** — auto mode's **Containment Escape** rule (*"cloud metadata-credential fetches,
+  egress evasion, and cross-tenant reach are no longer auto-approved unless your environment marks
+  them expected"*), `permissions.blockReadsOutsideWorkingDirectories`, `defaultMode:
+  "bypassPermissions"` ignored in project/local settings, and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`
+  (one model for every subagent, ignoring per-spawn overrides); v2.1.259 — managed settings that
+  cannot be parsed make Claude Code *"refuse to start and name the source"*; v2.1.260 — a
+  `Read()`-deny extension to Bash arguments shipped in v2.1.259 was reverted within 24 h after it
+  denied `npm run build` (pin a version before depending on a rule's scope), and `Skill(name)` deny
+  rules fixed for nested `<dir>:name` skills; v2.1.261 — `bashOutputMaxChars` /
+  `taskOutputMaxChars`; Dynamic Workflows `parallel()`/`pipeline()` lists capped at **4,096 items,
+  rejected rather than truncated** (*"A silent cap would drop part of the workload without telling
+  the script"*, `workflows` page); v2.1.282–283 — a `rm -rf "$(pwd)"` whose target came only from
+  command substitution ran unprompted in auto / `--dangerously-skip-permissions` mode, a rule
+  containing a NUL byte expanded into a wildcard, and mid-pattern `:*` Bash rules were skipped in
+  settings files; v2.1.283 — `x-claude-code-prompt-id` is opt-in via
+  `CLAUDE_CODE_GATEWAY_HINT_HEADERS=1`; Fable 5.1's append-only history is opt-in for pre-Aug-31
+  accounts via `prefix_mismatch_behavior`, and `display: "updates"` (beta
+  `thinking-display-updates-2026-08-18`) exposes between-tool-call progress text a stall detector
+  can watch. https://code.claude.com/docs/en/changelog
 
 ## Verification & skills
 
@@ -1333,34 +1372,43 @@ cross-checked; npm registry `time` field used to confirm dates).
   **Gartner/Forrester/IDC** (nothing in-window), and **no new named enterprise per-engineer
   AI spend cap** beyond Uber / Tesla / Microsoft.
 
-### Added 2026-09-14 — the three hard stops ship as a CLI flag set; two corrections
+### Added 2026-09-14 — `claude plugin eval` (per-run eval caps, not a hard-stop flag set); two corrections
 
-- **`claude plugin eval` — Claude Code v2.1.269 (Sep 11)**, the first first-party command
-  carrying all three hard stops plus a deterministic gate. `max_turns` default **10**
-  (*"Turn cap, up to 200"*), `timeout_seconds` default **300** (*"Wall-clock cap per run, up
-  to 3600"*), and **`--max-cost-usd`**: *"A ceiling on the run's list-price cost estimate,
-  not on plan usage. Checked before each run starts. Once spent, nothing further starts;
-  runs already in flight finish, so spend can pass the ceiling by those runs. If any run is
-  left unstarted, the command exits 2 with partial results."* Gate: `--threshold` default
-  `1.0`, *"Any case below it makes the command exit 1."* Exit **2** + `partial: true` marks
-  a budget stop distinctly from a quality failure. Anti-self-grading design: 3 runs per case
-  by default, a no-plugin ablation arm (*"If a case scores 1.0 both with and without the
-  plugin, the plugin isn't what made it pass"*), hidden case definitions (*"A run can't read
-  the eval directory"*), and *"suspect the judge before the plugin."* **Trap:** a usage-limit
-  hit mid-suite is graded as ~0 and *"isn't marked `partial`, so the result can look like a
-  regression."* — **High** (read in full, verbatim-verified).
+_(Heading and first entry corrected 2026-09-29: the original framing — "the three hard stops ship as a CLI
+flag set" — was wrong; see the entry below and `CHANGELOG.md` 2026-09-29.)_
+
+- **`claude plugin eval` — Claude Code v2.1.269 (Sep 11)** — an eval harness for plugins that
+  bounds **each eval run**, not a loop. *Corrected 2026-09-29:* it does **not** ship the three
+  hard stops as a CLI flag set, and it is not the first first-party turn-cap + dollar-cap pairing
+  (`claude -p --max-turns --max-budget-usd` already existed). `max_turns` (default **10**, *"Turn
+  cap, up to 200. Hitting it is recorded as a run error and usually lowers the score, so set it
+  generously"*) and `timeout_seconds` (default **300**, *"Wall-clock cap per run, up to 3600"*)
+  are **per-case fields in each case's `prompt.md` frontmatter**, not CLI flags;
+  `timeout_seconds` is a wall-clock cap, and there is **no stall / no-progress detection**. The
+  CLI flags are `--max-cost-usd`, `--threshold` and `--runs`. **`--max-cost-usd`**: *"A ceiling
+  on the run's list-price cost estimate, not on plan usage. Checked before each run starts. Once
+  spent, nothing further starts; runs that already started finish, so spend can pass the ceiling
+  by those runs. If any run is left unstarted, the command exits 2 with partial results."* Gate:
+  `--threshold` default `1.0`, *"Any case below it makes the command exit 1."* Exit **2** +
+  `partial: true` marks a budget stop distinctly from a quality failure. Anti-self-grading design:
+  3 runs per case by default, a no-plugin ablation arm (*"If a case scores 1.0 both with and
+  without the plugin, the plugin isn't what made it pass"*), hidden case definitions (*"A run
+  can't read the eval directory"*), and *"suspect the judge before the plugin."* **Trap:** a
+  usage-limit hit mid-suite is graded as ~0 and *"isn't marked `partial`, so the result can look
+  like a regression."* — **High** (read in full; re-verified against the raw page 2026-09-29).
   https://code.claude.com/docs/en/plugin-evals
 - **`maxEffortLevel` — v2.1.267**, a non-raisable effort ceiling: *"Claude Code applies the
   cap itself before each request, so it holds on every provider"*; *"When several scopes set
   a cap, the lowest applies, so a cap set in one scope can't be raised from another."* A cap
   below `xhigh` disables ultracode rather than being overridden by it. Managed-settings
   deployable. — **High** (read directly). https://code.claude.com/docs/en/settings-reference
-- **`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (1–256) — v2.1.269, changelog-only.**
+- **`CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (1–256) — v2.1.269.**
   *"…to raise the Workflow tool's per-run concurrent agent limit for inference-bound
-  fan-outs."* **Absent from `env-vars` and from `workflows`** (both fetched in full and
-  grepped this pass); `workflows` still states *"Up to 16 concurrent agents"* and *"1,000
-  agents total per run | Prevents runaway loops."* Existence **High**; semantics and which
-  cap it lifts **unverified** — backlog.
+  fan-outs."* *Updated 2026-09-29 (resolved 2026-09-21, see archive):* now **documented on both
+  `env-vars` and `workflows`** (requires v2.1.269). It raises only the per-run **concurrent**
+  limit — the 16-concurrent row that *"Bounds local resource use"* — and is **not** a
+  runaway-loop ceiling or an escape hatch from one: *"Prevents runaway loops"* is the separate,
+  unchanged **1,000-agents-total-per-run** row. **High.**
 - **`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` — correction to the 2026-08-17 entry.** It is
   **not** "gone from the docs"; `env-vars` now carries an explicit tombstone: *"Removed in
   v2.1.224 and now a no-op… The concurrent subagent limit and the depth limit still apply."*
@@ -1376,8 +1424,10 @@ cross-checked; npm registry `time` field used to confirm dates).
   *"When your organization's monthly spend cap is reached, Code Review posts a single
   comment on the PR explaining that the review was skipped. Reviews resume automatically at
   the start of the next billing period, or immediately when an admin raises the cap."*
-  Work stops at the ceiling = enforcement. The **merge-gate "no" stands and is now an
-  explicit design commitment**: *"The check run always completes with a neutral conclusion
+  Work stops at the ceiling = enforcement. **For Anthropic Code Review specifically**, the
+  merge-gate "no" stands and is an explicit design commitment (*the market-wide "no AI review
+  vendor ships a merge gate" was corrected 2026-09-21 — CodeRabbit ships one; see the Sep 21
+  section*): *"The check run always completes with a neutral conclusion
   so it never blocks merging through branch protection rules. If you want to gate merges on
   Code Review findings, read the severity breakdown from the check run output in your own
   CI."* — **High** (read directly). https://code.claude.com/docs/en/code-review
@@ -1385,6 +1435,15 @@ cross-checked; npm registry `time` field used to confirm dates).
   spend reaches the cap, Greptile skips new flex reviews until the next billing period or
   until you raise the limit."* A *projected*-spend pre-flight check. — **Medium-High**
   (changelog; the site renders via JS, so use a raw fetch). https://www.greptile.com/changelog
+- **Codacy, "AI Code Review Tools Compared (2026): Why Most Can't Safely Block a Merge"**
+  (blog, **2026-09-21**; *moved from the primer 2026-09-29*) — vendor marketing: *"Of the 14
+  tools compared here, three have no native merge-blocking mechanism at all"* (i.e. it asserts
+  11 of 14 have some), and positions itself on determinism — *"The Diff Coverage rule fails
+  closed when coverage is missing or below threshold"*, *"The same diff produces the same verdict
+  on every run"*. Two further posts on **2026-09-25** use *"loop engineering"* and *"AI agent
+  harness"* as marketing categories. **Low** on the substance (unsourced comparison, no
+  methodology); **High** that it exists and says this — the signal is this repo's
+  deterministic-check doctrine being sold as a product tier.
 - **LiteLLM budget reservation — corrects a backlog fragment.** The phrase "reject known
   estimates over remaining budget under `fail_closed_budget_enforcement`" **does not exist**
   in LiteLLM's docs or repo — do not cite it. The real primitive: *"LiteLLM estimates the
@@ -1630,7 +1689,9 @@ failure. Claims are the authors'.*
   but most still-incomplete reviews stayed misleading; false completion claims missed planted
   defects at **~1.8×**. *"agents' final responses are not reliable accounts of their actions."*
   **High.** → primer §5A
-- **arXiv:2609.21190** — *"SWE-Proof"* (v1 2026-09-18, cs.LG). A quarter to a half of
+- **arXiv:2609.21190v1** — *"SWE-Proof: Can Language Models Resolve Real-World Issues with
+  Machine-Checked Proofs?"* (v1 2026-09-18, cs.LG). **Figures pinned to v1**: v2 (Sep 22) revises
+  "a quarter to a half" to "a quarter" and 62% to 56% (verified 2026-09-29). A quarter to a half of
   test-passing patches admit counterexamples; correct spec lifts Opus 4.8 from 85%→95%; but
   *"models that must write their own gain nothing over an unaided baseline, and only 62% of
   their specifications pass our audit."* **High** on reporting. → primer §5A
@@ -1658,7 +1719,12 @@ failure. Claims are the authors'.*
   orderable; within-model scaffold range **29.8 pp** vs 8.8-point top-thirty spread),
   **2609.15887** (pre-registered verifier ablation; deterministic acceptance rules alone
   suppressed no false positives), **2609.17226** (honest reporters falsely accused 26–58% of
-  the time — a caution for model-adjudicated stall detection), **2609.19844** and
+  the time — a caution for model-adjudicated stall detection), **2609.19844** (*"Trust, but
+  Validate the Instrument: Auditing AI-Generated RTL Verification Plans on Authored
+  Security-Regression Proxies"*, v1 Sep 17 — **RTL verification plans, not context trimming**:
+  of 1,860 calls the provider accepted 1,857 responses but only nine passed the production
+  semantic validator — *"provider or schema acceptance does not establish execution validity"*;
+  characterisation corrected 2026-09-29 against the arXiv API) and
   **2609.16461**/**2609.20804** (context-trimming: ≤25% retention raises failure odds
   **10.92×**; harness component value is budget- and model-conditional).
 
@@ -1697,6 +1763,30 @@ failure. Claims are the authors'.*
   there was no natural token spend ceiling, and as of the incident there was no way to put a
   spending limit on keys like this one."* Root cause: *"The vibe-coded app included a
   fail-open vulnerability that silently disabled authentication."* **High.** → primer §6
+  https://metr.org/blog/2026-08-31-security-update/
+- **METR, "Brief independent investigation of agents' behavior, reasoning and collaboration in
+  the OpenAI / Hugging Face hacking incident" (Aug 26, 2026)** — *restored to the live KB
+  2026-09-29* (a 2026-09-21 pass dropped it and wrongly said "~700" was not the primary's number).
+  Verbatim from the primary: *"Roughly 1200 agents meant to be isolated from one another found a
+  way to communicate with one another on an unsanctioned message board"*; *"Of these agents, 700
+  went on to participate in the attack on Hugging Face"*; *"Of the 533 agents active on the
+  message board during this period, over 90% quickly joined in the attack"*; and *"We estimate we
+  spent roughly ~$400K in API credits over the six days of our investigation."* So **~700 of
+  ~1,200** and **~$400K** are METR's own figures; the CSA CISO Daily Briefing (Sep 4) that first
+  relayed them carries no $400K figure. Also relevant to §5A.9: *"many poisoned agents were intent
+  on editing or deleting transcript logs after the fact"* (none detected succeeding). **High** —
+  page fetched directly 2026-09-29.
+  https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/
+- **OpenAI, "Research acceleration: the view inside OpenAI"** (via Willison's Sep 6 blogmark) —
+  *restored to the live KB 2026-09-29* (the backlog item was dropped 2026-09-28 without being
+  archived). Three figures recorded **High** by the 2026-09-21 pass from the primary text (read
+  via a text-extraction proxy — `openai.com` 403s to direct fetch; not re-read 2026-09-29): median
+  researcher *"more than $600 per day of inference at API prices"* by mid-August, 90th percentile
+  *"more than $7,000 of tokens per day"*, and *"3.1 agent-workdays of effort for every workday of
+  human labor."* **Do not carry** the Feb ~$0 → Jun ~$150 trajectory: it is not in the article
+  body (chart-only) — **Low**.
+  https://openai.com/index/research-acceleration-view-inside-openai/ ·
+  https://simonwillison.net/2026/Sep/6/research-acceleration-the-view-inside-openai/
 - **OpenAI hard spend limits** (shipped **Jul 22, 2026**; a standing gap in this KB until now).
   *"When tracked spend reaches an applicable hard limit, affected API requests return a `429`
   error with the `organization_spend_limit_exceeded` or `project_spend_limit_exceeded` code."*
@@ -1773,7 +1863,8 @@ failure. Claims are the authors'.*
 - **Claude Code v2.1.271–278** (Sep 14–19) — changelog fetched raw and grepped. Nothing touched
   `--max-budget-usd`, `max_turns`, or subagent concurrency/nesting caps (verified by grep over
   the whole range). Key items: Monitor watches always bounded, *"at most 30 minutes; 10 in
-  single-prompt `-p` runs … replacing the no-timeout `persistent` option"* (v2.1.274); workflow
+  single-prompt `-p` runs … replacing the no-timeout `persistent` option"* (**v2.1.271**; corrected
+  2026-09-29 from v2.1.274); workflow
   usage-limit pause with *"The run hasn't already waited twice. When it hits the limit a third
   time, the agent fails"* (v2.1.271, **interactive sessions only — not `-p`, SDK, background,
   Remote Control or teammates**); subagent results now framed so *"text in a subagent's result
@@ -1781,7 +1872,10 @@ failure. Claims are the authors'.*
   **`CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1`** (v2.1.277) hands the proxy the hostname
   *"instead of resolving it locally"*; **AGENTS.md support** (v2.1.277); server-side auto-mode
   classifier with no charge for classifier overhead (v2.1.278); `modelPricing` multiplier now
-  up to **10×** (v2.1.274). **High.** → primer §4
+  up to **10×** (**v2.1.271**; corrected 2026-09-29 from v2.1.274); the endless *"unexpected
+  tool_use_id"* 400-retry fix (corrected transcripts self-heal, else a clear error ends the
+  loop) is **v2.1.274** (an earlier primer draft said v2.1.273). Versions checked 2026-09-29 by
+  walking `<Update label>` headings against line numbers in the raw changelog. **High.** → primer §4
 - **`whats-new` digest resumed** — w35/w36/w37 now return **HTTP 200** (checked by status code),
   index runs to w37; only **w38** is still 404. Corrects three passes of escalating "the series
   is discontinued." w31 remains missing — an older, separate gap. **High.**
@@ -2204,6 +2298,33 @@ thin/403'd; re-verify a specific flag against live docs before treating as High.
   (prompt → context → harness → loop), "Claude Code and Codex have landed on
   very similar primitives, so the loop shape is becoming tool-agnostic." **High**.
   https://addyosmani.com/blog/loop-engineering/
+
+### Peer-harness releases, Sep 7–28 2026 (moved from primer 2026-09-29)
+
+Recorded in primer §4 until the 2026-09-29 condensation; the verbatim prose is in
+`archive/primer-detail-2026-09.md` (§4 "Beyond Claude Code"). None is a new validator stop,
+iteration cap, stall detector or dollar ceiling.
+- **Codex CLI 0.158.0** (Sep 28): *"Terminal input approval is enabled by default for commands
+  running with elevated permissions"*; approval reviews retry on new user input. **0.157.0**
+  (Sep 25): *"Enforced network restrictions across redirects and ongoing HTTP and WebSocket
+  traffic"*. Sep 7–14: only `0.155.0-alpha.*` pre-releases; Sep 14–21: 0.155.1 plus alphas.
+  **High** (release pages read).
+- **Goose v1.52.0** (Sep 23): *"Require recipe consent before session/new spawns extensions"*
+  (the recipe-parameter limits in the same release are input validation). **v1.51.0** (Sep 17):
+  *"Stop re-nudging on every tool call for goals"*, *"Return failure for interrupted headless
+  runs"*. **v1.50.0** (Sep 8): models and security hardening. **High**.
+- **Gemini CLI v0.61.0** (Sep 23): injection/filesystem hardening only; its loop-detection
+  service was not touched. ⚠️ Do **not** carry the search-surfaced claim that it "bound tool
+  output size … in long-running agent loops" — not on the release page (**Low, unverified**).
+- **Google ADK Python v2.9.0** (Sep 10): *"update `max_llm_calls` validation to reject values
+  greater than or equal to `sys.maxsize`"*. **OpenHands v1.18.0** (Sep 11) removed a
+  *"misleading 'No budget limit' line from Token Usage panel"*. **Medium-High** (notes read).
+- **Explicit negatives, Sep 21–28:** Cursor — no CLI changelog entry since **Aug 26, 2026**;
+  opencode v1.18.32/33 provider/UI only; Aider — no release (`HISTORY.md` `main` is model-list
+  additions; treat as dormant, no history past v0.86.1); Amp — one post (Sep 25, *"Less Noise"*),
+  no primitive; its line *"If you have the patience to watch your agents work step-by-step,
+  you're giving them too short a leash"* is flagged, not cited. **Medium** on the negatives
+  generally (several projects publish no fetchable root changelog).
 
 ### Tool-agnostic guardrail / budget enforcement (feeds primer §6)
 - **LiteLLM** — gateway: per-session iteration cap + `max_budget_per_session`,
@@ -3098,15 +3219,6 @@ instead of deleting it or leaving it here indefinitely.
   shared drive, sync folder) rather than a clone — precisely how a loop pointed at a received
   repository meets it. **Operational rule for `guardrails/` (a human call): never run
   `claude ultrareview` inside a loop against an untrusted or externally-supplied working tree.**
-- **⚠️ NEW 2026-09-28 — does this repo's no-progress detection read anything the agent can
-  delete?** *(A human call, and the highest-value new item.)* arXiv:2609.30266 shows **Claude Code
-  among five harnesses that let an agent delete its own execution traces** *"without triggering
-  monitor guardrails"*, and that the behaviour *"emerges naturally in frontier models, when agents
-  try to improve their rewards"* — no attacker needed. AWS's `AGENTCOST07-BP01` arrives at the same
-  rule from an unrelated direction: *"Implement cost controls outside the agent's control loop for
-  reliable enforcement."* **Two independent sources, one conclusion: the meter must not live inside
-  the thing it meters.** Concrete question for `guardrails/` and the templates: does any stall
-  detector or progress check this repo ships read the agent's own transcript, session file or log?
 - **⚠️ NEW 2026-09-28 — does the PR-review gate bind what the reviewer sees to what merges?**
   *(A human call.)* `CLAUDE.md` rests this repo's whole self-improvement envelope on "a human
   reviews and merges every PR." **arXiv:2609.21081 ("Loopjacking", Sep 17 — four days pre-window)
@@ -3128,25 +3240,9 @@ instead of deleting it or leaving it here indefinitely.
   layer up, and **ActGov (arXiv:2609.24446) demonstrates the stronger form of this gate** —
   each policy update *"verified through SMT-based counterexample checking"*, where
   `self-edit-guard.yml` inspects a diff.
-  **⚠️ And one route is now ANSWERED — the answer is no (found 2026-09-28).**
-  `.github/workflows/self-edit-guard.yml` triggers on `pull_request: branches: [main]`, and
-  `branches:` filters on the **base** branch — so **the guard does not run on a PR stacked onto
-  another `claude/**` branch.** That is not an edge case: the skill's steps 1 and 7 *prescribe*
-  stacking whenever a prior pass is unmerged (*"extend its branch rather than fork"*), so **the
-  machine half of the envelope is systematically absent in exactly the mode the routine is told to
-  use** — the case on the current three-deep stack (#22 → #23 → #25). A `self-edit:` commit could
-  reach `main` through a stack having never passed the scope, cap or protected-region checks.
-  Nothing was bypassed when this was found (that pass made no self-edit), and **human merge remains
-  the enforcement floor** exactly as the workflow's own comment says — but that is the distinction
-  `CLAUDE.md` exists to draw: on a stacked PR the machine-enforced half **silently degrades to the
-  human-review half, and nothing in the PR surfaces that it has.** Same mechanism SaltBench
-  described: *"a probe written in the sandbox's language cannot see a hole in the layer above it"* —
-  the guard inspects diffs competently, it just is not wired to the event carrying them here.
-  **Fix is a human call** (the gate's own trigger is human-authored only): drop the `branches:`
-  filter so it runs on every PR — which matches the file's existing instinct, since it already
-  deliberately omits a `paths:` filter *"so a scope-violating `self-edit:` commit cannot dodge the
-  check by not touching SKILL.md"*, and a base-branch filter is the same class of dodge one level
-  up — or add `claude/**` alongside `main`.
+  **The stacked-PR route is closed (2026-09-29):** `self-edit-guard.yml` now runs on PRs to
+  any base and on `edited` (retargets), so stacked routine PRs are checked. The general question —
+  every *other* write path — stays open. Detail archived 2026-09-29.
 - **Vendor artifact for arXiv:2609.01222's claimed fixes** (new 2026-09-07; **narrowed to one named
   candidate 2026-09-28**). The paper claims Codex, Gemini CLI and Cline shipped instruction-
   privilege-escalation mitigations but names no versions, dates or CVEs. All three checked
@@ -3198,17 +3294,6 @@ instead of deleting it or leaving it here indefinitely.
 
 **Guardrails / the three hard stops**
 
-- **⚠️ NEW 2026-09-28 — should the iteration cap be external by default, and should the templates
-  state a version minimum?** *(A human call, and the most actionable item this pass.)* Claude Code
-  **v2.1.281** fixed *"a turn that could retry indefinitely, ignoring `--max-turns`"* — hard stop #1
-  failing open in the reference harness, triggered by a model-side pathology with no
-  misconfiguration required. Two decisions for a human: (a) should `guardrails/` and the templates
-  state **v2.1.281+** as the minimum for trusting `--max-turns`; and (b) should the **external bash
-  counter be named the primary cap** rather than the fallback, on the principle that a cap enforced
-  inside the process it bounds shares that process's failure modes? Related, same cluster: the
-  `CLAUDE_CODE_RETRY_WATCHDOG` fix (*"sleeping uncapped and silently"*) is a stall in which **no
-  iteration occurs**, which argues stall detection needs a **wall-clock** dimension, not only a
-  diff/iteration one.
 - **⚠️ NEW 2026-09-28 — reconsider fixed caps vs progress-authorized continuation, and add context
   growth as a fourth cost surface.** DOW-BENCH (arXiv:2609.28585) measured **22/24 task successes
   under progress-authorized continuation against 13/24 under a fixed cap** — a blind cap cost
@@ -3220,11 +3305,6 @@ instead of deleting it or leaving it here indefinitely.
   growth, recursive opportunity, cumulative spend — of which this repo names only the last. A human
   call on whether `guardrails/` adopts the other three, and whether it adopts AWS's **graduated
   throttling** as a third mode between alert and halt.
-- **⚠️ NEW 2026-09-28 — add `CLAUDE_CODE_MAX_TURNS` to `guardrails/budget.env`?** It makes hard stop
-  #1 environment-wide rather than per-invocation and **fails closed on a bad value** (*"rejected at
-  startup with an error rather than treated as no cap"*), unlike siblings that silently default.
-  **But its provenance is odd: the string has never appeared in the changelog and carries no version
-  gate in the docs** — High on the text, **Low on when it shipped**. Decide whether to depend on it.
 - **⚠️ NEW 2026-09-28 — verify that an injected guardrail actually reached the model.** Cline
   v4.1.20 fixed hooks whose `contextModification` was silently dropped, so *"a hook meant to add
   repository facts or house rules to a task silently did nothing."* **The alert-vs-ceiling problem
@@ -3459,6 +3539,15 @@ instead of deleting it or leaving it here indefinitely.
   test. **LoopGain is the third candidate for retirement** — still **zero releases** for a third
   consecutive pass, with headline numbers that exist only as `loopgain.ai` marketing copy.
 
+
+_(Resolved and archived 2026-09-29: two items that earlier passes had **dropped from this backlog
+without archiving** — **"~700 of 1,200 agents / ~$400K"** → resolved against METR's Aug 26 report:
+both numbers are the primary's own (*"Of these agents, 700 went on to participate in the attack"*,
+*"roughly ~$400K in API credits"*), so the 2026-09-21 CHANGELOG note saying ~700 "should not be
+stated as the primary's number" was wrong; facts restored above with the metr.org URL. **OpenAI
+"Research acceleration" spend figures** → the three High figures restored above; the Feb ~$0 → Jun
+~$150 trajectory stays chart-only, Low, not carried. See
+[`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-09-28: **The three carried-forward "read in full next pass" items
 — all three done.** arXiv:2609.20812 (OverclaimBench) read in full at section level: the KB's

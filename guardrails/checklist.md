@@ -4,10 +4,18 @@ Run through this before starting any loop. The `loop-guardrails` skill automates
 it. Don't start until every box is checked.
 
 ## Stop conditions
-- [ ] **Iteration cap** set (`max_turns` / `--max-iterations` / bash counter).
-- [ ] **No-progress detection** in place — bails after N no-diff passes and
-      records blockers (default N=3).
+- [ ] **Iteration cap** set (`max_turns` / `--max-turns` / bash counter), on
+      **Claude Code v2.1.281+** (earlier versions could ignore `--max-turns`).
+- [ ] **Each call is capped from outside**, not just the loop: per-call
+      `--max-turns`, `--max-budget-usd` and a wall-clock `timeout` — a counter
+      that only ticks between calls can't stop a call that never returns.
+- [ ] **No-progress detection** in place — bails after N passes with no
+      worktree change and records blockers (default N=3).
 - [ ] **Budget ceiling** set as a *hard enforcement* stop (not just an alert).
+- [ ] **Stops live outside the agent's reach** — no counter, budget or success
+      check reads a file the agent can edit. On an unattended run, `/ralph-loop
+      --max-iterations` is not enough on its own (its count is in a worktree
+      file); prompt, harness and tests are fingerprinted or read-only.
 
 ## Containment (required companion to the stop conditions)
 - [ ] **Network egress scoped** to the domains the loop needs, not full access

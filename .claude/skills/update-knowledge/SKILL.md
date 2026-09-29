@@ -106,11 +106,23 @@ changes guidance — and quote it verbatim rather than paraphrasing a summary.
 
 ### 5. Diff and draft
 Compare findings to the current knowledge base. For each genuinely new or
-changed fact: update the relevant section of `00-primer.md`, add/adjust the
-entry in `sources.md` with its confidence, and write a dated `CHANGELOG.md`
-entry (newest first, above the marker line) summarizing what changed and why.
-Do not churn wording for its own sake — only substantive changes. Preserve
-existing corrections/caveats.
+changed fact: add/adjust the entry in `sources.md` with its confidence, and
+write a dated `CHANGELOG.md` entry (newest first, above the marker line)
+summarizing what changed and why. Do not churn wording for its own sake — only
+substantive changes. Preserve existing corrections/caveats.
+
+**The primer is a briefing, not a log — it has a size budget.** Touch
+`00-primer.md` only when a finding changes the *state of the practice* or the
+guidance that follows from it (a stop mechanism breaks or ships, a correction
+to something the primer asserts, a shift in what a loop author should do).
+Per-release changelog items, paper-by-paper digests, quotes, and backlog status
+go in `sources.md`; the primer gets at most a sentence of synthesis and a
+pointer. Prefer replacing a primer passage over appending to it. The primer must
+stay **≤ 750 lines** — `.github/workflows/kb-size.yml` fails the PR otherwise —
+so if a pass needs room, condense or move older primer detail to `sources.md`
+or `knowledge/archive/` in the same PR. (Context: the primer grew from 559 to
+3,303 lines in ten weekly passes before this rule; it was condensed back to a
+briefing on 2026-09-29.)
 
 ### 6. Prune — archive, don't accumulate
 The knowledge base's whole value is being *current*, not exhaustive. Before

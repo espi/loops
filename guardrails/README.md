@@ -7,18 +7,38 @@ the ceiling has to live in your loop harness.
 
 ## The three hard stops
 
-1. **Max iteration count** — bound the number of turns. Anthropic's Agent SDK
-   ships this as `max_turns`; `/ralph-loop` as `--max-iterations`; bash ralph as
-   a counter. Default cap: **20**.
+1. **Max iteration count** — bound the number of iterations *and* the turns
+   inside each one. Anthropic's Agent SDK ships this as `max_turns`; the CLI as
+   `claude -p --max-turns N` (or `CLAUDE_CODE_MAX_TURNS`, which rejects a bad
+   value at startup instead of treating it as "no cap"); bash ralph as a
+   counter. Default cap: **20** iterations. **Require Claude Code v2.1.281+** —
+   before it, a turn could retry indefinitely while ignoring `--max-turns`
+   (changelog, Sep 23 2026). A bash counter alone would not have caught that: it
+   only ticks between calls, and a runaway call never returns — so also cap each
+   call's turns, dollars and wall-clock time from outside.
 2. **No-progress / stall detection** — bail when the loop stops advancing
-   (no git diff, repeated identical actions, unchanged test state) for **3**
-   consecutive iterations; document blockers instead of looping.
+   (no worktree change, repeated identical actions, unchanged test state) for
+   **3** consecutive iterations; document blockers instead of looping. Measure
+   the worktree, not commits — empty commits are not progress.
 3. **Token / dollar budget ceiling** — a hard enforcement stop. Agent SDK ships
-   `max_budget_usd`. In a bash loop, wire a real cost meter and check it
-   *before* the next paid call.
+   `max_budget_usd`; the CLI `--max-budget-usd` (since v2.1.217 it also halts
+   background subagents). In a bash loop, read spend from the CLI's own
+   `--output-format json` result (`total_cost_usd`) and check it *before* the
+   next paid call.
 
 Plus, always: **verification inside the loop** — one deterministic check
 (test/lint/typecheck) the agent runs itself, declaring done only on pass.
+
+**The meter must not live inside the thing it meters.** Each stop, and the
+success check, has to be enforced from state the agent cannot write. The
+counterexample shipped in the official `ralph-wiggum` plugin: its iteration
+count lives in `.claude/ralph-loop.local.md` inside the agent's worktree, and
+the stop hook only enforces it while `max_iterations` is above 0 — so an agent
+that writes `max_iterations: 0` has removed its own cap. Likewise a success
+check that runs tests the agent can edit is forgeable. Keep counters in the
+harness, read spend from the CLI's result rather than the agent's report, and
+fingerprint the prompt, harness and tests so the loop stops if they change.
+`templates/ralph/run.sh` implements all of this.
 
 ## Containment — the required companion (not a fourth hard stop)
 

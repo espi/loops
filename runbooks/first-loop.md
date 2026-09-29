@@ -28,13 +28,18 @@ passing output** so the condition is provable from what it surfaces.
 
 `/goal` is bounded by its condition, but confirm the condition is reachable, and
 keep an eye on cost. For longer autonomous runs, switch to the ralph pattern
-which has explicit caps:
+which has explicit caps. Unattended, use the headless
+`templates/ralph/run.sh` (caps in its CONFIG block, all enforced outside the
+agent's reach; needs Claude Code v2.1.281+). While you're watching, the
+in-session plugin is fine:
 
 ```
 /ralph-loop "<task with explicit, testable deliverables>" --completion-promise "COMPLETE" --max-iterations 20
 ```
 
-or the fully-headless `templates/ralph/run.sh` (caps in its CONFIG block).
+Don't leave the plugin as the only cap on an unattended run: its iteration
+count lives in `.claude/ralph-loop.local.md` in the agent's worktree, and
+`max_iterations: 0` there means no limit.
 
 ## 4. Watch the first runs
 

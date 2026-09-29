@@ -27,7 +27,7 @@ that returns clear pass/fail (e.g. `pytest test/users`, `npm test`,
 | Pattern | Use when | Mechanism |
 |---|---|---|
 | **`/goal`** (default) | Iterate-to-completion on a well-scoped task with a provable success condition. | `/goal` with a separate validator model (defaults to Haiku). Requires Claude Code v2.1.139+. |
-| **ralph** (`/ralph-loop` or bash) | Long autonomous build where each iteration should reset context to anchor files. | Official `ralph-wiggum` plugin (`--max-iterations` defaults to **unlimited** — always set it), or `templates/ralph/run.sh`. |
+| **ralph** (bash or `/ralph-loop`) | Long autonomous build where each iteration should reset context to anchor files. | `templates/ralph/run.sh` for anything unattended (all stops enforced outside the agent's reach, per-call caps, needs Claude Code v2.1.281+). The official `ralph-wiggum` plugin only for supervised in-session runs: `--max-iterations` defaults to **unlimited**, and its count lives in `.claude/ralph-loop.local.md` in the agent's own worktree, where `0` means no cap. |
 | **`/loop`** | Recurring maintenance on an interval (babysit PRs, poll a deploy). | Bundled `/loop` skill (v2.1.72+); cron-backed, session-scoped; recurring tasks expire after 7 days. |
 
 Default to `/goal` for "do this task once, correctly." Use ralph for
@@ -51,10 +51,15 @@ Create `loops/<slug>/` (slug derived from the task) containing:
 
 ## Step 3 — Bake in the three hard stops (always)
 
-1. **Max iterations** — set a concrete cap (default 20; raise deliberately).
-2. **No-progress detection** — instruct the loop to bail if N consecutive
-   iterations produce no git diff / no test-state change (default N=3), and
-   document blockers instead of looping forever.
+1. **Max iterations** — set a concrete cap (default 20; raise deliberately),
+   and cap each `claude -p` call too (`--max-turns`, a wall-clock `timeout`;
+   defaults in `guardrails/budget.env`). Require Claude Code v2.1.281+.
+2. **No-progress detection** — the harness bails if N consecutive iterations
+   produce no worktree change (default N=3), and the prompt tells the agent to
+   document blockers. An instruction in the prompt alone is not a stop — the
+   agent grades itself; `run.sh` enforces it from outside.
+   Set `PROTECTED_PATHS` to the prompt, harness and test files so the loop stops
+   if the agent edits its own checks.
 3. **Budget ceiling** — set `MAX_BUDGET_USD` (ralph `run.sh` / Agent SDK
    `max_budget_usd`), or pass `--max-budget-usd` on the Claude Code invocation
    (since v2.1.217 it also halts background subagents at the cap). A reminder

@@ -3,6 +3,87 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-09-29 — Review of the Sep 7–28 passes: corrections and primer condensed
+
+Reviewer findings, verified against primary sources on 2026-09-29 (the raw changelog — each
+`<Update label>` heading walked against line numbers — `plugin-evals`, the arXiv API, metr.org,
+and the ralph-wiggum `stop-hook.sh`). Older CHANGELOG entries are left as the dated record; the
+corrections below supersede them.
+
+### Corrections
+
+- **`claude plugin eval` (v2.1.269) was mis-framed** as "the three hard stops ship as a CLI flag
+  set" / "the first first-party command" (this file's 2026-09-14 entry). Per the docs,
+  `max_turns` and `timeout_seconds` are **per-case `prompt.md` frontmatter fields**, not flags;
+  only `--max-cost-usd`, `--threshold` and `--runs` are flags; `timeout_seconds` is a wall-clock
+  cap, **not stall detection** (there is none); the caps bound **each eval run**, not a loop
+  (hitting `max_turns` *"is recorded as a run error"*); and `claude -p --max-turns
+  --max-budget-usd` already paired turn and dollar caps. The "verbatim" quote now reads *"runs
+  that already started finish"*. Fixed in `sources.md` (entry + section heading); the primer
+  states the corrected fact.
+- **Version numbers**: Monitor deadline / removal of `persistent` → **v2.1.271** (not 2.1.274);
+  `modelPricing` multiplier >1 up to 10× → **v2.1.271** (not 2.1.274); the "unexpected
+  tool_use_id" self-heal fix → **v2.1.274** (not 2.1.273). Fixed in primer and `sources.md`.
+- **SWE-Proof** pinned to **arXiv:2609.21190v1** ("a quarter to a half", 62%); v2 (Sep 22) says
+  "a quarter" and 56%.
+- **SaltBench's "a budget stop is a halt, never a failure"** is filed under hard stop **#3**, not
+  #1.
+- **METR Aug 31 security update** entry gained its URL
+  (https://metr.org/blog/2026-08-31-security-update/).
+- **arXiv:2609.19844** re-characterised: it is about **auditing AI-generated RTL verification
+  plans**, not context trimming.
+- **`templates/ralph/run.sh`** is no longer described as "the independent" backstop against the
+  v2.1.281 `--max-turns` bug: the old counter ticked only between calls and would **not** have
+  caught it. The primer records the 2026-09-29 rewrite (commit 46d7214: refuses < v2.1.281,
+  per-call `--max-turns` / `--max-budget-usd` / wall-clock `timeout`, spend metered from
+  `total_cost_usd`, `PROTECTED_PATHS` fingerprinting, whole-worktree stall detection); a status
+  note was added to the still-open backlog item.
+- **Added (High, source read):** the official **ralph-wiggum** plugin stores its iteration count
+  in `.claude/ralph-loop.local.md` inside the agent's worktree and `stop-hook.sh` enforces the cap
+  only `if [[ $MAX_ITERATIONS -gt 0 ]]` (line 51) — an agent can remove its own cap. Filed with
+  "a loop's own instruments are removable by it".
+- **Already resolved by earlier passes (confirmed, no live text still wrong after this pass):**
+  `CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS` (resolved 2026-09-21 — it raises only the
+  16-concurrent limit that *"Bounds local resource use"*; the stale "changelog-only / unverified"
+  entry in `sources.md` was updated to match); the spend-limit-bar version (**v2.1.251**, resolved
+  2026-09-21, re-confirmed in the raw changelog); "no AI review vendor ships a merge gate"
+  (corrected 2026-09-21 — CodeRabbit ships one; the superseded line is struck through in the
+  archived primer text, and one ambiguous `sources.md` sentence now scopes the "no" to Anthropic
+  Code Review).
+
+### Backlog items restored / archived
+
+- **"~700 of 1,200 agents / ~$400K"** — dropped 2026-09-21 without archiving, and that pass's
+  correction was wrong: METR's Aug 26 report does say *"700 went on to participate in the
+  attack"* (of ~1,200), plus ~$400K and *"533 agents active … over 90%"*. Facts restored to
+  `sources.md` with the metr.org URL; caveat archived with the correction.
+- **OpenAI "Research acceleration" spend figures** — dropped 2026-09-28 without archiving (which
+  also removed three High figures from the live KB). High figures restored to `sources.md`;
+  caveat archived; the Feb ~$0 → Jun ~$150 trajectory stays chart-only and uncarried.
+
+- **Five human calls resolved by this PR's human-authored changes** (commits 46d7214, 9637d3c) and
+  archived: v2.1.281+ plus a per-call cap in `guardrails/` and the templates (external counter
+  *and* native per-call caps, not either alone); no stop or success check reads agent-writable
+  state (`run.sh` rewritten; ralph-wiggum plugin flagged in every doc that recommends it);
+  `CLAUDE_CODE_MAX_TURNS` added to `budget.env`; `self-edit-guard` runs on stacked and retargeted
+  PRs; containment was already decided as a required companion (PR #21). The general "every write
+  path to a protected region" question stays open.
+
+### Primer condensed: 3,303 → 661 lines
+
+The primer is a briefing again: §1–§7 structure kept; §1, the §2 table and §7 kept whole; §3–§6
+rewritten as the current state of the practice plus the guidance that follows, each load-bearing
+fact carrying its confidence tag. Removed: per-release changelog bullet lists (§4), paper-by-paper
+digests (§5A), "Corrected / Resolved YYYY-MM-DD" narratives, backlog status and methodology notes.
+Where it went: **all removed prose verbatim** in the new `archive/primer-detail-2026-09.md`
+(3,331 lines, organised by primer section, with the corrections above applied); per-claim records
+were already in `sources.md` (every arXiv ID and Claude Code version cited by the old primer was
+checked present), and the few loop-relevant facts that were only in the primer were added to
+`sources.md` (a Claude Code condensed-items entry, a Sep 7–28 peer-harness entry, the Codacy blog
+entry); methodology notes are summarised in `archive/resolved-caveats.md` (2026-09-29). No open
+caveat or human-call item was removed from the `sources.md` backlog; the primer's §6 now lists the
+open human calls with a pointer to it. A CI check will hold the primer to a 750-line ceiling.
+
 ## 2026-09-28 — Seven-day pass (Sep 21–28): hard stop #1 was broken in the reference harness, and the instruments that watch a loop turn out to be removable by it
 
 Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails &

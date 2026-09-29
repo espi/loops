@@ -55,7 +55,9 @@ self-assessment of correctness.
 
 ## Knowledge base discipline
 
-- `knowledge/00-primer.md` is the canonical briefing.
+- `knowledge/00-primer.md` is the canonical briefing — a briefing, not a log,
+  with a **750-line budget** enforced in CI (`.github/workflows/kb-size.yml`).
+  Per-release detail, paper digests and backlog status belong in `sources.md`.
 - `knowledge/sources.md` is the curated link list; every claim carries a source
   and a confidence level.
 - `knowledge/CHANGELOG.md` records dated updates. The `update-knowledge` skill

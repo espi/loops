@@ -9,6 +9,110 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-09-28
+
+- **The three carried-forward "read in full next pass" items — all three done, and two of them
+  changed what the KB says.** Opened 2026-09-21 as a single backlog line.
+  - **arXiv:2609.20812 (OverclaimBench)** — read in full at section level (§3 methodology, §4–6,
+    appendices A/B/C/D.2/F.1/F.2). The KB's headline figures were **correct, denominator included**.
+    Three additions came out of the read: the 67.9% coverage measure is **deterministic and involves
+    no model call** (*"The measures in this subsection are computed from the transcript alone and
+    involve no model judgment"*), with subagent output folded in and the context-window confound
+    excluded by construction — making the paper a **worked example of this repo's own doctrine**,
+    since the one model judgement *"does not see the transcript, workspace, or raw tool output"* and
+    was itself reliability-tested (8 samples, 91.1% unanimous, bootstrap 81.1% [80.5, 81.7]);
+    **delegation raises coverage but worsens honesty** (G²=19.10, 1 df, p<0.0001), with no capability
+    effect on misleading reporting once coverage is partial; and a **failure mode coverage cannot
+    detect** — agents *"restated the defective step in corrected form … The substitution is not
+    flagged as a change, and it removes the defect"*, so only a pre-registered defect registry
+    catches normalization. Resolved by reading, not by the world changing.
+  - **arXiv:2609.18272 (substrate independence)** — read at section level. Gave the KB a numbered
+    scale for "the checker must not be the maker": the **(P,S,E) triple scored `min(P,S,E)`**, the S
+    rubric, and the beta-factor identity, calibrated at **β≈0.46 for a seven-family judge panel
+    against IEC 61508's 0.005–0.05 for diverse programmable electronics** — *"which is why Grade 3
+    asks for a deterministic verifier on the load-bearing checks rather than for more models."*
+    Promoted to primer §5 **with the author's own magnitude caveats attached verbatim** (*"The 5.9%
+    and 77.3% of Table 5 are artefacts of the chosen parameters; the gap between them is not"*), and
+    with the β transfer labelled *"indicative, not established."*
+  - **arXiv:2609.16461 (the "10.92× cliff")** — read in full from the PDF, since no HTML or ar5iv
+    render exists. **Two corrections.** It was **misfiled**: it is a **context-trimming** paper, not
+    a verification one, and "retention" means the retained-*context* budget, not retention of tests
+    or review coverage. And its evidence is thinner than the KB implied: the full text **never
+    reports the number of runs, never names a model and never names a dataset** (*"Results were
+    additionally checked across more than one model family"* with no family named), single author,
+    v1 never revised, data *"available on request"*. **Downgraded Medium → Low–Medium**, re-worded
+    with its denominator (protocol-failure odds, ≤25% vs ≥50% retained context) and its gaps. The
+    **directional** claim survives and is corroborated in-window; the **magnitude must not be quoted
+    as an engineering threshold.**
+- **CodeRabbit's undated Pre-Merge Checks page — dated, and it turns out to be old news.** Opened
+  2026-09-21 because the merge-gate correction rested on a page with no date or version stamp, so
+  "CodeRabbit ships a merge gate" was established as *present now* but possibly a recent market
+  move. It is not: **2025-09-29** CodeRabbit's own X announcement (date derived two independent ways
+  — search-index snapshot and snowflake decode to 13:27:02Z — since x.com 402s), **2026-02-25** the
+  first *dated* entry in `docs.coderabbit.ai/changelog` (adding `override_requested_reviewers_only`
+  and an override audit trail), **2026-03-11** the blog explainer, **2026-09-10** the most recent
+  pre-merge entry. **So the gate is roughly a year old and the KB was simply not looking at it.**
+  Worth keeping as provenance: **CodeRabbit's own docs changelog has no entry for the original
+  launch** (nearest neighbours 2025-09-16 and 2025-10-10), so the ship date exists only in the X
+  post — which is why the next pass should not re-search for it.
+- **Does roborev's v0.62.0 human-approval gate cover the v0.68.0 MCP path? — answered: no, and the
+  reason is structural.** Opened 2026-09-21. The gate is implemented in **skill frontmatter**
+  (`disable-model-invocation: true` for Claude Code; `allow_implicit_invocation: false` for Codex),
+  and **MCP tools are not skills**, so it cannot extend to them; the MCP integration doc contains no
+  mention of approval, confirmation or human gating at all. What constrains the MCP path is
+  **capability scoping** — *"no MCP tool starts a review"* — not approval. Archived as *answered*,
+  but a **narrowed form was deliberately kept live** in `sources.md`, because the answer produced a
+  new standing caution: four state-changing MCP tools remain model-invocable with no roborev-side
+  approval (including `roborev_close_review`, i.e. dismissing findings), and **snooze is human-only
+  as a Factory skill while ungated as the MCP tool `roborev_snooze`.**
+- **LiteLLM issue #27381's "fixing release" — unanswerable, because the premise was retracted.**
+  Opened 2026-09-21 as "establish which version carries the fix before relying on LiteLLM budgets as
+  hard stop #3." #27381 (*"Global `max_budget_limiter` instantiated but never registered (Budget
+  Bypass)"*, opened May 7 2026 against v1.83.10) was **closed as completed by the reporter himself on
+  May 12 2026**, after a commenter established the limiter *"is actually registered correctly on
+  current staging"* — registration happens through the `PROXY_HOOKS` factory, iterated by
+  `ProxyLogging._add_proxy_hooks()`, and the unused instance variable was a red herring. **There is
+  no fixing release to find.** The live bypasses in this family are **#33323** (fail-open when the
+  spend lookup raises — only the team-policy half fixed) and **#27394** (team-associated keys
+  skipped), both carried forward. Method note kept: the GitHub issue **timeline would not render**
+  and was readable only via a text-extraction proxy.
+- **"Helicone / Portkey / OpenRouter searched but not changelog-fetched" — all three fetched
+  directly, item closed.** Opened 2026-09-21 as explicitly absence-of-evidence-at-search-depth.
+  **Helicone**: `helicone.ai/changelog` newest entry **Nov 26, 2025**, GitHub releases newest **Aug
+  21, 2025**, `docs.helicone.ai/changelog` 404s — **the lane is dormant, not quiet**, and its
+  alert-not-enforcement positioning remains **Medium** because only secondaries could confirm it.
+  **Portkey**: working changelog is `portkey.ai/docs/changelog/enterprise` (`portkey.ai/changelog`
+  404s; the Frill-hosted announcements page is stale since Apr 29, 2026); two real in-window releases
+  (a `startHooks` guardrail stage, per-attempt retry logging) but **nothing on budget or spend
+  enforcement**. **OpenRouter**: readable surface is `openrouter.ai/blog/announcements/`
+  (`/docs/overview/changelog` 404s), and `openrouter.ai/docs/llms.txt` is an excellent
+  machine-readable index; its in-window item is only the Batch API (Sep 22), while its genuine
+  **per-key 402 budget ceiling is dated May 29, 2026 — pre-window, newly verified, and now the
+  cleanest citable reference implementation of hard stop #3 in the KB.**
+- **"Huntley's blog unchanged since Jul 23 2026" — stale, and corrected.** Carried for several
+  passes. He published *"the eighteen-month recap: AI Engineer, Singapore, May 2026"* on **Sep 27,
+  2026**. Archived as a *fact correction*, with all three qualifiers moved into the primer rather
+  than lost: the post is **paywalled** (*"This post is for subscribers only"*), so most of it is
+  **unread rather than absent**; its content is a **May 2026 talk**, so the publication date
+  overstates its freshness; and the economics framing **restates** his Feb 27, 2026 post of the same
+  name. A new caveat was opened for its **internally inconsistent dating** (title May 2026 /
+  published Sep 27 / *"roughly a year and a half"* since a Jul 2025 origin). The **Loom** half of the
+  old caveat stays open — still unverifiable, still nothing in-window.
+- **EvoAgentBench and SkillCheck — both confirmed dead against primaries, both retired.** Carried as
+  "too thin to promote" since 2026-08-03 and 2026-08-31 respectively, with the 2026-09-21 pass
+  recommending archival. Confirmed this pass: **EvoAgentBench (arXiv:2607.05202)** is still
+  **v1-only from 2026-07-06** — no v2, no venue note, no author activity (its HuggingFace dataset
+  does show ~283 downloads/month, so there is low-level use but no development). **SkillCheck** is
+  still **v3.32.0 from 2026-08-31**, confirmed against two primaries (version strings in the raw HTML
+  of the JS-rendered vendor page, and the `SkillCheck-Free` GitHub releases); one release in August
+  after a four-month gap, single author. ⚠️ **Archived as dead leads, not as dead questions** — this
+  pass found a live replacement for each, and both are now in `sources.md`: **EvoPathBench
+  (arXiv:2609.24663)** for "does self-evolution transfer?" (*"no method achieves reliable rule
+  adaptation"*; the **selector**, not the generator, is the bottleneck), and **NVIDIA/SkillEvaluator
+  + ACES (arXiv:2608.20614)** for skill evaluation — actively developed, with **7 commits inside
+  this window** — bringing **paired-trial Skill Lift** and the number that settles the lint-vs-test
+  question: **structural versus LLM-judge Spearman ρ = 0.14** on 145 real skills.
+
 ## Archived 2026-09-21
 
 - **Anthropic's "Sept 14 weekly-limit change" — resolved on a primary surface after four

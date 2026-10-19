@@ -655,6 +655,135 @@ section numbers. This file remains the canonical per-claim record.
   looking is invisible to it. A one-off backfill sweep on core terms would be a cheap, high-yield pass
   (a human call).**
 
+
+### 2026-10-19 pass (window Oct 12–19)
+
+- **Anthropic — "How the Claude Code team does code review"** (`claude.dev/blog/solving-code-review-at-anthropic/`,
+  `article:published_time` **2026-10-15**; authors **Addy Osmani, Morgan Westlee Lunt, Qing Wang**) — **High**
+  (lead read the page directly; metadata-dated). The in-window primary that matters most, because it shows
+  the doctrine *enforced*: **merge gate** — *"A PR can't merge while any finding from the bug review or the
+  security review is still open. You either fix it or close the thread with a short reason, which is how you
+  clear a false positive. If a later commit fixes the issue, the finding clears on its own."*;
+  **show-the-output** — *"We give Claude something it can run—like tests, a build or a screenshot to compare
+  against the design—and ask it to show the output instead of saying it's done."*; **multi-agent review with
+  a voting filter** — *"Findings get verified by other agents before humans review them. Several agents look
+  for bugs at the same time. Then a separate group votes on each finding, and it only gets posted if enough
+  of them agree it's real."*; **regression discipline** — *"Any incidents are now an eval."*; **a `REVIEW.md`
+  beside `CLAUDE.md`**, with *"We check separately whether the reviewer actually follows it."*
+  ⚠️ **The convergence limit, a first-party non-terminating two-agent loop:** *"An agent author and an agent
+  reviewer can keep each other busy indefinitely. One CLI PR went through more than fifty rounds of review
+  and fixes overnight before its author stopped it. When we ran git blame on what the reviewer kept flagging,
+  about 59% of it was code that had been there since the reviewer's first pass."* **This is hard stop #2 with
+  a named first-party incident.** Volume context: *"changes landing per day went from about 2,500 in May to
+  more than 30,000 in September this year"* (⚠️ repo-wide changes/day — **do not merge with the 8× figure**),
+  and *"the share of internal PRs getting substantive review comments went from 16% to 54%."*
+- **Geoffrey Huntley — five in-window posts** (dated from `ghuntley.com/rss` `pubDate`): `/agency/` Oct 13,
+  `/remix/` Oct 14, `/bot/` Oct 16, `/toronto/` Oct 16, `/underclass/` Oct 17. **High** (the RSS feed carries
+  full `content:encoded` bodies, so all five were read in full with no page fetch).
+  ⭐ **`/agency/` is the strongest in-window verification material, and it is enforcement over instruction:**
+  *"Instead, I write a pre-commit hook that checks the git diff for direct calls to observability modules
+  that bypass my diagnostics module. Boom: fail the commit, inject a prompt telling the agent to use the
+  diagnostics library. All of a sudden it's ten out of ten."* — preceded by his rejection of the
+  documentation-only fix (updating `AGENTS.md` leaves *"still a delta, and it'll drift"*). Also *"That's why
+  I'm in the verification space: you need a good verification platform as back pressure"*; *"LLMs can act as
+  a judge and spot problems, but they can't tell you whether something will hold up in worst-case
+  scenarios"*; *"A program is reproducible and verifiable"* (a prompt and its output are not); *"I've
+  engineered the integration tests so they can't commit unless they pass"*; and a loop-introspection
+  practice — *"One of my favorite prompts is to have an agent study its own traces at the end of a loop:
+  what did you learn?"* ⚠️ He also works **without** two controls this repo mandates: *"My agents have sudo,
+  and I push to main. I don't do pull requests anymore"* (greenfield work on a disposable NixOS box) —
+  **record as his practice, not a recommendation.**
+  **`/toronto/` ("state of agentic coding #11")** — a staleness rule worth adopting: *"your AGENTS.md and
+  many of your skills should be deleted after every model release, or at least every couple of months, and
+  redone."* Plus provenance (*"I published the research in July last year"*) and two **Medium**, secondhand
+  cost figures to keep separate: Dex Horthy's *"about $10.42 an hour when you run it in the loop and it
+  builds AFK overnight"*, and Huntley's own hypothetical *"I'd be up past US$200,000 a month at real
+  prices"* — ⚠️ **the latter is an unmetered estimate, not a bill; do not merge it with his attributable
+  ~US$6,000 ×3 for CURSED.**
+  **`/underclass/`** — useful as a loop-reliability failure mode rather than a cost claim: *"by now, most
+  people should be aware that we're in a cost of compute crisis"*, with time lost to *"walls of 'model is at
+  capacity, try again' errors"* and *"babysitting agents because of inferencing capacity issues."*
+  ⚠️ Subscription pooling (`underclass`) likely cuts against provider terms — **record, do not endorse.**
+- **Addy Osmani — "Agentic Verification"** (`addyo.substack.com/p/agentic-verification`, `pubDate`
+  **2026-10-14T11:31:03Z**) — **High** (the Substack **feed** served the complete 48K-char body, which
+  bypasses the usual 403 on article pages; read in full). The most on-angle post of the window, and its new
+  contribution is that **the loop teaches the agent**: *"tests are also how your agent senses the world and
+  knows when it's done"*; *"Tests must be fast and deterministic, or the agent will pick up the wrong
+  lesson"*; *"It's not merely a time sink - it's a training exercise"*; *"The agent, however, learns from the
+  incentives of the loop."* If retrying a flaky test sometimes works *"it'll pick retrying as its preferred
+  strategy"*; if tests take 15 minutes it batches changes and loses the ability to localise a failure.
+  ⚠️ **The load-bearing consequence:** *"Both failure modes cause the agent to get worse, but without any
+  visible sign of failure"* — **so an activity-keyed stall detector cannot see it, because the loop looks
+  busy.** Also *"If your agent can't verify its output, it's essentially guessing"*; *"I would always prefer
+  a much better feedback loop to a slightly better model"*; *"Example tests say what should happen;
+  properties say what must not"*; *"A flaky test in the main suite is worse than no test at all, because it
+  breaks trust in every other result."* **Independently corroborates Huntley's "oracle" vocabulary** — E2E
+  tests are *"the kind of oracle you want for your agent"*, and for migrations *"the old system is the
+  oracle."* ⚠️ Two secondhand attributions in the post are **not** primaries and must not be recorded as
+  such: a Lauren Tan post (snowflake-decodes to **2026-10-11**, out of window) and an **unlinked** claim that
+  Cherny *"has been using models (Lean, TLA+) on the hairiest state machines"* — **Low; do not record as a
+  Cherny statement.**
+  ⚠️ **Coverage note: his `.com` blog now lags Substack by ~30 days** (newest there is 2026-09-14), and
+  `addyosmani.com/blog/rss.xml` and `/feed.xml` **both 404**, so the `.com` index must be scraped. **A
+  `.com`-only check this pass would have missed both "The Code Nobody Reads" (Sep 28) and this post.**
+- **Simon Willison — in-window but a clean negative on-angle.** 19 Atom entries Oct 12–18, **none** on agent
+  cost ceilings, budget caps or hard stops, so **hard stop #3's only outside voice remains his Oct 3 post.**
+  Two in-window items are useful corroboration (**High**): **Oct 13** quotes Huntley's `/agency/` post and
+  specifically the **pre-commit-hook / *"Boom: fail the commit"*** passage — **so that claim is now verbatim
+  across two independent surfaces** — and **Oct 16** quotes the Anthropic code-review post.
+- **Boris Cherny — no new in-window statement** (**Medium**, as permanently: no first-party blog or feed).
+  ✅ But a **January** statement is now quoted verbatim on an Anthropic first-party surface (the Oct 15 code
+  review post): giving Claude a way to verify its work is *"probably the most important thing"* for good
+  results, he estimates it makes the result *"two to three times better"*, and *"Verification looks different
+  for each domain. It might be as simple as running a bash command, or running a test suite, or testing the
+  app in a browser or phone simulator."* ⚠️ **The cited post snowflake-decodes to 2026-01-02T19:59:05Z — out
+  of window.** So this is a **text-confidence upgrade on an old quote** (previously x.com-only and
+  unreadable), **not** a new in-window claim. ⚠️ The Oct 7 auto-mode / drive-deletion report remains **Low**
+  and **unrecorded**; nothing new was found and the carrying secondary's own hedge stands.
+- **Steve Yegge — nothing in-window;** newest Medium post is **2026-08-24, "Fences, not Sandboxes"** (quiet
+  ~8 weeks). **High.** ✅ **Method win: `steve-yegge.medium.com/feed` returns HTTP 200 with full
+  `content:encoded` even though Medium article pages 403** — this closes a long-standing coverage hole.
+  ⚠️ The **Yegge/Gene Kim *Vibe Coding* book dated 2026-10-21** has **no primary** and is **not recorded**.
+  (*"Fences, not Sandboxes"* is guardrail-adjacent and out-of-window — a backlog read for `guardrails/`.)
+- **Armin Ronacher — blog carried nothing in-window**; newest `lucumr.pocoo.org` **entry** is **2026-10-06**.
+  **High.** ⚠️ **The feed-header trap recurred identically**: the feed header `updated` read
+  **2026-10-09T18:03:45Z** while the newest entry is Oct 6 — **dating from the header would have
+  manufactured a phantom in-window post.** He *was* active off-surface (co-hosting the podcast Huntley wrote
+  up Oct 16), but **the episode could not be independently confirmed**, so all Ronacher-attributed content
+  this window is **Medium, secondhand via Huntley only**. Correct wording: *"Ronacher's blog carried nothing
+  in-window; he appeared in-window on his own podcast per Huntley's account, which was not independently
+  verified."* The **"Jev" item is not advanced** — Huntley's Oct 16 classifier remarks corroborate
+  classifiers-in-harnesses generally but **never name Jev**. Stays **Medium**.
+- **Peter Steinberger — `steipete.me/rss.xml` fetched cleanly (107 entries); newest is 2026-02-15.**
+  ⚠️ **Exact wording for the KB: *his blog carried nothing in-window.*** Because he publishes mainly on
+  **x.com, unfetchable here**, the stronger claim *"Steinberger published nothing in-window"* **cannot be
+  established.** A permanent coverage limit of this routine, not a weekly finding.
+- ✅ **BACKLOG RESOLVED — Osmani's "570 review comments / only 14% about defects" has a primary.**
+  **Bacchelli & Bird, "Expectations, Outcomes, and Challenges Of Modern Code Review", ICSE 2013, Microsoft
+  Research** — `microsoft.com/en-us/research/wp-content/uploads/2016/02/ICSE202013-codereview.pdf`. **High**
+  (PDF retrieved and text-extracted; both figures confirmed verbatim): *"by analyzing the content of 200
+  threads (corresponding to 570 comments) recorded by CodeFlow"* and *"the category 'defect' is the only the
+  fourth most frequent, out of nine items, with 78 (14%) comments."* Most frequent was *"code improvements"*
+  at 165 (29%). **Osmani's restatement is accurate.** ⚠️ **But the framing caveat must travel with it: this
+  is a 2013, pre-AI, Microsoft/CodeFlow study of *human* review** — evidence about what human review was
+  historically *for*, **not** evidence about AI review.
+- ✅ **BACKLOG RESOLVED — the Anthropic "8× merge rate" figure has an Anthropic primary, and Anthropic
+  disclaims it.** *The Anthropic Institute*, "Recursive self-improvement"
+  (`anthropic.com/institute/recursive-self-improvement`; Marina Favaro and Jack Clark; page shows **"Update
+  9/18/2026"**; data described as current as of May 2026) — **High** (lead read the page directly).
+  Verbatim: *"In the second quarter of 2026, the typical engineer was merging 8× as much code per day as they
+  were in 2024."*; *"This is because much of the code is written by Claude, with the engineer directing and
+  reviewing, rather than typing it themselves."*; *"As of May 2026, more than 80% of the code we merge into
+  Anthropic's codebase was authored by Claude"*, against *"low single digits"* before Claude Code's Feb 2025
+  research preview. 🔴 **The decisive detail — record it permanently alongside the figure so it cannot be
+  stripped:** *"A caveat: Lines of code is an imperfect measure, as it measures quantity over quality. So
+  8 × lines of code/engineer/day in the second quarter of 2026 is almost certainly an overstatement of the
+  true productivity gain. Nonetheless, it indicates an acceleration."* **So the figure may be cited to a
+  primary but must never be restated as a productivity fact.** ⚠️ Do not conflate with a different metric
+  from the same org: `anthropic.com/research/how-ai-is-transforming-work-at-anthropic` reports a *"67%
+  increase in merged pull requests … per engineer per day"*. **Out of window — a backlog resolution, not an
+  in-window claim.**
+
 ## Claude Code mechanics (official docs — High)
 
 **Window note added 2026-09-07 — read this before citing a version number.** A version
@@ -1292,6 +1421,209 @@ Per-item detail here; the shape is in primer §4 and §5A.8. All verbatim from t
   and the status line"* — the ceiling became invisible. v2.1.290/292 negotiate **MCP protocol version
   `2026-07-28`** by default, confirming the revision this KB tracks. **High.**
 
+
+### 2026-10-19 pass (window Oct 12–19) — Claude Code v2.1.299 → v2.1.303
+
+**Method, and a cheaper primary worth adopting:** the lead fetched
+**`code.claude.com/docs/en/changelog.md`** (1.1 MB) rather than the 4.8 MB rendered HTML. It carries explicit
+per-version date attributes — `<Update label="2.1.303" description="October 18, 2026">` — so it is both
+cheaper and **immune to the year-hallucination trap**. The in-window range was sliced out and grepped
+locally; every quote below was checked against that slice, and the whole-file history was grepped for each
+hard-stop token. Version dates independently corroborated from the npm `time` map for
+`@anthropic-ai/claude-code`. ⚠️ **`2.1.297` and `2.1.298` were never published** — the sequence jumps
+2.1.296 (Oct 9) → 2.1.299 (Oct 14). (Same pattern as the never-published v2.1.279.) **High.**
+
+- 🔴 **v2.1.299 (Oct 14) — hard stop #1 AND hard stop #3 defeated by one bug, from the extension surface.**
+  Verbatim: *"Fixed a mod that submits a prompt at the end of every turn keeping a headless run going past
+  `--max-turns`, `--max-budget-usd`, an interrupt, or the end of the host's conversation."* **This is the
+  only in-window hit for either flag**, and it is the first recorded defeat of `--max-budget-usd` by anything
+  other than its meter. ⚠️ **It is documented capability colliding with the caps, not a stray defect.** From
+  `code.claude.com/docs/en/plugins/mods/overview.md` (lead read directly): a mod can *"**Change your
+  session**: rewrite a prompt or a tool call, **submit a prompt as if you had typed it**, or send a message
+  to another of your sessions"*; *"A mod is code that runs with your permissions"*; and ⚠️ *"**Mods aren't
+  sandboxed.** If you turn on sandboxing, the sandbox isolates the Bash commands Claude runs, and a process
+  that a mod starts runs outside it."* **So an install-time trust decision can defeat the harness's own
+  ceilings.** **High.**
+- 🔴 **The full `--max-budget-usd` history, from a whole-changelog grep — five mentions ever, and hard stop
+  #3's enforcement has failed open twice.** `2.0.28` (Oct 27 2025) added the flag; **`2.1.217` (Jul 21
+  2026)**: *"Fixed `--max-budget-usd` **not stopping background subagents**: once the cap is reached, new
+  spawns are denied and running background agents are halted."*; `2.1.239` added the data-residency premium;
+  `2.1.296` fixed the Sonnet 5.5 cache-read over-pricing; `2.1.299` is the mod bypass above.
+  ⚠️⚠️ **v2.1.217 is pre-window and was never recorded by this KB — it was found only because the lead
+  grepped the whole file rather than the window. That is a direct vindication of the standing "the weekly
+  window sweep misses relevant older work" backlog item.** **So the primer's claim that "what would have
+  caught [hard stop #1's failures] is the budget ceiling" is no longer safe: the ceiling has its own
+  failure history.** **High.**
+- **`--max-turns` history (four mentions ever):** `2.1.205` (a message lost at the limit), `2.1.281` (retry
+  indefinitely ignoring it), `2.1.285` (resume re-running a turn that ended at it), `2.1.299` (the mod
+  bypass). **High.**
+- ⚠️ **`CLAUDE_CODE_RESUME_INTERRUPTED_TURN` — third turn-accounting defeat in 15 days, and eight fixes
+  across its life.** **v2.1.299**: *"Fixed cloud sessions and `CLAUDE_CODE_RESUME_INTERRUPTED_TURN`
+  sometimes answering a finished turn again after a restart, when a tool ended the turn and a skill loaded in
+  the same step"* — after v2.1.285 (`--max-turns`) and v2.1.296 (an MCP tool result). The whole-history grep
+  returns **eight** entries (2.1.221, 2.1.269, 2.1.274, 2.1.285 ×2, 2.1.296, 2.1.299 ×2). ⚠️ **Each trigger
+  is narrower than the last, which reads like whack-a-mole on a design rather than convergence** — and the
+  newest explicitly names **cloud sessions**, which is what Routines run on. Related, same version: *"Fixed a
+  regression in 2.1.296 where cloud and headless sessions could run an approved tool call twice if a new
+  message arrived as the session resumed after a restart"* — **a fix in 2.1.296 introduced a
+  double-execution bug, so the remediation itself regressed.** **High.**
+- ✅ **v2.1.301 (Oct 15) — a second, narrower bound on the retry watchdog.** Verbatim: *"Added
+  `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` so unattended retry mode
+  (`CLAUDE_CODE_RETRY_WATCHDOG`) ends a request at a usage limit that resets too far away instead of
+  waiting."* It complements `CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS` (v2.1.295), which bounds `429`/`529`
+  **capacity** waits; this one bounds **usage-limit** waits. The documented reason it is needed, from
+  `env-vars` (lead read directly): the watchdog *"backs off up to 5 minutes between attempts, or until the
+  limit resets when the response carries a rate-limit reset time, **so a session that hits a usage limit
+  waits out the remaining window**"* — **a stall in which no iteration occurs, so an iteration counter never
+  sees it.** ⚠️ **It is changelog-only: zero occurrences across `env-vars`, `settings-reference`, `costs`,
+  `routines` and `scheduled-tasks`, four days after shipping** (lead verified by count on all five pages).
+  **The env-vars reference lags the changelog, so for the newest guardrail knob the changelog is the only
+  primary.** Both bounds are **opt-in**, so the default remains unbounded wall-clock. **High.**
+- 🔴 **v2.1.302 (Oct 16) — three findings about this routine's own substrate, cloud sessions.**
+  (a) ⚠️ *"Fixed a cloud session's cost and usage restarting from zero after the session resumed in a new
+  process"* — **the spend analogue of `/goal`'s token-spend baseline reset**, and **changelog-only**: `costs`
+  carries no statement about spend accounting across a resume. (b) ⚠️ *"[Cloud sessions] Fixed a scheduled
+  routine run that failed partway being run again from the start an hour or more later, **which could repeat
+  work such as posting the same report twice**"* — **a partway-failed routine was silently re-run from the
+  start, duplicating side effects. For *this* routine that means a second PR**, which is exactly why step 1's
+  "extend the open PR rather than fork" guard is load-bearing. (c) ⚠️ *"[Cloud sessions] Fixed routine runs
+  showing as **Completed** after their cloud session stopped unexpectedly, and as Cancelled when archived
+  before they started, instead of failed"* — **a fourth way a routine can appear to have run while doing
+  nothing**, and a loop monitored by its own status field was being told it succeeded. Also added: *"a banner
+  on a routine's page that says why its last run didn't start, such as your organization reaching its limit
+  on concurrent cloud sessions."* **High.**
+- ✅ **Hooks keep moving fail-closed — two more in v2.1.299.** *"Changed actions a plugin hook can block to be
+  refused, not let through, when the hook cannot be handed them or cannot hand back its answer; a tool that
+  already ran has its result withheld"*, and *"Windows: Fixed PreToolUse and PermissionRequest hooks that set
+  no shell failing open when Git for Windows isn't installed; **a guard that fails now blocks the call**."*
+  This continues the v2.1.295 `onFailure: "block"` direction and **directly supports this repo's
+  verification-inside-the-loop non-negotiable.** ⚠️ But the same version also fixed *"plan mode running a
+  write… that a `PreToolUse` hook or a mod's `tool.check` hook allowed"* and *"mods' hooks being handed values
+  with `__proto__` keys silently removed, which could skip a `tool.check` guard on a tool call another mod
+  made"* — **a guard skippable via prototype-key stripping.** v2.1.300 added validation of hook
+  `updatedInput` (*"unknown keys are dropped, and input the tool rejects denies the call"*). **High.**
+- ⚠️ **v2.1.302 behaviour change for headless loops on third-party providers:** *"Changed `claude -p` and
+  Agent SDK sessions with no permission mode to start in `default` mode on third-party providers… ;
+  `--permission-mode auto` keeps auto."* **A `-p` loop on Bedrock/Vertex/Foundry that relied on the implicit
+  mode will now block on prompts.** Worth a runbook note. **High.**
+- ⚠️ **Operator note (npm `dist-tags`): `stable` is still `2.1.292` (2026-10-06) while `latest` and `next` are
+  `2.1.303`.** **A harness pinned to `stable` is eleven versions behind and has none of the in-window fixes
+  above.** **High** (npm JSON). And **v2.1.303 is *"Bug fixes and reliability improvements"* and nothing
+  else** — one bullet, zero detail.
+- ⚠️ **v2.1.299 narrowed MCP allow rules, which is a silent tightening:** *"Changed MCP allow rules to reach
+  only the server they name: `mcp__a` no longer allows a server named `a__b` or `a_`; write
+  `mcp__<server>__*` with the server's whole normalized name"*, plus *"Changed agent `tools:` lists to take
+  only the named MCP server's tools."* **An existing prefix rule narrows and a loop that relied on it starts
+  prompting.** Conversely a limit was *removed*: first-party Anthropic MCP server descriptions now *"reach
+  Claude in full instead of being cut at 4,096 characters."* **High.**
+- **`claude plugin eval` — the open item is half-resolved and the residual half is now documented as
+  deliberate.** ✅ **v2.1.299 fixed the sharp edge**: per `plugin-evals` (lead-read), a run whose last request
+  got an HTTP error *"such as a rate limit or a plan usage limit"* now *"scores 0 with no grader results, and
+  the command exits non-zero whatever the scores and `--threshold` are"*, and the doc states the boundary —
+  *"**Before v2.1.299, such a run was graded on what it had produced.**"* So a CI gate will now catch it.
+  ⚠️ **But the enum is unchanged** — `partialReason` is still exactly *"`cost_ceiling`, `interrupted`, or
+  `auth_failed`"* — and the residual gap is explicit: *"Runs that end with a usage-limit or rate-limit error
+  score 0 without grading, and the command exits non-zero. **The suite still finishes and isn't marked
+  `partial`.**"* **So the doc's own advice to *"leave `partial: true` documents … out of any trend you chart"*
+  does not protect you here: a rate-limited suite silently deposits a 0 into the trend.** ⚠️ **And
+  `--max-cost-usd` is a ceiling with three documented weaknesses**: it bounds *"the run's list-price cost
+  estimate, **not** … plan usage"*, is *"Checked before each run starts"*, and *"runs that already started
+  finish, **so spend can pass the ceiling by those runs**"* — with `-j 8` the overshoot is up to eight runs.
+  ⚠️ **It also degrades the verifier, with a dedicated field for it:** `skippedPaidGraders` is *"true when the
+  cost ceiling skipped this run's judge graders, so its score isn't comparable"* — **first-party confirmation
+  of the "a metered verifier's ceiling is a verifier kill-switch" finding.** ✅ New containment lever:
+  `--disallow-tools` / `disallowed_tools` *"to keep specific built-in tools, such as Agent, out of eval
+  runs"*, i.e. an eval suite can now forbid subagent spawning. **High.**
+- ⚠️ **v2.1.299 also fixed `/loop` and scheduled-task firing errors:** *"Fixed scheduled tasks and loops
+  firing again after every turn, or firing early, during the repeated hour when daylight saving time ends"*,
+  *"Fixed scheduled wakeups (ScheduleWakeup) not firing while a background task was running"*, and *"Fixed
+  scheduled tasks being announced for the wrong minute."* **High.**
+- **Clean negatives, counted on the in-window slice (lead-verified):** **zero** in-window hits for
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `max_turns`/
+  `max_budget_usd` (snake case), `onFailure`, `/loop` or `/goal` as feature changes, `partialReason`,
+  `cost_ceiling`, `no-progress`, `validator`. Subagent caps re-verified unchanged against the live doc and
+  **both retain the good property**: `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` *"(default: 20) … the variable
+  can adjust the cap but can't disable it"*; `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` *"(default: 3) … the
+  limit can be adjusted but not removed."* ✅ **And no meter-accuracy fix this window** — the 2.1.286/2.1.296
+  under/over-counting pair appears settled. **High.**
+
+### Standing facts re-verified on their primaries, 2026-10-19 (all unchanged)
+
+- 🔴 **The `claude/` branch prefix is a *default*, not an enforced restriction — and this is now measured on
+  this repo, not inferred from doc silence.** `code.claude.com/docs/en/routines.md`, verbatim and unchanged:
+  *"Claude pushes its work to a branch prefixed with `claude/` **unless your prompt directs it to push to
+  another branch**. **To control which branches a run can push to, use branch protection rules or rulesets on
+  GitHub.** … GitHub applies them to the GitHub access you connected, **so a rule that access can bypass
+  doesn't block a run's push**."* ⚠️ **And the GitHub API reports `espi/loops`'s `main` as
+  `"protected": false`** (lead called `list_branches`). **So `runbooks/staying-current.md`'s claim that the
+  routine *"physically cannot touch `main`"* and `SKILL.md` step 8's *"the routine physically can't touch
+  main"* are both false.** **Confidence upgraded Medium → High**, because the doc now supplies *affirmative*
+  text (the prefix is prompt-overridable, and enforcement lives in GitHub rulesets) rather than mere absence.
+  ⚠️ **Residual uncertainty, stated honestly:** the branches API reflects classic branch protection; a
+  **ruleset** is a separate mechanism that the available tooling could not read, so "no protection of any
+  kind exists" is **Medium**. ✅ **One human action fixes two things at once:** `self-edit-guard.yml`'s own
+  header says *"To make this a hard merge gate (not just a visible red X the reviewer sees), add it as a
+  required status check in the repo's branch-protection rules for `main`. Without that, human merge remains
+  the enforcement floor."* **A non-bypassable ruleset on `main` would both make that gate real and make the
+  "can't touch main" claim true.**
+- **Routine caps are *hourly*, and scheduled runs *wait* rather than failing** — re-verified verbatim:
+  *"Scheduled runs, including one-off runs | **100 per hour** | Your account | **The run waits until the
+  limit resets**"*; *"**Run now**, API fires, and setting a one-off routine to run again | 30 per hour | Each
+  routine… | **The action fails** until the limit resets"*; *"None of these hourly limits has overage."* And
+  the part that does reject: *"When a routine hits your subscription usage limit, organizations with usage
+  credits turned on can keep running routines on metered overage. **Without usage credits, additional runs
+  are rejected until your usage window resets.**"* **So `SKILL.md`'s "the Routine daily-run cap *rejects*
+  runs" is wrong twice over.** Also re-confirmed: *"Routines are in research preview"*, *"The minimum interval
+  is one hour"*, and that a routine's work *"appears as you: commits and pull requests carry your GitHub
+  user."* **High.**
+- **`/goal`'s bounds, re-read in full** (`goal.md`; newest version marker on the page is v2.1.269, pre-window,
+  so no in-window change): the only documented way to bound a run is **self-reported** — *"To bound how long a
+  goal runs, include a turn or time clause in the condition, such as `or stop after 20 turns`. Claude reports
+  progress against that clause each turn and **the evaluator judges it from the conversation**"* — while the
+  evaluator *"does not call tools, so it can only judge what Claude has already surfaced."* **By this repo's
+  own standard that is a pacing hint, not hard stop #1.** ⚠️ **And resume resets all three of its own
+  bounds**: *"Claude Code carries the condition over but **resets the turn count, timer, and token-spend
+  baseline**"* — **so `/goal`'s resume leaks hard stop #3 as well as #1.** ✅ It does ship a genuine stall
+  detector (*"If Claude keeps answering the evaluator without making progress (no tool use for several turns
+  in a row), Claude Code stops the loop, prints a warning, and returns control to you with the goal still
+  set"*) — **but unattended, that pauses for a human rather than terminating.** ⚠️ **No evaluator-only model
+  override exists:** `ANTHROPIC_DEFAULT_HAIKU_MODEL` applies *"everywhere it uses the small fast model, not
+  only for `/goal` evaluation"*, and setting it also repoints the `haiku` alias and background work. **High.**
+- **`/loop`'s bounds, re-read in full** (`scheduled-tasks.md`) — unchanged: *"Loops on a fixed interval keep
+  running until you cancel them like any other scheduled task or seven days elapse"*; *"Recurring tasks
+  automatically expire 7 days after creation. The task fires one final time, then deletes itself. **This
+  bounds how long a forgotten loop can run.**"*; self-paced mode lets the worker declare itself done
+  (`ScheduleWakeup` with `stop: true`); and the dead-man's-switch worth copying — *"If an iteration ends
+  without either rescheduling or stopping, Claude Code schedules one fallback wakeup about 20 minutes later
+  and ends the loop when that iteration doesn't reschedule either."* ⚠️ **New nuance, and it is the opposite
+  direction from the resume leaks:** *"A self-paced `/loop` isn't restored [on resume], so run `/loop` again
+  to restart it"* — **here resume *loses* the loop rather than duplicating it.** **High.**
+- **`--restricted` is still absent from `sandbox-environments`** — **5th consecutive pass.** The lead grepped
+  the raw page: the exact flag form `--restricted` and `CLAUDE_CODE_RESTRICTED` each appear **zero** times
+  (an apparent hit was the ordinary word *"restricts"* in prose — **a false positive worth recording, because
+  a careless grep here would manufacture a resolution**). The flag remains documented in `env-vars`.
+  **Working position unchanged: a permission gate, not a sandbox.** **High.**
+- **The 1 GB tool-results cap is still changelog-only — 5th consecutive pass.** Zero hits for `1 GB`/`1GB`/
+  `gigabyte`/`1073741824` across `env-vars`, `settings-reference`, `costs` and `sandbox-environments`.
+  **Medium** until a doc page carries it.
+- ✅ **BACKLOG RESOLVED (and the tripwire was aimed at the wrong page) — `claude-haiku-4-5-20251001` did NOT
+  retire.** `platform.claude.com/docs/en/about-claude/model-deprecations.md`, verbatim table row:
+  `| claude-haiku-4-5-20251001 | Active | N/A | Not sooner than October 15, 2026 |` — **state Active,
+  Deprecated N/A, four days past the date with no advance.** **So a "not sooner than" date is a floor that can
+  pass without action, not a schedule** — a reusable lesson for dated tripwires. Corroborating: the page
+  promises *"at least 60 days' notice"*, and Haiku 4.5 is still the recommended replacement for six retired
+  models. ⚠️ **But the tripwire could never have been answered here anyway**, which is the better finding:
+  the same page states *"The dates on this page apply to Anthropic-operated platforms… **Partner-operated
+  platforms (Amazon Bedrock and Google Cloud) set their own retirement schedules**, so a model's lifecycle
+  status and dates can differ."* **The item was about non-Anthropic providers, so the Bedrock and Vertex model
+  tables govern it — and those were not read.** ⚠️ **The premise may also be stale**: Haiku **5.5** is now
+  listed as available on Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS, with Haiku 4.5
+  under *"Legacy models (still available)"* (**High** on the table; **Medium** on the inference that the
+  `haiku` alias has moved per provider, since no page states the alias→model mapping per provider).
+  **Carried forward in narrowed form: read the Bedrock/Vertex tables.** Also confirmed:
+  `claude-sonnet-4-5-20250929` is **Deprecated** with retirement **November 30, 2026**, and
+  `claude-haiku-5-5` is Active *"Not sooner than October 7, 2027"*.
+
 ## Verification & skills
 
 - Building Effective Agents (evaluator-optimizer, workflows vs agents) — **Medium**.
@@ -1652,6 +1984,92 @@ Per-item detail here; the shape is in primer §4 and §5A.8. All verbatim from t
   verifies controls hold them to spec. Maturity unassessed — too new for primer.
   **High** (Help Net Security + open-source repo).
   https://www.helpnetsecurity.com/2026/06/24/praxen-open-source-ai-agent-behavior-verification/
+
+
+### 2026-10-19 pass — review tools: the standing claim needed REVISION, not a refresh
+
+🔴 **The KB's claim that "no tool both caps spend and gates merges" is no longer safe as stated, and the
+roborev half was simply wrong.** All four first-party doc sets below were read directly.
+
+- 🔴 **roborev does *neither* half** (the KB credited it with the spend-cap half). ✅ Method that beats the
+  403: `roborev.io/changelog` 403s, but **`raw.githubusercontent.com/kenn-io/roborev/main/docs/*.md` is a 1:1
+  mirror** and returns 200 (⚠️ the GitHub *API* path for the same repo 403s — repo not enabled for this
+  session — and `raw.` cannot list directories, so fetch known filenames). **The budget is a routing hint,
+  and the docs say so twice:** *"The limit is soft, so reviews keep running after spend reaches it"*
+  (changelog) and *"**The cap never stops jobs**; missing cost data, unavailable candidates, or a spend-query
+  error preserve ordinary agent resolution and quota failover"* (`configuration.md`). Mechanism: below
+  `daily_limit_cents - reserve_floor_cents` the configured agent runs; at the threshold candidates are scored
+  by quality ÷ estimated cost; *"At or above the daily limit, the cheapest available candidate runs."*
+  ⚠️ **Measurement caveat the docs volunteer:** *"**Unpriced jobs are unknown rather than free, so measured
+  spend may understate usage**"*, and *"Rerunning, retrying, or failing over a job replaces its previous
+  attempt telemetry and can reduce measured spend."* ⚠️ **And its merge-side status is vacuous too**
+  (`integrations/github.md`): `success` means *"The review process completed and a comment was posted,
+  **including comments that contain findings**"* — **so a required `success` check gates on "a review
+  happened", not "the review passed"** — while a label bypass *"completes with a `skipped` conclusion."*
+  ✅ **In-window release: v0.72.0, 2026-10-16**, adding `roborev review --type goal` over specifications and
+  plans, a `--rebuttal` flow where *"Codex, Claude Code, Pi, and Grok return a confirmed, refuted, or
+  superseded assessment"*, `roborev fix --plan`, and *"Recover exhausted CI agent failures with a fresh
+  bounded retry budget when the daemon starts."* **High.**
+- 🔴 **CodeRabbit *does* gate merges, in two first-party mechanisms** — so the "no tool does both" claim
+  fails on this leg. (a) Pre-merge checks have enforcement modes *"`off`"* / *"`warning`: Display warnings
+  but don't block merges (default)"* / *"`error`: When paired with Request Changes Workflow, **block merges
+  until resolved or manually overridden**."* (b) The **CodeRabbit Security check** is designed as a GitHub
+  required status check — *"A failed or unfinished required check blocks merging, subject to your GitHub
+  bypass rules"* — and is **fail-closed on the thing that matters**: *"**Known blockers continue to fail the
+  check even when other review evidence is unavailable.**"* ⚠️ **Two fail-open seams remain even on the
+  gating path:** *"Incomplete analysis alone does not cause failure"*, and Neutral (which satisfies a
+  required check) applies when *"comment history cannot be confirmed and there are no known blockers"*;
+  Inconclusive *"does not block the pull request."* ✅ It also ships maker ≠ checker as a setting —
+  `reviews.allow_author_approval`, ⚠️ **default `true`** — which once disabled *"the pull request's branch
+  configuration cannot re-enable it"*: **the property this repo requires of `self-edit-guard`, a gate not
+  widenable from inside what it gates.** ⚠️ **Its reported monthly spending cap is Low** — aggregator search
+  snippet only, the figure reportedly living in a pricing-page FAQ; **needs first-party confirmation before
+  the "does both" claim is asserted in either direction.** **High** on the gating docs.
+- **Anthropic Code Review — the finding holds, but the KB's two quoted sentences are gone from the page.**
+  ⚠️ *"always completes with a neutral conclusion so it never blocks merging"* and *"a failed run never
+  blocks your PR"* are **no longer present** at `code.claude.com/docs/en/code-review` (note
+  `docs.claude.com/en/docs/claude-code/code-review` now 301s there). **Current wording, to replace them:**
+  *"A review never approves or blocks the pull request, so the decision to merge stays with your team."*;
+  *"A check run: named **Claude Code Review** … **The check run doesn't conclude as a failure.**"*; and a
+  useful vendor admission — *"**A review with no findings doesn't mean your code is error-free or secure.**"*
+  **The cap still enforces the absence of the check**, verbatim from the troubleshooting page: *"When your
+  organization's budget can't cover a review, **Code Review skips the review** and Claude posts a comment on
+  the pull request that begins with '⚠️ Code review skipped'. **In some of these cases a check run titled
+  Code review declined also appears.**"* Also *"Code Review also skips reviews once what's left is less than
+  the expected cost of one review"*, with three distinct exhaustion causes. ✅ **The one genuine change: a
+  `Code review declined` check run now appears in some budget-exhaustion cases** — a **visibility**
+  improvement, not an enforcement one, since the check run still *"doesn't conclude as a failure."*
+  ⚠️ **Not datable, so not claimed as in-window.** **High** on the current text.
+- ⚠️ **Ellipsis — the thesis is confirmed and the mechanism is *stronger* than the KB recorded, but the KB's
+  quoted string is not findable.** *"never counts as an approval"* does **not** appear on
+  `ellipsis.dev/docs/code-review/budgets`. **Replace with the actual wording:** *"A reviewer that fails or
+  runs out of budget contributes nothing"*; the review still posts with the other reviewers' comments
+  *"**never as an approval**"*; *"**A review in which a reviewer stopped early never approves**"*; *"A
+  reviewer that returns more than its limit fails and contributes nothing."*; and strongest of all —
+  *"**When no reviewer finishes, nothing is posted and nothing is marked reviewed.**"* Plus *"A review passes
+  when no reviewer returned a blocking comment and fails otherwise."* **So exhaustion degrades to withheld
+  approval *and* nothing-marked-reviewed, which means the absence of the check cannot be mistaken for its
+  success.** **High.**
+- ⚠️ **Qodo is at 3.1 (15 Oct 2026, in-window), not 3.0 (1 Oct) — update the version label.** And **Qodo 3.1's
+  headline feature is a new vacuity mechanism worth naming**: *"Automatic rule deactivation for rules whose
+  findings are rarely fixed."* **A gate that silently retires its own rules based on whether humans act on
+  them will erode its check surface over time without anyone deciding to weaken it — adaptive, usage-driven
+  vacuity**, and a genuinely new mechanism relative to the two `2609.27871` names. Qodo 3.0 added PR Triage
+  (Research Preview) and a review analytics dashboard (Beta). **No spend caps or budgets appear anywhere in
+  Qodo's changelog**; merge gating appears only as approval-based. **Medium** (one WebFetch summary of the
+  changelog page, not a line-by-line read).
+- **Greptile — clean negative.** ✅ The flight-payload technique works: `self.__next_f.push` chunks extracted
+  from `greptile.com/changelog` yield a contiguous dated series **2025-10-16 → 2026-09-16**; newest entry is
+  **2026-09-16**, so **no in-window change**. **Medium-High** (lazy-loaded newer entries cannot be fully
+  excluded).
+- ⚠️ **Kodus was NOT reached this pass — an unverified gap, not a negative.** The previous pass's
+  five-tool set is therefore only 4/5 covered. Carry forward.
+
+➜ 🔴 **The revised standing claim, which is better evidenced and more useful than the one it replaces:**
+**no reviewer documents what its spend cap does to its merge gate.** CodeRabbit gates merges and says nothing
+about credits/budget/rate-limit exhaustion on either gating page; Anthropic documents the cap precisely *and*
+documents that the check never blocks; roborev documents a cap that never stops. **The cap↔gate interaction
+is undocumented across the field — and wherever the degradation *is* documented, it degrades to vacuity.**
 
 ## Guardrails & cost
 
@@ -3338,6 +3756,187 @@ not a dated negative.
   Sep 28 Security Center 500-key claim; LiteLLM's `422`-not-`429` exhausted-budget code (needs a live
   proxy); `roborev.io` (403s persist). **An honest not-checked beats a relayed assumption.**
 
+
+### 2026-10-19 pass — guardrails & cost
+
+- ✅🔴 **RESOLVED, and it is the window's biggest world-fact: Google Cloud Spend Caps went GA on
+  2026-10-13.** Lead-verified from the release-notes page's **own dated changelog entry** (raw HTML, tags
+  stripped — not a summarizer's rendering), `docs.cloud.google.com/billing/docs/release-notes`:
+  > **October 13, 2026 — Feature — "Spend cap budgets are now generally available for a limited set of
+  > services"** — *"For eligible services, you can configure a spend cap budget to automatically pause usage
+  > when your estimated spend exceeds the budget amount you set. You can manage spend cap budgets in the
+  > Budgets page in the Google Cloud console and using the Cloud Billing Budget API."*
+  The prior **July 27, 2026 "(Preview)"** entry is still on the page, so the Preview→GA transition is visible
+  on one surface, and **the two-surface stage disagreement is resolved in favour of GA** (the doc page carries
+  no stage banner, which is consistent with GA). **High.**
+  **This is the first GA'd project-level spend ceiling from a hyperscaler** (AWS's remains limited
+  availability). ⚠️ **But GA did not fix the leakage — every caveat is live verbatim at GA**, lead-read from
+  `docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps`: *"When a spend cap budget is enforced, usage
+  of your specified services is automatically paused for the remainder of the budget period unless you
+  manually lift the spend cap."*; *"Due to latency in usage and cost reporting, **spend cap enforcement isn't
+  instantaneous**."*; *"**Any in-flight requests of the specified service are processed to completion,
+  accruing charges as applicable.**"*; *"**You remain responsible for any overage costs accrued due to
+  reporting latency.**"*; FAQ — *"**Only new usage is blocked** when the spend cap is enforced. In-flight
+  usage is processed to completion."* and *"Any overage due to cost reporting latency is billed as usual."*
+  **This is the strongest first-party statement yet of the KB's invariant (a): a ceiling bounds new work, not
+  the bill.** ✅ **And Google states the runway rule itself:** *"Consider setting your budget slightly below
+  your absolute limit."* **Scope did not change at GA, and is the narrowest possible:** *"Spend caps are
+  limited to budgets that are scoped to a single Google Cloud project and a single eligible service"*;
+  *"Folders, Organizations, Labels, and multi-project or multi-service budgets are out of scope"*; period
+  *"limited to Monthly"*; and enforcement triggers on *"gross, **estimated** usage costs"*. Eligible services
+  today: *"Gemini API, Agent Platform (formerly known as Vertex AI), Cloud Run, and Cloud Run functions"*
+  (**Maps is no longer listed** vs the April set — **Medium** on that delta). **New details worth carrying:**
+  restoration latency — *"After a spend cap is lifted, services might take up to one hour to fully return to
+  normal function"* — and spend caps *"don't pause any on-going, fixed usage associated with persistent
+  resources."*
+- **AWS project spend limits — no GA, no scope change** (re-verified 2026-10-19): *"We're currently releasing
+  our new experience to a limited number of customers. You might not be able to access this experience
+  yet."* Tiers re-verified verbatim: ~7 days *"new resources stop launching"* (*"through application of a
+  service control policy that is managed by AWS"*, **no service list**); ~5 days *"we will automatically
+  pause **EC2, RDS and SageMaker endpoints**"* (**no Bedrock**); ~4 days top cost drivers from *"EC2, RDS,
+  Lambda, Bedrock, and SageMaker"*, called *"This opt-in control"*. ⚠️ **Refinement to the KB's cell: the doc
+  frames *all three* tiers as optional** — the heading is *"Customize your spend limit settings with
+  **optional** early cost controls"* — **so by default you get nothing but the terminal project pause, and
+  model spend (Bedrock) is reached only by the ~4-day opt-in tier.** Destructive tail unchanged: *"If you take
+  no action within 90 days of your project being paused, AWS permanently deletes your project data."*
+  **New constraints:** *"You can apply spend limits to up to 10 projects"*; manageable only by project owners;
+  *"You must be on a Paid Plan to create a spend limit."* **High** (primary read in full).
+- 🔴 **Anthropic's pre-announced further spend controls: THIRD consecutive pass with zero *enforcement*
+  delivery.** Lead read `platform.claude.com/docs/en/release-notes/overview.md` in full. In-window entries
+  are exactly: **Oct 15** — Fast mode out of research preview for Opus 5.5; a Compliance API addition; and
+  **Oct 14** — *"We've launched **OpenTelemetry export** in beta, so you can trace Messages API requests and
+  Claude Managed Agents sessions in your observability backend."* **So what shipped is tracing —
+  *visibility*, not *enforcement* — which is precisely the axis this repo's doctrine distinguishes.**
+  Nothing in-window creates, tightens or extends a spend ceiling. **High**, with the date checked.
+- 🔴 **NEW — the Spend Limits API disowns itself as a control, and it is a fifth meaning of zero.** From
+  `platform.claude.com/docs/en/manage-claude/spend-limits-api.md` (lead-verified verbatim, line 193):
+  *"`period_to_date_spend` is the member's spend accrued since the start of the current `period` … **It may
+  read as `"0"` if the spend reading is temporarily unavailable; treat it as informational, not
+  transactional.**"* ⚠️ **So a harness that reads this endpoint and compares it against a ceiling sees
+  "nothing spent" during an outage and proceeds** — the fail-open-meter family and the zero-polarity family
+  in one field, and here `0` means *unknown*. Also confirmed: *"Currently `monthly` is the only supported
+  period"* with *"Treat `period` as an open set"* — **no daily or weekly window, so this API cannot bound a
+  per-run or per-day loop.** **High.**
+- ⚠️ **LiteLLM — v1.106.0 shipped in-window (2026-10-18) still carrying the zero-budget bug; PR #44259 did
+  not merge.** Lead read `litellm/router_strategy/budget_limiter.py` **from source** at `main`
+  (HEAD `581b7d1a`, 2026-10-18T21:59Z): the falsy-zero guard is live at lines **258 / 273 / 288** —
+  `if config.max_budget and current_spend >= config.max_budget:` (provider, deployment) and the tag
+  equivalent — so **`max_budget = 0` short-circuits and is read as *unlimited* in all three router paths**,
+  while the same file uses `is not None` elsewhere. A fourth truthiness site persists at `main:848`.
+  Corroborated at `v1.106.0`, `v1.105.1` and `v1.107.0-rc.1`: **identical and unchanged in all four.**
+  ⚠️ **The sharper finding: the surrounding budget-window code *was* refactored in-window** (injectable-clock
+  windows, `duration_in_seconds_from`) **and the zero guard was left untouched — this is neglect of the bug,
+  not of the file.** PR **#44259** (*"fix(router): enforce a router budget of 0 and stop dropping providers
+  with no cap"*) is **still Open** with **no activity since Oct 2**; issue **#43214** open; **#43292 was
+  closed unmerged** 2026-10-03. Versions dated from **PyPI JSON**: 1.106.0 **2026-10-18**, 1.105.1 Oct 14,
+  1.103.5 Oct 17, 1.107.0rc1 Oct 18. **High.** ⚠️ **New: LiteLLM's own docs never document
+  `budget_exceeded_status_code` at all**, and its budget examples are internally inconsistent about the
+  status code — **400**, **429** and **401** appear across different examples. **Medium.**
+- ✅🔴 **NEW and important — `agentgateway` implements the ceiling *correctly*, and is the positive
+  counterexample to LiteLLM.** AAIF-hosted (named on `aaif.io/projects`), **98 commits in-window**, newest
+  tags `v1.6.0-rc.1` / `v1.5.0`; two in-window commits are directly on budget enforcement (`681c3ad`
+  2026-10-15 *"budget: allow budgets with no refresh"*; `648a523` 2026-10-12 *"budget: do not override gateway
+  policy from a route policy"*). It ships a **real per-API-key USD ceiling with enforcement, not an alert**:
+  `policies.apiKey.keys[].budgets[].limit.unit` is an enum of **`USD` | `Tokens`**, `window.rolling` takes
+  `1h`/`24h`/`30d`, and `onBudgetExceeded` is an enum of **`Audit` | `Block`** — **so "measure only" is an
+  explicit choice, not an accident.** 🔴 **And the comparison has no truthiness guard**, lead-verified from
+  source at HEAD `955d56fa` (2026-10-16), `crates/agentgateway/src/http/budget/mod.rs:449`:
+  `let exceeded = used >= budget.limit.amount.decimal();` — **unconditional, so `limit.amount = 0` correctly
+  blocks everything, exactly the case LiteLLM gets wrong in three places.** Enforcement doc comment:
+  *"Refreshes each matched counter before a request, logs exceeded budgets, and returns the first exceeded
+  budget configured to block. **Audit-only budgets never block the request.**"* Schema note on the honest
+  limit: *"A request is not charged when its provider does not report the usage or cost required by the budget
+  unit."* **High** (read from source).
+- 🔴 **NEW — the generalised anti-pattern: a guard gated on the truthiness or positivity of its own limit is
+  not a guard.** Three independent instances now: **LiteLLM** `max_budget = 0` → unlimited (above);
+  **ralph-tui** `maxIterations > 0` → the documented-as-valid value `0` **silently removes hard stop #1**
+  (`src/engine/index.ts:590-593`; schema permits `.min(0)`, validation rejects only `< 0`, default is a safe
+  `10`); and **Gemini CLI**, where the *same* setting means two things in one binary (below). ✅ The correct
+  form — an unconditional compare plus an explicit sentinel for "unlimited" — is modelled by **agentgateway**
+  (above), **Anthropic's gateway** (*"`null` is unlimited. `"0"` is a zero cap, which blocks every
+  request."*), **LiteLLM's proxy** org/project path, and **Gas City's `withDefaults`**, which *"fills every
+  unset or non-positive duration and threshold from DefaultPolicy, **so no Policy can pace at zero**."*
+  **This is the most transferable finding of the pass and belongs in `guardrails/` as a check, not just a
+  primer note.** **High.**
+- **The exhausted-budget signal — all unchanged, re-verified verbatim.** Anthropic's gateway: *"A developer
+  over any cap gets a `429` with `error.type: billing_error` and header `x-should-retry: false`"*, plus
+  `retry-after`; periods **daily/weekly/monthly**, *"each enforces independently"*; and the **fail-open
+  default is still live** — *"If the store is unreachable or times out, enforcement fails open by default…
+  Set `enforcement.fail_closed_on_error: true` to fail closed instead."* ⚠️ **OpenRouter's two open items are
+  both still open**: the **402-vs-403 inconsistency is live on the same page** (`openrouter_key_limit`
+  attributed to both; per-workspace is unambiguously 403), and **`limit: 0` remains undocumented**
+  (`remaining_usd` is *"zero or negative blocks requests"*, but the per-key `limit` is only *"Credit limit
+  for the key, or null if unlimited"*). ➜ **Takeaway to carry: on neither major gateway can a harness detect
+  budget exhaustion from the HTTP status code alone — key on `x-should-retry`.** **High.**
+- **Databricks / Azure / Bedrock — all unchanged.** Databricks Unity AI Gateway budgets are still **Beta**,
+  *"Block usage thresholds are enforced approximately"*, and *"**Do not use this feature as a way to ensure an
+  absolute spend cap on final billed amounts.**"* ⚠️ Note its *overview* page markets *"hard caps"* while the
+  budgets page disclaims absoluteness — **cite the budgets page.** Page last updated Oct 7 (pre-window).
+  Azure remains an alert; **Bedrock remains a meter, not a control**, with the only enforcement routes being
+  AWS's ~4-day opt-in tier or DIY (budget action → Lambda revoking inference access). **High** on Databricks;
+  **Medium** on the Azure/Bedrock negatives (no in-window primary existed to read).
+- ⚠️ **NEW — a fourth instance of "the meter a ceiling is computed from is wrong", and the second that stops
+  a loop *early*.** Agent Router `main` commit 2026-10-12, *"fix: avoid charging request-time quota hit
+  (#2816)"*, body verbatim: *"Previously, QuotaPolicy request-time rate-limit entries omitted `hits_addend`.
+  Envoy Rate Limit Service treats an omitted value as an increment of `1`, so a completed request with
+  `total_tokens = 28` charged `1` at request time and `28` again when the response completed, **resulting in
+  `29` tokens deducted**."* **A systematic +1-per-request over-charge against a token ceiling, so the ceiling
+  fired early by a margin that grows with request count, not token volume.** **Unreleased.** **High** (read
+  from the repo). Taken with Claude Code's under-counting (v2.1.286), over-pricing (v2.1.296) and
+  cloud-session reset-to-zero (v2.1.302), **"verify the meter, not just the ceiling" deserves its own
+  guardrail line.**
+- **Gartner tripwire — fired, and the result is an honest empty.** The Symposium **opened Oct 19**, the day
+  this window closed, so **no keynote-derived release on agent cost, agent governance or agentic spend had
+  landed as of the check.** The opening keynote is on-angle (*"Reaching Escape Velocity - Shaping an
+  Effective Enterprise AI Economy"*, Plummer and Moyer, who *"will discuss the economics of AI"*) and an
+  **inaugural *"Hype Cycle for Agentic AI 2026"*** session is scheduled **Oct 20** — both **next window.**
+  ⚠️ **One Gartner release did land in-window but is off-angle**: Oct 14, *"More than $3.5 trillion of AI
+  infrastructure spending could be exposed to impairment by the end of 2030"* — **provider capex and
+  write-down risk, not agent operating cost or spend governance**, so it does not bear on the three hard
+  stops. **Medium** (gartner.com 403s; read via a dated secondary and wire syndication). ✅ **Citation upgrade
+  available:** the KB's *"agentic AI costs to rise more than fivefold by end of 2028"* has an identified
+  primary press release dated **2026-08-17** (analyst Will Sommer; Gartner's framing is the *"Inference
+  Paradox"*; comparative figure *a task costing a basic chatbot $0.01 could cost an AI agent up to $1.50*) —
+  **pre-window, and confidence stays Medium-High because gartner.com could not be read.**
+- **No new citable cost-overrun incident — clean negative.** Nothing in-window clears the bar (a named primary
+  with disclosed methodology). ⚠️ **And the predicted Mandiant distortion not only spread, it mutated from
+  the same account**: `dev.to/mech_app_ai`, which recirculated Mandiant as *"a $50,000 cloud bill"*, has
+  published a second round-number headline — *"The $78,000 Agent Runaway… OpenAI Codex's 826-Thread
+  Explosion"* (Sep 27, **pre-window**). It fails on every axis: **no named primary** (its only source is a
+  Hacker News discussion, the figures *"an anonymous user's own reconstruction"*), **internally
+  inconsistent** (headline `$78,000`, body *"162 paid invoices totaling $79,664.88"*, never reconciled), and
+  **unauditable by its own admission** (~2,550 threads with no raw logs). ➜ **Add to do-not-cite:
+  `$78,000 / 826 threads`, and treat `dev.to/mech_app_ai` as a distortion source, not a lead.** Also surfaced
+  and **not citable**: a Revefi *~$73,750* (explicitly a hypothetical retailer scenario); the Cycles "State
+  of AI Agent Incidents 2026" *$32.40–$2,300* range (the report itself says these are modelled scenarios);
+  a Logic42 *$8,000 weekend burn* (vendor-audit anecdote). **Always cite Mandiant directly — ~$50,000 PER
+  HOUR, with the database-lock availability angle intact.**
+- **Anthropic cost mechanics — both standing items confirmed, plus one new compounding factor.**
+  (a) ✅ **Client-abort billing still live verbatim** (and it lives on the *gateway* doc, not the pricing
+  page — zero "abort" matches across pricing, rate-limits, errors, streaming and usage-cost-api):
+  *"Client aborts are billed too. When a stream ends without the upstream's final usage frame, the meter
+  bills a floor estimate of about four characters per output token for the text already sent to the client,
+  **so aborting requests early doesn't evade a cap**."* Companion line unchanged: the meter is *"a circuit
+  breaker rather than an invoice; for billing, reconcile against your provider's usage reporting."*
+  (b) **Haiku 5.5's prompt-length pricing confirmed exactly** — *"Claude 4.6 and later models (except Claude
+  Haiku 5.5) … include the full 1M token context window at standard pricing"*; *"a request whose prompt is
+  over 100,000 tokens pays higher prices… **Each request is priced on its own: a request over the threshold
+  pays the higher prices even when part of its prompt is a cache hit**, and earlier requests keep the prices
+  they were billed at."* ≤100K: **$0.10 / $0.01 cache read / $0.50**; >100K: **$0.50 / $0.05 / $2.50** —
+  **exactly 5×**. ⚠️ **NEW compounding detail — 5× is not the worst case:** *"For Claude 4.6 and later models,
+  specifying US-only inference through the `inference_geo` parameter incurs a 1.1x multiplier on all token
+  pricing categories… **On Claude Haiku 5.5, the multiplier also applies to the higher prices for prompts
+  over 100,000 tokens.**"* **So a US-only-inference Haiku 5.5 request over 100K tokens costs 5.5× the
+  sub-100K global rate** — relevant to any loop that pins `inference_geo` for compliance and lets context
+  grow. **High** on the text; ⚠️ **Medium on recency** — the pricing page is undated and this could not be
+  placed in-window, so **do not report it as a change.**
+- **AgentGuard47 and LoopGain — both clean negatives.** AgentGuard47's full PyPI history ends at **2.0.0,
+  2026-10-06** (pre-window), so there is no new release against which to re-verify its
+  `agentguard hook claude-code` internals. **LoopGain's ends at 0.6.5, 2026-09-30 — a third consecutive
+  no-release pass**, site still live. **High** (PyPI JSON). ⚠️ **Note an internal contradiction for a human
+  to settle: this file already carries a ⚠️ correction saying LoopGain is *not* a retirement candidate, while
+  the retirement framing persists elsewhere. No new evidence either way beyond "no release in three weeks."**
+
 ## Alternative harnesses & cross-tool landscape (mid-2026 survey)
 
 Added 2026-07-20 from a 3-agent survey (CLI harnesses / orchestration platforms
@@ -3712,6 +4311,151 @@ iteration cap, stall detector or dollar ceiling.
   ⚠️ **But do not enter the ownership chain:** secondary results additionally claimed Graphite was
   acquired by Cursor/Anysphere and that Cursor was then acquired by SpaceX in Aug 2026. **No primary
   was found for either, and the second is implausible on its face. Cite only the rename.**
+
+
+### 2026-10-19 pass — peer harnesses
+
+✅ **Method note that closes several "permanently blocked" caveats, and should be the documented default:**
+`git ls-remote --tags <https url>` and `git clone --depth 1 --branch <tag> --filter=blob:none|blob:limit=200k`
+**both work through the proxy on third-party GitHub repos**, and `git log -1 --format=%cI` then dates any tag
+exactly. This resolved opencode's tag dates and allowed Codex and Goose to be read **from source at a tag**.
+`api.github.com` remains 403 for third-party repos; `github.com` WebFetch works; PyPI/npm JSON work.
+⚠️ **No `add_repo` was called on any third-party repo** — the research agents correctly reported tooling
+blocks rather than routing around them. ⚠️ **And `git clone --shallow-since` fails outright
+(`fatal: error processing shallow info: 4`) when the cutoff is later than the repo's last commit** — which is
+itself a dormancy signal; fall back to a full clone.
+
+- 🔴 **Codex CLI 0.163.0 (2026-10-15, in-window) — hard stop #2 was leaking through *interrupt*, and this is
+  the window's most citable cross-vendor generalisation.** Release bullet: *"Count interrupted goal
+  continuations toward the no-activity limit (#52640)."* **Lead-verified from source at tag `rust-v0.163.0`
+  (HEAD `83086188`), `codex-rs/ext/goal/src/accounting.rs:237`:**
+  `let empty = automatic && !turn.has_activity && (turn.empty_final || interrupted);`
+  with the breaker at line 245, `(inner.consecutive_empty_turns >= 3).then_some(goal_id)` — **hardcoded and
+  not configurable.** ⚠️ **Before 0.163.0 every interrupt reset the consecutive-empty-turn counter, so the
+  no-activity breaker could be deferred indefinitely by interrupting.** ➜ **Two vendors, two codebases, two
+  different hard stops, the same week and the same seam:** Claude Code v2.1.299 (Oct 14) fixed its third
+  resume leak of hard stop #1/#3, and Codex 0.163.0 (Oct 15) fixed an interrupt leak of hard stop #2.
+  **"Interrupt/resume is where hard stops leak" is now a property of agentic loop harnesses, not one
+  vendor's bug** — a materially stronger claim than the KB previously made. **High.**
+- **Codex has a `/goal`-equivalent the KB's matrix omitted, and it splits exactly the way this repo's doctrine
+  predicts** (⚠️ **pre-window** — the crate exists in 0.162.1; the in-window delta is only the interrupt fix).
+  `codex-rs/ext/goal/` is ~3,420 lines; the feature gate is
+  `FeatureSpec { id: Feature::Goals, key: "goals", stage: Stage::Stable, default_enabled: true }` — **on by
+  default and stable.** ✅ **Its token budget is harness-enforced and the tool description says so**, verbatim
+  from `spec.rs`: *"**Budget limits take precedence over pausing.**"*; *"Do not mark a goal complete merely
+  because its budget is nearly exhausted or because you are stopping work."*; *"**You cannot use this tool to
+  resume, budget-limit, or usage-limit a goal; those status changes are controlled by the user or system.**"*
+  — and `templates/goals/budget_limit.md`: *"**The system has marked the goal as budget_limited**, so do not
+  start new substantive work for this goal."* ⚠️ **But no-progress and completion are model-judged**:
+  `continuation.md` carries a *"No-progress check"*, a *"Completion audit"* and a *"Blocked audit"* as
+  **prompt instructions**, e.g. *"Only use status `blocked` when the same blocking condition has repeated for
+  at least three consecutive goal turns"* and *"Treat uncertain or indirect evidence as not achieved."*
+  **The same vendor enforces the budget in the runtime and delegates the progress judgement to a prompt — and
+  it was the harness-level half that had the leak worth fixing.** ⚠️ **No dollar ceiling**: a grep of all Rust
+  sources finds only OpenAI *server-side* error codes Codex relays (`organization_spend_limit_exceeded`,
+  `project_spend_limit_exceeded`) and display/telemetry (`estimated_usd`). (Separately, `Feature::TokenBudget`
+  is `Stage::UnderDevelopment, default_enabled: false` — **a different, unshipped feature; do not conflate.**)
+  **High** (read from source).
+- **Goose v1.55.0 (2026-10-16, in-window) — the agent loop was rewritten as a state machine; the KB's
+  position is confirmed verbatim from source.** `GOOSE_MAX_TURNS` default **1000**
+  (`configure.rs:1953`, `cli.rs:135` help text *"Maximum number of turns allowed without user input (default:
+  1000)"*), and ⚠️ **it pauses rather than terminating** — `ops_maxturns.rs:14`:
+  `MAX_TURNS_MESSAGE: &str = "I've reached the maximum number of actions I can do without user input. Would
+  you like me to continue?"` **In an unattended loop with nobody to answer, that is a hang, not a stop.**
+  In-window architecture change: `agent.rs` **−5,139 lines**, a new `state_machine_builder.rs`, and the turn
+  cap is now a pipeline operation ordered **last** (`RetryOperation → EmptyResponseOperation →
+  StopHookOperation → ExitOnErrorOperation → MaxTurnsOperation`), consistent with the release bullet *"Finish
+  pending tools before enforcing max turns (#12702)"*. **High** on the defaults and ordering; **Medium** on
+  attributing that bullet to the reordering specifically. Three primitives newly verified (⚠️ **presence at
+  v1.55.0 confirmed; in-window-ness not established**): an `EmptyResponseOperation` (same breaker class as
+  Codex's), a `StopHookOperation` with a `stop_hook_block_cap`, `GOOSE_GATEWAY_MAX_TURNS` with documented
+  precedence, and a `/grind` mode — *"Set a goal the agent pursues relentlessly until max_turns"* — i.e. **a
+  third peer `/goal` analogue, bounded only by the pausing 1000-turn cap.** ⚠️ Also notable as a technique
+  *and* a mild self-grading hazard: `turn_budget_part()` injects
+  `<turn-budget>{turns_taken}/{max_turns} used</turn-budget>` into the prompt once half the budget is spent —
+  **telling the model its own remaining budget.**
+- ✅🔴 **RESOLVED — Gemini CLI's `maxSessionTurns` is a real stop-at-limit iteration cap, not history
+  retention. The docs are wrong in two of three places, and so is the settings dialog.** Settled from the
+  **shipped npm tarball** (`@google/gemini-cli@0.64.0`, published **2026-10-13**, in-window), which bundles
+  both its own `docs/` tree and the compiled settings schema. **The contradiction still ships:**
+  `docs/reference/configuration.md` and `docs/cli/settings.md` say *"Maximum number of user/model/tool turns
+  **to keep in a session**"* — and so does the compiled schema's `description`, which is **the text shown in
+  the settings dialog** — while `docs/cli/session-management.md` says *"The maximum number of turns … **
+  allowed** in a single session"* with explicit behaviour (*"Interactive mode: The CLI shows an informational
+  message and stops sending requests to the model… Non-interactive mode: The CLI exits with an error"*).
+  **The implementation is unambiguous — three enforcement sites, zero history-trimming sites:**
+  `processTurn` (`if (this.config.getMaxSessionTurns() > 0 && this.sessionTurnCount > …)`), `_runLoop`
+  (`if (maxTurns >= 0 && turnCount > maxTurns)` → `MAX_TURNS_EXCEEDED`), and the non-interactive path
+  (`>= 0` → `handleMaxTurnsExceededError`). User-facing strings corroborate (*"Reached max session turns for
+  this session"*). **High** (read from the shipped bundle).
+  🔴 ⚠️ **NEW — and it is the cleanest zero-polarity instance the KB has, because it is inside a single
+  binary with no documentation ambiguity to hide behind.** Note the operators above: with
+  `maxSessionTurns: 0`, `_runLoop` and the non-interactive path **stop on turn 1** (`1 > 0`) — **0 means
+  "stop immediately"** — while `processTurn` treats it as **no cap at all** (`0 > 0` is false) — **0 means
+  "unlimited"**. **The same value means both things in two code paths of one shipped binary.** Only `-1` is
+  documented, so the hazard is reachable only by someone deliberately setting `0` — **which is exactly what
+  someone writing a guardrail would try.** **High.**
+  Other Gemini findings: ✅ **the settings schema is byte-identical between 0.63.0 and 0.64.0** across all 246
+  labelled entries (**0 added, 0 removed**) — a clean negative, **no new Gemini primitive in-window**;
+  `disableLoopDetection` default **`false`** re-confirmed verbatim, so **loop detection on by default**
+  holds; and **zero hits in the whole bundled `docs/` tree** for `maxBudget`, `budget.?usd`, `cost ceiling`,
+  `spend limit` or `dollar` — **no dollar ceiling.** ⚠️ **Method limitation worth recording: the bundled
+  changelog lags the version it ships in by three releases** (`latest.md` in the 0.64.0 tarball says
+  *"Latest stable release: v0.61.0"*), **so the tarball is the strongest primary for *behaviour* but not for
+  *what changed*.** ⚠️ **Two Gemini primitives that look absent from the KB and are NOT new in-window**
+  (verified present in 0.63.0 too): `browser.maxActionsPerTask`, default **100** —
+  *"**Enforcement is hard: the agent will be terminated when the limit is reached.**"*, unusually explicit
+  peer hard-stop language and a good `guardrails/` citation — and a per-agent block carrying `maxTimeMinutes`
+  (*"The maximum execution time for the agent in minutes"*) plus `maxTurns`. **The wall-clock ceiling is a
+  hard-stop dimension this repo's three-stop model does not name.**
+- **Cursor CLI — clean negative, and `/goal` is *still* "Rolling out" after ~9 weeks.** No release in-window
+  (newest `docs/cli/changelog.md` entry is **v2026.10.08**, four days pre-window). Verbatim from
+  `slash-commands.md`: *"`/goal [objective]` | Give the agent a long-lived objective to work towards until
+  it's fully complete. **Rolling out.**"*, and the only changelog mention of durable goals is under
+  **v2026.08.11** — *"**Durable goals.** `/goal` tracks a durable goal with an active or paused status line,
+  continues the goal across idle and headless runs, and pauses it on Ctrl+C. **This is rolling out and
+  gated.**"* ⚠️ **`docs/cli/reference/parameters.md` has ZERO hits for `budget|cost|usd|max.turn|limit|
+  iteration` — Cursor CLI exposes no iteration cap, no token ceiling and no dollar ceiling as CLI
+  parameters.** **High** (raw markdown read directly).
+- **Factory Droid — clean negative across all four dimensions despite 7 in-window releases** (CLI v0.239.0
+  through v0.244.0, Oct 12–16; 11,220 characters of notes parsed from dated `##` headers). **Zero** new
+  iteration caps, dollar/token ceilings, stall detection or validator changes. Validators confirmed unchanged
+  (`--validator-model <id>` *"Model ID used by mission validator agents"*, `--validator-reasoning-effort`),
+  and **no `--max-cost`/budget flag of any kind in the `droid-exec` flag reference.** Two near-misses worth a
+  line each: ⚠️ *"**Script progress reporting** - Checking an unfinished Script run now reports its progress
+  instead of calling it stalled"* — **a stall-detection *false positive* being fixed, the inverse hazard, and
+  hard stop #2's guidance should acknowledge that a detector firing on a healthy long step is its own failure
+  mode**; and ⚠️ *"**Enabling Extra Usage** - The limits pane can now turn on Extra Usage in one click"* —
+  **a usage limit made easier to raise.** ⚠️ **The KB's "10 runs/hour" automation cap could NOT be located on
+  the droid-exec page this pass — not refuted, unlocated.** **High** on the negatives.
+- **Aider — the dormancy is now stark**: PyPI `aider-chat` latest **0.86.2, 2026-02-12**; the one before it
+  was 2025-08-13. **One release in fourteen months.** **High.**
+- **Amp — a block, not a negative.** ~6 npm publishes/day through the window (`latest`
+  `0.0.1792368068-g91990d`, 2026-10-19), but version strings are epoch+SHA with no semver signal and **no
+  changelog in the package**, so **whether anything loop-relevant changed is unknown.** Dating **High**;
+  content **unknown**.
+- ✅ **RESOLVED — opencode's v2.0.x tag dates, and the caveat can be closed.** Exact commit dates via
+  `git ls-remote` + a filtered tag fetch: **v2.0.27 2026-10-12, v2.0.28 10-13, v2.0.29 10-14, v2.0.30 10-15,
+  v2.0.31 10-16, v2.0.32 10-16** — **six in-window**, and the line now runs to v2.0.32 (last pass could only
+  confirm to v2.0.27 because .28+ did not yet exist). Stable line also in-window: v1.19.1 (10-15), v1.19.2,
+  v1.19.3 (10-16). ⚠️ **v1.19.1 and v2.0.30 were cut 29 minutes apart, and v1.19.3/v2.0.31 six minutes
+  apart — the two lines are released in lockstep pairs, so v2.0.x is an active parallel channel, not an
+  abandoned branch.** Both earlier findings confirmed from `package.json` at tag `v2.0.32`: `"private": true`
+  (**npm publication is deliberately blocked, by construction not oversight**) and
+  `"repository": "https://github.com/anomalyco/opencode"` — and `git ls-remote` against `sst/opencode` and
+  `anomalyco/opencode` returns **byte-identical tag lists (1,150 refs, same SHAs)**, so **the `sst` →
+  `anomalyco` org move is confirmed and `sst/opencode` now redirects.** **High.**
+- **ralph derivatives — now deliberately inventoried for the first time, all dormant or thin.** Dates from
+  `git clone --depth 1 --branch <tag>` + `git log -1`. **`subsy/ralph-tui`** `v0.12.0` **2026-05-13**
+  (dormant ~5 months) — 1 of 3 hard stops, and ⚠️ **that one is defeatable by a legal config value**
+  (`maxIterations: 0`, above); no budget ceiling and no no-progress detection (greps clean).
+  **`umputun/ralphex`** `v1.7.0` **2026-09-07** — `--max-iterations N` only (the skill offers 25/50/100); no
+  budget ceiling, no stall detection; its design is interesting for this repo's "separate verifier" thread —
+  *"Each task runs in a fresh session"* plus five parallel reviewers and *"optional GPT-5 cross-validation
+  through codex"*. **`snarktank/ralph`** — **no tags, dormant since 2026-02-01** (8.5 months); **record as
+  inventoried-and-dormant, stop tracking.** **`mikeyobrien/ralph-orchestrator`** — in-window *development*
+  (commits Oct 12 and Oct 15) but latest tag is still `v2.9.3` from **2026-05-08**, i.e. **five months of
+  unreleased `main`.** **High** (git).
 
 ## Ecosystem (newer than the seed)
 
@@ -4382,6 +5126,121 @@ framework and a separate project; **do not conflate**). **Cursor CLI v2026.10.08
   its own product — recommend a do-not-cite note.** **No October 2026 launch combining guardrails with
   spend-limit enforcement surfaced**; the only in-window mechanism-backed gateway spend finding is Agent
   Router v1.2.0 above. **Medium** on the negative.
+
+
+### 2026-10-19 pass — ecosystem & standards
+
+- **Gas City — no in-window release, both standing facts confirmed from source, one genuinely new
+  mechanism.** ⚠️ **Repo identifier correction: use the org-qualified `gastownhall/gascity`** —
+  `github.com/steveyegge/gascity` prompts for credentials (not publicly readable). Newest tag is still
+  **`v1.5.0`**, but **295 commits** landed between Oct 12 and HEAD (`3b4f3ede`, 2026-10-19), confirming it
+  remains the most active loop orchestrator in this space. ✅ **Stall detection still disabled by default**,
+  verbatim from `docs/reference/config.md`: `ProgressStallTimeout` *"when set, enables progress-aware session
+  recycling… values below 5m are clamped to 5m. **Unset/zero disables it.**"*, with
+  `session_reconciler.go` commenting *"disabled (zero) by default"*. ✅ **The Oct 11 hard-class-failure commit
+  is live and unreverted** (`fa848a57`, *"fix(dispatch): stop a compiled ralph loop on a hard failure
+  (#7583)"*), and `control.go` at HEAD reads *"attemptHardFail closes the control as a terminal hard failure
+  regardless of attempts remaining"* and *"An iteration that failed hard closes the control as a hard failure
+  **without running the check**."*
+  ⭐ **NEW, and a direction worth watching: `internal/workladder`**, three in-window commits (Oct 18),
+  including *"feat(reconciler): v2 lane step work-ladder **replaces the three backstops** (W3)"*. It is a
+  **counted escalation state machine** over rungs assigned → claimed → started → escalated, pure and
+  replayable (*"the same prev, obs and p give the same Decision"*), resetting *"on progress the seat made
+  since its last nudge"*, with *"at most one Nudge per pass"*. 🔴 **The load-bearing part is its defaults:**
+  `DefaultGrace = 90s`, `DefaultBase = 3m`, `DefaultCap = 60m`, `DefaultProgressReset = 10m`,
+  `DefaultMaxRecycles = 1`, thresholds 3/6/3/6 — and *"withDefaults fills every unset or **non-positive**
+  duration and threshold from DefaultPolicy, **so no Policy can pace at zero**."* **That is the correct
+  answer to the zero-polarity anti-pattern, shipped in code.** ⚠️ **But it is unreleased and undocumented** —
+  nothing in `CHANGELOG.md` mentions a work ladder — so **treat as a direction, not shipped behaviour.**
+  **High** (read from source).
+- **`temporalio/pi-temporal` — no in-window release; every standing fact confirmed verbatim; one nuance to
+  add.** Only two tags exist, both **2026-10-08** (out of window), and in-window activity is **four commits**,
+  none touching a guardrail. From source at HEAD: the **200-step runaway cap** is unchanged
+  (`protocol.ts:394`, *"// Runaway guard (a model looping on one tool, say). High enough that real work never
+  reaches it."*); `TurnBudget` has exactly five fields (`seconds`, `tokens`, `hardSeconds`, `sessionSeconds`,
+  `sessionTokens`) and `overBudget()` compares only those — **no USD/cost field anywhere in the budget
+  path**; and **no no-progress detection** (every `stall` hit in the tree is about worktree leases, fences and
+  storage races). The heartbeat distinction is confirmed verbatim and appears **twice**, in two wordings —
+  `core/workflow.ts:66` (*"The heartbeat finds a dead Worker in 30 seconds. **It comes from a timer, not from
+  progress**, so a call that hangs runs on to this timeout."*) and a `pi/local-turn-workflow.ts:52` variant.
+  ⚠️ **NEW nuance that sharpens the KB's claim: cost is *measured* but never *enforced*.** `Spent` is defined
+  as `{ tokens, cost, seconds }` — *"What a session has spent so far, carried between runs of its
+  workflow"* — **so it tracks dollars across Continue-As-New and has no budget field to compare them
+  against.** It is not that pi-temporal cannot see dollars; **it sees them and has no ceiling to check them
+  against.** **High** (read from source).
+- ✅🔴 **RESOLVED on a Linux Foundation primary — Agent Skills is NOT in the AAIF, and Agent Router IS.**
+  The LF press release (`linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation`,
+  dateline **Dec 9, 2025**) names the founding contributions as *"Anthropic's Model Context Protocol (MCP),
+  Block's goose, and OpenAI's AGENTS.md"* — **three projects, and neither "Agent Skills" nor "Skills" appears
+  anywhere in the text.** AAIF's own project list (`aaif.io/projects`) now shows **six**: MCP, goose,
+  AGENTS.md, **agentgateway**, **Agent2Agent (A2A)** and **Agent Router** — **Agent Skills absent.**
+  ➜ **This moves the KB's claim from Medium/secondary to High**, and **confirms Agent Router as AAIF-hosted**
+  (*"Agent Router is an open source AI gateway built on Envoy"*). ⚠️ **The *date* of Agent Router's move is
+  still unverified** (the project list carries no dates), so *"moved around Sep 9–10 2026"* stays **Low** —
+  **archive the membership half of that caveat, keep the date open.** Corroborating from the AGENTS.md side:
+  `openai/agents.md` commit `40de070`, 2025-12-11, *"Add note on AAIF in the About section."*
+  ⚠️ **Two AAIF projects the KB was not tracking: `agentgateway` (now tracked above — it is directly in
+  scope) and `Agent2Agent (A2A)`.** **High.**
+- 🔴 **Agent Skills still has no governance of any kind — now verified by absence, not inferred.** Full clone
+  of `agentskills/agentskills` read: **zero tags**; `find` for `*govern*`/`*charter*`/`*maintainer*`/
+  `*conformance*` returns **nothing**; root is only `AGENTS.md CLAUDE.md CONTRIBUTING.md LICENSE README.md
+  docs/ package.json skills-ref/`; and **zero commits since 2026-08-09.** ⚠️ **No spec version exists** — the
+  only `version:` strings in `docs/specification.mdx` are inside an example of a *skill author's own*
+  frontmatter (`version: "1.0"`), **a per-skill field; do not misread it as a spec v1.0.** `agentskills.io`
+  is the whole governance story: the format *"was originally developed by Anthropic, released as an open
+  standard"* and *"is open to contributions from the broader ecosystem"* — **no body, no TSC, no charter, no
+  foundation.** ✅ **The asymmetry is unchanged and now rests on primaries:** Agent Plugins has a TSC and a
+  published `v1.0.0` (⚠️ **zero commits since 2026-08-19**, so 1.1.0 is still a working draft), `AGENTS.md`
+  has a `Technical_Charter.pdf` and AAIF membership (⚠️ **zero commits since 2026-09-10**), and **Agent
+  Skills — the most adopted of the three (~48 clients in the `agentskills.io` showcase) — has none of it.**
+  ⚠️ **Do not conflate the two tracks:** the *MCP Skills extension* (SEP-2640) has an **executable conformance
+  suite** (`modelcontextprotocol/conformance`, 20 tags through `v0.1.16`) which **three independent
+  implementations now cite passing**; the *bare on-disk format* has no version, release, status or suite.
+  **High.**
+- ⭐ **NEW in-window — an MCP "Progressive Disclosure" Working Group charter was adopted (merged `5ea9960`,
+  2026-10-13).** Verbatim mission: *"The Progressive Disclosure Working Group explores how MCP Primitives
+  (Tools, Resources, Prompts, Tasks) might be organized, beyond the flat lists maintained by the protocol …
+  and feeds recommendations into the SEP process **rather than picking a single canonical pattern early**."*
+  Goal 2 adds *"it may be too early to select one canonical pattern … e.g., **grouping, tool-search,
+  code-mode**."* It is a **distinct WG from Skills Over MCP** and says so. ⚠️ **The work is not new, only the
+  governance is** — its repo has existed since March 2026 and its last commit (**2026-10-05**) is out of
+  window. **Connective finding:** `agentskills.io` describes the Agent Skills loading mechanism with the
+  identical term — *"Agents load skills through **progressive disclosure**, in three stages"* — **so MCP has
+  stood up a WG named after the mechanism Agent Skills is built on, while explicitly declining to
+  canonicalise it.** **High** (git + file read). ⚠️ Minor date to re-check: the KB dates the **Governance** WG
+  charter to Oct 8, but its merge commit is **2026-10-10** — either way pre-window; the Oct 8 figure is
+  unverified (**Medium**).
+- ⭐ **SEP-2640 implementation movement — three in-window matrix updates**, all to
+  `modelcontextprotocol/ext-skills/docs/implementations.md`: **mcpkit `partial` → `v1`** (`e083f6d`,
+  2026-10-15, now *"Passes the conformance suite server scenarios"*), **FastMCP `pre-v1` → `in progress`**
+  (`bfdd553`, 10-15, noting *"released versions still serve their own `skill://` shape"*), and **Brewale added
+  as a `v1` server** (`c1aa87e`, 10-16). ⚠️ **The clean negative still holds: all four official SDKs remain
+  `in progress`** (Go, TypeScript, Python, C#) and **every host row is still `partial`/`prototype`/
+  `planned`** — `v1` exists only in community/vendor code. SEP-2640 itself was untouched but for a broken-link
+  fix (`1155ca4`, 10-17). **High** (read from git).
+- 🔴 **Clean negatives on the MCP satellite repos, and one is notable.** **`ext-tasks` had zero in-window
+  commits** (last `899c1bb`, 2026-10-09; latest tag v0.2.2, 2026-09-30). ⚠️ **`experimental-ext-server-card`
+  is DORMANT since 2026-08-12 with zero tags — and has not graduated** (`ext-server-card` resolves to the
+  *same* HEAD, i.e. a redirect, not a new repo). **So SEP-2127 "MCP Server Cards" merged Oct 6 into a
+  satellite repo that has not moved since August — a spec-ahead-of-implementation gap worth recording.**
+  **High** (git).
+- **AG2 — still no in-window release; `v1.2.0` remains tagged-but-unpublished, now for 8 days.** PyPI
+  `info.version` is **1.1.2, 2026-10-03**; `git ls-remote --tags` shows `v1.2.0` and nothing newer.
+  **High** (both primaries read). **Agent Router — quota work merged to `main` but shipped in nothing:**
+  `#2695` *"support weekly, monthly, and yearly quota windows"* and `#2766` (both 2026-10-09) are on `main`,
+  but the newest tag is still **`v1.2.0`, 2026-10-06** (pre-window), so **zero releases in-window**.
+  ⚠️ **And `serviceQuota` is still not enforced**, verbatim from `RELEASES.md` on `main` today:
+  *"`QuotaPolicy` is `v1alpha1`-only … its `serviceQuota` field is **accepted but not yet enforced
+  end-to-end**."* — **a ceiling you configure is accepted silently and does nothing**, which belongs beside
+  "a cost alert is not enforcement." Also unreleased: *"feat: support cross-namespace quota backends
+  (#2798)"* (Oct 16). **High** (git).
+- **Other framework releases in-window — dates only, contents not inspected for guardrail content** (PyPI
+  JSON, **High** on versions/dates, **no claim** about contents): **LangGraph** 1.2.15 (10-12), 1.2.16
+  (10-16); **Google ADK** 2.12.0 (10-13); **CrewAI** 1.15.28 (10-14). 🔴 **OpenHands has no in-window PyPI
+  release** — `openhands-ai` latest is **1.11.0, 2026-07-09**; either distribution moved off that package or
+  releases stopped (**Medium** on the interpretation, **High** on the PyPI fact).
+- **Clean negatives:** **no new `/goal`-style validator-stop implementation shipped in another tool
+  in-window**, and **no genuinely new loop-orchestration project was first released in-window.**
 
 ## Verification & skills (academic)
 
@@ -6127,6 +6986,274 @@ overlap is stated wherever two papers might be mistaken for independent confirma
   the usage-limit masquerade. And: *"A run that started but ended badly is still graded on what it
   produced, so a non-null error doesn't imply score 0."*
 
+
+### 2026-10-19 pass — academic
+
+**Verification method (lead, not relayed):** every ID below was machine-verified against
+`export.arxiv.org/api/query?id_list=…` for **ID ↔ exact title ↔ v1 `published` ↔ primary category ↔ author
+count**. **22 IDs in two batched calls, both HTTP 200: 22/22 resolved, zero unresolved, zero hallucinated;
+15 have v1 in-window and one (`2610.08098`) carries an in-window v2.** ⚠️ **Only what the API returned is
+reported.** Findings are attributed to their authors, never asserted as fact. ⚠️ **Magnitudes do not cross
+papers** (`2609.25173`); each figure carries its own paper's *n*.
+
+#### The three backfill reads — a deliberate non-window sweep, and the highest-value task of the pass
+
+The weekly fan-out is scoped to "what changed since the last pass", so a paper published before this KB
+started looking is invisible to it. These three were surfaced last pass by title search with metadata
+verified but **contents unread**. All three abstracts were read in full this pass.
+
+- 🔴 **`arXiv:2609.27871v1` — *"Bounded Loops: Pre-Run Spend Bounds, Proved Termination, and Verified
+  Completion for Agent Harnesses"*** · v1 **2026-08-20** · **cs.SE** · 3 authors (Bhardwaj, Singh, Bhardwaj).
+  **The most on-point paper this KB has ever had, and it supplies the vocabulary the repo was missing.**
+  ⚠️ (Confirms `2609` ≠ a date.) Its definition of a bounded loop is this repo's doctrine in three terms:
+  *"a worker, an independent gate the worker cannot write to, and a declared budget"*, composed into a
+  **bounded-loop graph** with a repair relation. Three claimed guarantees, **each with a precondition**:
+  termination *"holds under repair, with the worst-case attempt total in closed form, **if the repair budget
+  is global not per node**"*; no drift — *"no node reaches DONE without a gate verdict in an append-only
+  hash-chained ledger"*; and no overspend — *"the ceiling is enforced **inside an attempt, not between
+  attempts**."* **Its framing claim restates "a self-graded gate is no gate":** *"In mainstream agent
+  frameworks, a step ends when the agent's own output says it has finished. Durable-execution platforms bound
+  retries and time, but their checker conventionally lives in the same codebase as the work: a discipline the
+  deployment is trusted to keep, not a property the harness enforces."*
+  ⭐ **The two named failure classes are the reusable contribution** — it *"characterise[s] two classes that
+  let a sound-looking check pass anything"*: **vacuity**, *"satisfied by the absence of the thing checked"*,
+  and **self-attestation**, *"where the subject supplies the value the check is applied to."*
+  **Measurement:** on an ***n* = 69-loop catalogue** the instrument *"found 47 vacuous gates in shipped,
+  reviewed code"*, and against repaired gates *"no false accepts over 209 destroying mutants (α ≤ 1.8%,
+  Wilson 95%)"*. Engine, catalogue and corpus Apache-2.0. ⚠️⚠️ **Read the authors' own caveat before citing
+  any number:** *"that figure is saturation, not quality: freezing the gates and applying a fresh operator
+  family recovers a **23.3% false-accept rate** where the exhausted corpus reported none"*, and *"A rate
+  belongs to a specific gate; **the apparatus, not our number, is the contribution**."* **High** (abstract
+  read in full; the *proofs* are claimed, not checked here).
+- **`arXiv:2608.21884v2` — *"Loop Engineering: Building Blocks, Adoption, and Impact"*** · v1 **2026-08-22**
+  (**now at v2**, `updated` 2026-08-26) · **cs.SE** · 5 authors incl. **Christoph Treude** and **Sebastian
+  Baltes**. **An academic paper on this repo's exact subject that the KB had never cited.** Mining study:
+  *"an exploratory mining study of **36,710 software repositories**. We confirmed the operation of autonomous
+  agent loops in **217 of the 256 repositories** our heuristics matched."*
+  🔴 **Its headline finding is a rebuke to prescriptive loop advice, this repo's included:** *"The
+  repositories commit the configuration around these loops, but **almost none commits the state files the
+  discourse prescribes**, and the loops' runtime state remains outside version control."* What the gray
+  literature agrees a good loop contains — a useful independent cross-check on this repo's templates:
+  *"triggered agent runs bounded by machine-checkable stop conditions, persistent state files, verifier
+  sub-agents, token budgets, and defined points of escalation to humans."* ✅ **The Osmani/Yegge claim is
+  confirmed from the paper body, with a date correction:** *"Osmani's **25 July** post revises the eight
+  stages of developer evolution Yegge had published in **January 2026** … treats autonomy as a choice made
+  per task rather than a level a developer reaches and keeps, and separates two dimensions a single ordering
+  conflates: **agency**, how far one agent proceeds without human intervention, and **orchestration**, how
+  many agents run at once and who coordinates them."* And: *"The highest agency level on his scale is
+  goal-driven autonomy, in which the agent iterates until a measurable stopping condition holds … and a team
+  should raise autonomy only as far as it can check the result at acceptable cost, **making verification cost
+  the bound on delegation**."* ⚠️ **Nothing here is from 2025** — both dates are 2026. Other harvested
+  material: Osmani's seed definition of loop engineering (*"replacing yourself as the person who prompts the
+  agent. You design the system that does it instead"*, 2026-06-07); ⭐ **Lindenberg**'s practitioner statement
+  of vacuity — a loop *"satisfies the gate you wrote"*, not the goal behind it; ⭐ **Greyling**, who
+  independently arrives at the Ellipsis principle — a verifier skill *"makes rejection the default, so the
+  agent's output must 'earn' approval"*, with readiness levels that *"start report-only (L1) and reach
+  unattended operation (L3) only once the verifier has proven reliable"*; and Andrew **Ng** calling loop
+  engineering *"a hot buzzphrase."* Taxonomy: C1 interactive → C2 goal-driven → C3 scheduled; four layers
+  prompt → context → harness → loop. ⚠️ **Authors' own limitation O4:** *"Claimed benefits are large but are
+  based on self-reports and anecdotes"*, and the discourse *"is weeks old, dominated by a few highly visible
+  voices, and possibly subject to survivorship effects. Practitioners who tried loops and then abandoned them
+  may not post about it."* **High** (abstract via API; body read directly as HTML). **New lead, unverified:**
+  it cites `arXiv:2601.18341` Robbes et al., *"Agentic much? Adoption of coding agents on GitHub"* —
+  bibliography reference only.
+- **`arXiv:2607.00038v1` — *"Stop Hand-Holding Your Coding Agent: Engineering the Loops that Replace
+  Step-by-Step Prompting"*** · v1 **2026-06-28** · **cs.SE** · 1 author (Sandeco Macedo). Core construct is
+  the *"loop specification"*: *"a bounded, reusable artifact, made of a **trigger, a goal, a verification
+  step, a stopping rule and a memory**, that a human hands to an agent harness … so the agent pursues a goal
+  on its own, in place of step-by-step prompting"* — explicitly distinguished from a programming loop and
+  from *"the internal perceive-act-observe cycle that the harness already provides as plumbing."* Over an
+  ***n* = 50*** hand-coded *"Loop Library"*: *"seventy percent of loops verify in the autonomous zone of the
+  ladder and seventy-four percent name their terminal states, while **automated triggering and durable memory
+  remain comparatively underdeveloped**."* Contributes a five-level verification ladder. Counter-claim worth
+  noting: *"we argue, against the stronger headlines, that it does not retire prompt engineering."* Stated
+  limitations: *"the verification burden, comprehension debt and the risk of cognitive surrender."*
+  **High** (abstract read in full); ⚠️ *n* = 50, single-author, hand-coded — descriptive, not inferential.
+- ⭐ **Convergent across the two independent studies, and safe to cite as a direction (not a magnitude):**
+  **36,710-repo mining and 50-loop hand-coding both find durable memory / state persistence is the
+  least-developed part of the practice, while verification is the most mature.**
+
+#### New in-window work
+
+- 🔴 **`arXiv:2610.18004v1` — *"SWEPatchTest: Evaluating Software Tests Beyond Reproduction"*** · v1
+  **2026-10-13** · **cs.SE** · 7 authors. **The sharpest number yet on whether an agent-written suite can
+  serve as a loop's gate.** It opens on this repo's premise: *"Coding agents use generated tests to decide
+  whether a proposed patch satisfies an issue's requirements. A suite that fails on the buggy program and
+  passes after applying the reference patch **can still accept an incorrect patch or reject a correct
+  patch**."* Over ***n* = 619 tasks** and ***n* = 82,579 candidate patches**, their Joint Validation Rate
+  requires reproduction **and** acceptance of correct patches **and** rejection of incorrect ones on the same
+  task: *"the best-performing configuration achieves only **9.21% JVR** despite reproducing the reference
+  transition on **59.29%** of tasks."* An SFT recipe *"approximately triples JVR."* ➜ **Within this paper's
+  *n*, an agent-written suite mostly cannot be the gate — and reproduction alone, the usual bar, is nearly
+  uninformative about it.** **High.**
+- **`arXiv:2610.21098v1` — *"ToolBottleneckBench"*** · v1 **2026-10-15** · **cs.CL** · 4 authors.
+  ***n* = 21 model-and-harness configurations.** *"The success score of a tool agent reflects both its model
+  and the budgets of the harness that runs it"*, and ⚠️ *"**Most failures end at a harness limit**, and the
+  failure record identifies the assigned pressure no more reliably than a count of tool calls."* Also: the
+  visible-tool-menu penalty *"tracks truncation at the completion cap. Raising the cap sixteenfold removes
+  most of the penalty."* Recommends *"reporting pressure effects with the harness budgets under which they
+  were measured."* ➜ **This repo mandates hard caps, so the consequence lands here: a cap, once hit, becomes
+  indistinguishable from a capability failure unless the harness records which limit ended the run.**
+  **High.**
+- **`arXiv:2610.17757v1` — *"Instructions Are Evidence, Not Objectives"*** · v1 **2026-10-13** · **cs.AI** ·
+  7 authors. ***n* = 100 user-agent trajectories*** from SWE-chat: *"**56% of initial instructions omit
+  requirements that later emerge as necessary**, and 52% of the useful follow-up requirements could have been
+  inferred from the project."* Across eight frontier models, *"the models lose **53 to 67 points** of success
+  rate when moving from the full specification to the partial instruction, and consequence feedback across
+  four submissions does not close the gap."* ⚠️ **And the caution that bears on `/goal` guidance:** *"a
+  **plan-mode harness cannot compensate** for the missing ability of the model itself"* — **not fixable at
+  the harness layer.** **High.**
+- **`arXiv:2610.17895v2` — *"Interaction-as-a-Judge"*** · v1 **2026-10-13** (v2 10-14) · **cs.LG** · 9
+  authors. ***n* = 6,858 application pairs with human preferences + 222 applications with human-verified
+  requirement labels.*** *"While humans assess these applications interactively, current automated LLM
+  evaluations primarily focus on code analysis and unit tests. This mismatch can cause LLM judges to miss
+  failures that are immediately apparent to human users."* Computer-use agents interacting with the app lift
+  preference prediction 65.6% → 69.1% and requirement verification 77.0% → 81.6%, and as a repair signal
+  *"repairs 75.5% of broken requirements within five attempts, compared to 55.4% for code-only
+  self-feedback."* ➜ **A gate that *runs* the artifact beats a gate that only reads it.** **High.**
+- **`arXiv:2610.16814v1` — *"StableJudge"*** · v1 **2026-10-12** · **cs.CR** · 5 authors. *"LLM-as-a-Judge
+  pipelines are vulnerable to score-hijacking prompt injection embedded in evaluated content, which corrupts
+  scoring signals and distorts induced rankings."* Proposes a compact **0.13B "Sentry"** that localises and
+  sanitises injected spans *before* scoring and *"derives deterministic, fine-grained scalar scores from the
+  judge's output distribution"*, decoupling judge safety from judge scale. ➜ **Directly relevant to `/goal`'s
+  validator, which reads content the agent surfaced.** **High.**
+- 🔴 **`arXiv:2610.23362v1` — *"Monitor-Validity Failures: LLM Safety Evidence Paths at Evolving Framework
+  Boundaries"*** · v1 **2026-10-16** · **cs.AI** · 1 author. **Vacuity, found independently in deployed
+  safety tooling.** *"a framework path may remain operational while **policy-relevant evidence never reaches
+  its decision point**. In one representative case, a regex detector returned a positive match, but the
+  framework stranded the result before the block decision. This differs from jailbreaks and detector errors
+  because **the evidence is already recognized yet disconnected from enforcement**."* ***n* = 18 confirmed
+  evidence-path failures across 11 LLM/agent safety project groups*** and four ecosystems; 14 reach
+  enforcement boundaries. Conclusion: *"Monitor assumptions therefore need regression tests at the schemas,
+  streams, tools, and adapters that frameworks evolve."* **High.**
+- 🔴 **`arXiv:2610.19264v1` — *"Beyond Maliciousness: Static and Runtime Attack-Surface Profiling of Agent
+  Skills"*** · v1 **2026-10-13** · **cs.CR** · 5 authors. **The strongest in-window skills finding, and it
+  lands on the permission model.** ***n* = 6,309 marketplace listings*** across two marketplaces, sampled
+  *"selecting listings for execution without conditioning that decision on a prior threat or risk signal"*.
+  Framing: *"Installing one grants **authority** (the standing to direct the agent, not new privilege), and
+  the size of that grant is what we measure."* *"**Half the corpus carries evidence of shell-execution
+  capability**; the corresponding shares are 35% for filesystem read, 31% each for filesystem write and
+  network egress, and 13% for credential access; **seven listings in ten carry at least one elevated
+  capability**. That is the surface a user accepts at install time, and almost none of it is visible then."*
+  🔴 **On declared permissions:** *"**A permission model exists but is close to inert.** Authors may list the
+  tools a skill pre-approves in its own frontmatter, which **removes confirmation prompts rather than
+  restricting what the skill can reach**; of the 6,061 listings whose frontmatter parses, 770 declare
+  anything at all, the vocabulary cannot express credential or environment access, and nothing checks what it
+  does express against the bundle."* And *"**59% of declaring listings understate what their bundle can
+  do**"* (ClawHub 88% vs skillsmp 31%). Conclusion: *"Triage at the marketplace boundary therefore cannot
+  rest on what a listing declares. **It must rest on what the bundle can do.**"* ➜ **This is `2609.27871`'s
+  self-attestation class measured at ecosystem scale** — and ⚠️ **the note that frontmatter `allowed-tools`
+  removes prompts rather than restricting reach is worth checking against this repo's own skill frontmatter
+  assumptions.** **High.**
+- 🔴 **`arXiv:2610.23254v1` — *"Ignored, Not Refused: What Low Prompt-Injection Success Rates Hide in Small
+  Tool-Using Agents"*** · v1 **2026-10-16** · **cs.CL** · 7 authors. ***n* = 33,000 trajectories from eleven
+  open-weight agents (2–14B)*** on InjecAgent and AgentDojo. *"Benchmarks measure IPI security by the attack
+  success rate (ASR), which treats every failed attack as a successful defense."* *"A label-blind LLM judge
+  shows that most failed attacks are **ignored (76-80%) rather than refused (17-18%)**."* 🔴 *"With identical
+  model weights, **changing only the system prompt shifts InjecAgent ASR from 0.2% to 43%**."* And *"in
+  **21.7%** of AgentDojo episodes, the agent stayed safe but did not complete the user's task."* ➜ **A second,
+  independent mechanism for the KB's ASR caveat: `2609.25173` says ASR is not comparable *across* papers;
+  this says it is not stable *within* a model. A low ASR is not evidence of a working defence.** ⚠️ **And
+  "stayed safe but didn't finish" is the security analogue of vacuity: safety satisfied by the absence of the
+  action.** **High.**
+- **`arXiv:2610.21144v1` — *"Plausible Is Not Enough: Trust and Evidence in AI-Authored Pull Request
+  Review"*** · v1 **2026-10-15** · **cs.SE** · 4 authors. Survey of ***n* = 239 practitioners from 31
+  countries***, matched within-respondent on AI-authored vs human-authored PRs: *"Most respondents (64.9%)
+  reported lower initial trust in AIPRs"*; *"the share who would block approval under residual uncertainty
+  increased from **19.4% for HPRs to 43.9% for AIPRs**"*; *"61.1% reported higher evidence requirements for
+  AIPRs"* while *"relying less on test coverage"*. ⭐ Conclusion: *"These findings frame AIPR review as an
+  **evidence-ownership problem, not merely a correctness check**. … Review tools and agentic workflows should
+  expose provenance, distinguish generated claims from human-validated evidence, and make uncertainty visible
+  before approval."* **High.**
+- ⭐ **`arXiv:2610.21914v1` — *"CodeHealth Predicts the Token Cost of Agentic Code Review: A Pre-Registered
+  Study of 465 Agent-Authored Pull Requests"*** · v1 **2026-10-15** · **cs.SE** · 4 authors.
+  **Pre-registered** — rare in this corpus. ***n* = 465 agent-authored PRs from 246 repositories*** (AIDev),
+  one frozen five-agent review-and-fix pipeline × three LLMs: *"For all three LLMs the CodeHealth coefficient
+  was negative, with 95% CI excluding zero; **each CodeHealth point was associated with 3.5% to 6.1% lower
+  token cost**."* CodeHealth was unrelated to PR footprint, and the association localises to the review stage
+  *"where agents iterated more on unhealthy code without writing more comments"*. Data at
+  `doi.org/10.5281/zenodo.22127920`. ➜ **A direct argument that a budget ceiling should scale with the health
+  of the code the loop is working in.** **High.**
+- **`arXiv:2610.17418v1` — *"Why Agentic Workflows Fail: A Taxonomy Derived from Literature and Empirical
+  Data"*** · v1 **2026-10-12** · **cs.SE** · 3 authors. *"literature-derived failures emphasize planning,
+  reasoning, learning, perception, and knowledge-related mechanisms, whereas **GitHub-derived failures
+  concentrate on execution-stage, actuation-related, tool, API, and infrastructure failures**. The dominant
+  hotspot is iterative execution and actuation."* Conclusion: *"agentic workflow reliability should be
+  treated as a systems problem rather than only a model-output problem."* (⚠️ no *n* stated in the abstract
+  for the GitHub corpus.) **High** on the quotes.
+- **`arXiv:2610.18206v1` — *"SWE-MISBEHAVIOR"*** · v1 **2026-10-13** · **cs.SE** · 15 authors.
+  ***n* = 7.4K human-in-the-loop synthesized samples***, 11 misbehaviors. On OpenHands and smolagents:
+  *"dependency misinterpretation (up to 98.5% of cases), unintended modification of user inputs (50.5%), and
+  silent compromise of environment integrity (53%)."* Their CODE-KIT mitigation *"reduces misbehaviors by 52%
+  for smolagents and 34% for OpenHands."* ⚠️ **Magnitudes are within this paper's synthesized corpus only.**
+  **High** on the quotes.
+- **`arXiv:2610.23186v1` — *"Code Skill Server"*** · v1 **2026-10-16** · **cs.SE** · 10 authors.
+  ***n* = 993 skills*** in the indexed corpus (CSS-993): *"the best CSS configuration improves Pass@1 by up
+  to 13.91% and consistently improves all evaluated models by at least 4.21%."* Motivation is
+  retrieval-at-scale: *"existing skill retrieval methods mainly focus on selecting relevant skills from
+  established skill libraries"*, which breaks across heterogeneous sources. ⚠️ **A partial counterweight to
+  `2610.08875`'s pessimism, but the two measure different things (retrieval quality vs configuration-dependent
+  utility) — do not net them against each other.** ✅ **993 is a stated corpus with a method attached, so it
+  is safe to cite** — unlike the incompatible public skill totals. **High.**
+- **`arXiv:2610.17727v2` — *"SkillScreen"*** · v1 **2026-10-13** (v2 10-14) · **cs.CR** · 5 authors. A compact
+  decision model scoring maliciousness *"directly from SKILL.md in a single forward pass"*; on
+  MaliciousSkillBench it *"flags 20-25% of benign skills at 99% recall on unseen attack families"*.
+  ⭐ **Its own negative result is the important part:** *"**unfamiliar benign sources sharply increase false
+  positives, showing that recognizing new attacks does not ensure reliable screening of new skill
+  collections.**"* ⚠️ It screens `SKILL.md` **text only**, which is precisely the surface PyCache Trap
+  (`2610.10612`) shows is bypassable — **the two results are complementary, not contradictory: SkillScreen
+  raises recall on the text; PyCache Trap says the text is not the whole artifact.** **High.**
+- **`arXiv:2610.18262v1` — *"Encrypted Skills Can Become New Security Exploits If AI Agents Know How to
+  Decipher"*** · v1 **2026-10-13** · **cs.CR** · 3 authors. Ciphered Skill Injection over ***n* = 8 models ×
+  139 injection-task pairs***: *"the variants achieve attack success rates of up to 47.5% and 40.3%"*, and
+  *"**The tested skill scanners rarely flag injected skills.**"* ✅ Usefully, the authors separate *"instruction
+  recovery from attack success"* — *"Successful decoding does not guarantee attack success."* ⚠️ **Apply the
+  `2610.08098` discount: this evaluates injected skill *files* with no competing retrieval stage, so these
+  ASRs presuppose selection.** **High.**
+- **`arXiv:2610.08098v2` — *"Surviving the Router"*** · v1 **2026-10-06**, ⚠️ **`updated` 2026-10-13 →
+  in-window revision** · **cs.CR** · 4 authors. Both load-bearing claims are present in v2: the discount —
+  *"In realistic multi-skill environments, injected skills must first compete for retrieval, reducing the
+  effective attack success rate (ASR) of existing injections by **87-97%**"* — and the two-sidedness, since
+  their **CORSA** *"substantially improves both retrieval and end-to-end attack success over existing skill
+  injections while preserving user utility, and … the resulting attacks **transfer across different router
+  architectures and LLM backbones**."* ➜ **Both halves of the KB's handling remain correct: apply the discount
+  to any ASR that presupposes selection; do NOT bank retrieval competition as a defence.** ⚠️ **The v1→v2
+  diff was not examined, so what the revision changed is unknown (Low on that point).** **High** on the
+  quotes.
+- **`arXiv:2610.08875v2` — *"An Empirical Study of Agent Skills' Downstream Utility"*** · v1 **2026-10-06**
+  (v2 10-08, pre-window) · **cs.AI** · 6 authors. **No in-window follow-up.** Both KB quotes confirmed
+  verbatim within ***n* = 87 SkillsBench tasks × 9 configurations*** (candidates retrieved from *"a curated
+  corpus of 37,596 Skills"*): *"The same Skills help some configurations and hurt others on **36.78%** of
+  tasks"* and *"Relevance rankings overlook more useful candidates."* **New material the KB did not carry:**
+  the mechanism — *"trajectories showing that **recommended procedures can become an execution burden**"*; a
+  constructive fix — *"reranking by support for required operations raises first-choice pass rates by
+  **4.35–5.80 percentage points**"*; ⭐ *"We derive **17 authoring practices** linking executable procedures to
+  recovery, preservation of task requirements, and **checks on final artifacts**"* — **directly actionable for
+  this repo's own `.claude/skills/` conventions**; and *"**Stage Plan and Dependency DAG outperform use order
+  alone**, with DAG's additional benefits concentrated in tasks supplied with five or six Skills."*
+  ⚠️ **SkillsBench *n* = 87 here** (87 / 89 / 509 across three papers — never cite a SkillsBench figure
+  without its paper's *n*), and **37,596 is this paper's curated retrieval corpus, not a public total.**
+  **High.**
+- **Re-checks — all clean negatives, still v1 with `updated` == `published`, no withdrawal or comment:**
+  **`2610.11835v1`** (*"On the Risks of using LLM-Generated Tests for Regression Testing"*, 2026-10-08,
+  cs.SE), **`2610.13065v1`** (⚠️ **titled *TestSuiteBench*** — *"Coding Agents Struggle to Generate Strong
+  Test Suites from Specifications"*, 2026-10-09, cs.SE, 4 authors), **`2610.09159v1`** (*"SpecGuard: Proving a
+  Task Is Broken Before the Agent Cheats"*, 2026-10-06, ⚠️ **primary cs.AI, not cs.SE** — check the KB's
+  category field, 2 authors), and **`2609.25173v1`** (the ASR measurement-validity meta-analysis, 2026-09-21,
+  cs.CR). ⚠️ **`2610.18004` (SWEPatchTest) is the natural successor to the first two** — same question,
+  larger *n*, and it measures acceptance *and* rejection jointly rather than either alone. **High.**
+- ⭐ **A clean in-window negative on self-verification *per se*, and the negative is itself the finding.**
+  **No in-window paper proposes a new agent *self*-verification method** (an agent checking its own output
+  with no independent gate). The in-window work moves consistently the other way — toward **external** gates:
+  an independent gate the worker cannot write to (`2609.27871`), an interacting computer-use judge
+  (`2610.17895`), an externalised 0.13B sanitiser (`2610.16814`), and capability profiling of the bundle
+  rather than its self-declaration (`2610.19264`). **That convergence supports this repo's existing stance.**
+- ⚠️ **Listing-level leads only — metadata NOT individually verified, abstracts not read. Low; do not
+  cite.** `2610.23241` *Towards Agentic Proof Harness Engineering*; `2610.20344` *Doc2Harness*; `2610.20394`
+  *What Should a Software Team Spend on Agents?*; `2610.22511` *AuditKIT*; `2610.21514` *Poison Valleys*;
+  `2610.20673` *HPCAgent-Bench*; `2610.23109` *TrojanForge*; `2610.20776` *INFUSE*; `2610.20907` *From
+  Detection to Decision*; `2610.18457` *Kairos*.
+
 ## Known caveats / things to re-verify
 
 This is a **live backlog**, not a permanent record: every `update-knowledge`
@@ -6136,6 +7263,51 @@ tracking), move it to [`archive/resolved-caveats.md`](archive/resolved-caveats.m
 instead of deleting it or leaving it here indefinitely.
 
 **Security / highest priority**
+- ⚠️🔴 **NEW 2026-10-19 — the harness's own ceilings are defeatable from the extension surface, and that is a
+  stronger claim than "resume is where stops leak".** v2.1.299: *"Fixed **a mod** that submits a prompt at the
+  end of every turn **keeping a headless run going past `--max-turns`, `--max-budget-usd`, an interrupt, or
+  the end of the host's conversation**."* **One bug, two hard stops.** And it is **documented capability**,
+  not a stray defect: a mod *"runs with your permissions"*, can *"submit a prompt as if you had typed it"*,
+  and ⚠️ *"**Mods aren't sandboxed.** If you turn on sandboxing, the sandbox isolates the Bash commands Claude
+  runs, and a process that a mod starts runs outside it."* **So an install-time trust decision can defeat the
+  harness's own ceilings** — §5A Friendly Fire with the caps as the target. **A human call for `guardrails/`:
+  should an unattended loop be required to run with no third-party mods loaded, and how would that be
+  *verified* rather than declared?**
+- ⚠️ **NEW 2026-10-19 — a guard was skippable by prototype-key stripping, and plan mode performed writes a
+  hook had allowed.** v2.1.299 fixed *"mods' hooks being handed values with `__proto__` keys silently
+  removed, which could skip a `tool.check` guard on a tool call another mod made"*, and *"plan mode running a
+  write (an MCP tool's, a file's, a shell command's) that a `PreToolUse` hook or a mod's `tool.check` hook
+  allowed."* **Two more instances of "a declared gate is not a gate", in the same release as the cap bypass.**
+  ✅ Counterweight, and the direction is right: the same version made actions a plugin hook can block *"be
+  refused, not let through, when the hook cannot be handed them or cannot hand back its answer"*, and fixed a
+  Windows `PreToolUse`/`PermissionRequest` fail-open so *"a guard that fails now blocks the call."*
+- ⚠️ **NEW 2026-10-19 — frontmatter `allowed-tools` removes prompts; it does not restrict reach, and 59% of
+  declaring skills understate their own capability.** `arXiv:2610.19264` (*n* = 6,309 listings): *"**A
+  permission model exists but is close to inert.** Authors may list the tools a skill pre-approves in its own
+  frontmatter, which **removes confirmation prompts rather than restricting what the skill can reach**… and
+  nothing checks what it does express against the bundle"*; *"**59% of declaring listings understate what
+  their bundle can do**"*; *"Half the corpus carries evidence of shell-execution capability… seven listings
+  in ten carry at least one elevated capability."* Conclusion: *"Triage at the marketplace boundary… **must
+  rest on what the bundle can do**."* ⚠️ **A human call: check this repo's own skill frontmatter assumptions
+  against it** — if `allowed-tools` is being read here as a restriction, it is not one.
+- ⚠️ **NEW 2026-10-19 — a low ASR is not evidence of a working defence, which weakens a whole class of
+  citation.** `arXiv:2610.23254` (*n* = 33,000 trajectories, eleven 2–14B agents): *"most failed attacks are
+  **ignored (76-80%) rather than refused (17-18%)**"*, and 🔴 *"With identical model weights, **changing only
+  the system prompt shifts InjecAgent ASR from 0.2% to 43%**."* ➜ **Pair this with `2609.25173`: ASR is not
+  comparable across papers *and* not stable within a model.** ⚠️ Also *"in 21.7% of AgentDojo episodes, the
+  agent stayed safe but did not complete the user's task"* — **the security analogue of vacuity.**
+- ⚠️ **NEW 2026-10-19 — a named taxonomy now exists for the failure this repo kept rediscovering, and the
+  repo should adopt its vocabulary.** `arXiv:2609.27871` names **vacuity** (*"satisfied by the absence of the
+  thing checked"*) and **self-attestation** (*"where the subject supplies the value the check is applied
+  to"*), found **47 vacuous gates in 69 shipped, reviewed loops**. **Six independent instances were
+  identified this pass** (Anthropic Code Review's cap, roborev's `success`, CodeRabbit's incomplete-analysis
+  path, Qodo 3.1's rule auto-deactivation, `2610.23362`'s stranded safety evidence, `2610.19264`'s
+  under-declaring skills). **Three human calls follow, all for `guardrails/` or `CLAUDE.md`:** (1) the
+  verification non-negotiable should require a check that **fails closed** — exhaustion, timeout and error
+  must not be expressible as pass; (2) the budget ceiling should be enforced *"inside an attempt, not between
+  attempts"*; (3) `loop-guardrails` could gain a fourth audit question — **"can this check pass by the
+  absence of the thing checked?"** ⚠️ **Cite its apparatus, not its numbers** — the authors' own caveat is
+  that a fresh mutant family *"recovers a 23.3% false-accept rate where the exhausted corpus reported none"*.
 - ⚠️ **NEW 2026-10-12 — the in-loop check needs a *provenance* clause, and this is the most consequential
   gap the routine has found.** `CLAUDE.md` requires *"a single deterministic success check … run inside the
   loop"* and says **nothing about who wrote the check**. `arXiv:2610.11835` (v1 2026-10-08, cs.SE, *n* = 145
@@ -6301,6 +7473,110 @@ instead of deleting it or leaving it here indefinitely.
   permission gate, not a sandbox, and do not rely on it to protect secrets in the environment.**
 
 **Guardrails / the three hard stops**
+- ⚠️🔴 **NEW 2026-10-19 — HIGHEST PRIORITY, and now *measured* rather than inferred: this repo's `main` has no
+  branch protection, so two of its own declared gates are not gates.** The GitHub API reports `espi/loops`'s
+  `main` as **`"protected": false"`**. Read against the `routines` doc — *"Claude pushes its work to a branch
+  prefixed with `claude/` **unless your prompt directs it to push to another branch**. **To control which
+  branches a run can push to, use branch protection rules or rulesets on GitHub**"* — **the claims in
+  `runbooks/staying-current.md` (*"it physically cannot touch `main`"*) and `SKILL.md` step 8 (*"the routine
+  physically can't touch main"*) are false.** ✅ **And `self-edit-guard.yml`'s own header already says the
+  same thing about itself:** *"To make this a hard merge gate (not just a visible red X the reviewer sees),
+  add it as a required status check in the repo's branch-protection rules for `main`. Without that, human
+  merge remains the enforcement floor."* ➜ **One human action fixes both: a GitHub ruleset on `main` that the
+  connected identity cannot bypass, with `self-edit-guard` as a required check.** **Confidence upgraded
+  Medium → High** on "the prefix is not enforcement" (the doc is now affirmative, not silent). ⚠️ **Residual,
+  stated honestly: the branches API reflects classic branch protection; a *ruleset* is a separate mechanism
+  the available tooling could not read, so "no protection of any kind" is Medium.** **This remains the item
+  where this repo most visibly commits the error it exists to warn about.**
+- ⚠️🔴 **NEW 2026-10-19 — hard stop #3's *enforcement* has failed open twice, so "the other two stops will
+  catch it" is no longer a safe argument.** A whole-changelog grep (not a window grep) returns only five
+  `--max-budget-usd` mentions ever, and two are failures: **v2.1.217 (Jul 21 2026)** *"Fixed
+  `--max-budget-usd` **not stopping background subagents**"* — **pre-window and never recorded by this KB** —
+  and **v2.1.299** (the mod bypass above). ⚠️ **This is a direct vindication of the standing "the window
+  sweep misses older work" item: the finding was available for three months and invisible to a weekly
+  window-scoped fan-out.** **A human call: the primer's §6 argument that "what would have caught [#1's
+  failures] is the budget ceiling" has been corrected, but `guardrails/` and the templates may still rest on
+  the unqualified version.**
+- ⚠️ **NEW 2026-10-19 — "interrupt/resume is where hard stops leak" is now a cross-vendor property, which
+  makes it a design rule rather than a vendor bug.** Claude Code v2.1.299 (Oct 14) is the **third**
+  `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` turn-accounting defeat in 15 days (eight fixes to that setting
+  across its life), and **Codex 0.163.0 (Oct 15) fixed a structurally identical leak of hard stop #2**:
+  before it, every interrupt reset the consecutive-empty-turn counter, so the no-activity breaker
+  (hardcoded `>= 3`) could be deferred indefinitely by interrupting. **Two vendors, two languages, two
+  different hard stops, the same week, the same seam.** ➜ **The rule for `guardrails/`: an external counter
+  must survive the restart it is counting across, and a stall detector must not be resettable by an
+  interrupt.** ⚠️ Also: *"Fixed a regression in 2.1.296 where cloud and headless sessions could run an
+  approved tool call twice"* — **the remediation itself regressed into double execution.**
+- ⚠️🔴 **NEW 2026-10-19 — a guard gated on the truthiness or positivity of its own limit is not a guard. This
+  is the most transferable finding of the pass and belongs in `guardrails/` as a *check*.** Three independent
+  instances: **LiteLLM** reads `max_budget = 0` as unlimited in all three router paths, **still live in
+  v1.106.0 (2026-10-18)**; **ralph-tui** gates its cap on `maxIterations > 0`, so the documented-as-valid
+  value `0` **silently removes hard stop #1**; and **Gemini CLI** means *both* things with one value in one
+  binary (below). ✅ The correct form — an unconditional compare plus an explicit sentinel for "unlimited" —
+  is modelled by **agentgateway** (`used >= budget.limit.amount`, plus an `Audit`/`Block` enum),
+  **Anthropic's gateway**, and **Gas City's `withDefaults`** (*"so no Policy can pace at zero"*).
+  **A human call: add "test every ceiling at zero" to `guardrails/checklist.md`.**
+- ⚠️ **NEW 2026-10-19 — the cleanest zero-polarity instance yet, inside a single binary with no doc ambiguity
+  to hide behind.** Gemini CLI `maxSessionTurns: 0` **stops on turn 1** in `_runLoop` and the non-interactive
+  path (`>= 0`) but means **no cap at all** in `processTurn` (`> 0`). Only `-1` is documented, **so the hazard
+  is reachable only by someone deliberately setting `0` — which is exactly what someone writing a guardrail
+  would try.**
+- ⚠️ **NEW 2026-10-19 — the meter a ceiling is computed from has now been wrong four ways across two vendors,
+  and two of the four stop a loop *early*.** Claude Code: under-counting (v2.1.286), **over-pricing 2×**
+  (v2.1.296), and ⚠️ **a cloud session's cost and usage *"restarting from zero after the session resumed in a
+  new process"*** (v2.1.302 — the spend analogue of `/goal`'s baseline reset, **changelog-only**, and cloud
+  sessions are what Routines run on). Agent Router: a systematic **+1 token per request** against a token
+  quota from an omitted `hits_addend` (*"resulting in `29` tokens deducted"* for a 28-token request),
+  **unreleased**. ➜ **"Verify the meter, not just the ceiling" deserves its own line in `guardrails/`.**
+- ⚠️ **NEW 2026-10-19 — Anthropic's own Spend Limits API disowns itself as a control, and `0` there means
+  *unknown*.** Verbatim: *"`period_to_date_spend` … **may read as `"0"` if the spend reading is temporarily
+  unavailable; treat it as informational, not transactional**."* **A harness comparing it to a ceiling reads
+  "nothing spent" during an outage and proceeds.** Also *"Currently `monthly` is the only supported period"* —
+  **no daily or weekly window, so it cannot bound a per-run or per-day loop.**
+- ⚠️ **NEW 2026-10-19 — record *which* stop fired.** `arXiv:2610.21098` (*n* = 21 configurations): *"**Most
+  failures end at a harness limit**, and the failure record identifies the assigned pressure no more reliably
+  than a count of tool calls"*, recommending *"reporting pressure effects with the harness budgets under which
+  they were measured."* ➜ **A cap that halts without saying so is indistinguishable from a capability
+  failure.** **A human call: `templates/ralph/run.sh` and the `new-loop` scaffold should emit which stop
+  fired**, which also operationalises SaltBench's "a capped run is a halt, not a failure."
+- ⚠️ **NEW 2026-10-19 — a stall detector firing on a healthy long step is its own failure mode, and the KB
+  only tracks the opposite direction.** Factory shipped *"**Script progress reporting** - Checking an
+  unfinished Script run now reports its progress instead of calling it stalled."* **Hard stop #2's guidance
+  should acknowledge the false-positive side.** Related, from Osmani: *"Both failure modes cause the agent to
+  get worse, **but without any visible sign of failure**"* — **an activity-keyed detector cannot see a loop
+  that is busy and degrading.**
+- ⚠️ **NEW 2026-10-19 — a wall-clock ceiling is a hard-stop dimension the three-stop model does not name.**
+  Gemini CLI exposes a per-agent `maxTimeMinutes` (*"The maximum execution time for the agent in minutes"*)
+  and a `browser.maxActionsPerTask` default 100 with unusually explicit language — *"**Enforcement is hard:
+  the agent will be terminated when the limit is reached**"*; Claude Code bounds per-*request* wait but not
+  session duration; Codex tracks goal elapsed time. **A human call: should the non-negotiables name a fourth
+  stop, or explicitly fold wall-clock into #1?** (`templates/ralph/run.sh` already applies a per-call
+  `timeout`, so the practice is ahead of the doctrine.)
+- ⚠️ **NEW 2026-10-19 — three findings about this routine's own substrate, all from v2.1.302.** (a) *"Fixed a
+  scheduled routine run that failed partway being run again from the start an hour or more later, **which
+  could repeat work such as posting the same report twice**"* — **for this routine that means a second PR, so
+  step 1's "extend the open PR" guard is load-bearing, and the runbook should say the routine's side effects
+  must be idempotent regardless of the fix.** (b) *"Fixed routine runs showing as **Completed** after their
+  cloud session stopped unexpectedly"* — **a fourth way a routine appears to have run while doing nothing.**
+  (c) ⚠️ *"Changed `claude -p` and Agent SDK sessions with no permission mode to start in `default` mode on
+  third-party providers"* — **a `-p` loop on Bedrock/Vertex/Foundry that relied on the implicit mode will now
+  block on prompts.**
+- ⚠️ **NEW 2026-10-19 — set `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` too, and know it is
+  undocumented.** v2.1.301 added it (*"ends a request at a usage limit that resets too far away instead of
+  waiting"*), complementing `MAX_WAIT_MS`, which bounds only `429`/`529` capacity waits. **Zero occurrences
+  across `env-vars`, `settings-reference`, `costs`, `routines` and `scheduled-tasks` four days on**, so the
+  changelog is the only primary. **Both are opt-in, so the default is still an unbounded wall-clock wait** —
+  and the documented behaviour it bounds is a session that *"waits out the remaining window"* of a usage
+  limit, **a stall in which no iteration occurs.** `guardrails/budget.env` and the templates set the watchdog
+  and should set both bounds.
+- ⚠️ **NEW 2026-10-19 — operator hazard: npm `dist-tags.stable` is `2.1.292` while `latest` is `2.1.303`.**
+  **A harness pinned to `stable` is eleven versions behind and has none of the in-window fixes** — including
+  the mod cap bypass and the third resume leak. **Worth a line in `runbooks/`.**
+- ⚠️ **NEW 2026-10-19 — budget ceilings should scale with code health.** `arXiv:2610.21914`
+  (**pre-registered**, *n* = 465 agent-authored PRs across 246 repositories, one frozen pipeline × three
+  LLMs): *"each CodeHealth point was associated with **3.5% to 6.1% lower token cost**"*, 95% CIs excluding
+  zero, localised to the review stage *"where agents iterated more on unhealthy code"*. **A rare
+  pre-registered cost finding, and a concrete input to sizing hard stop #3.**
 - ⚠️🔴 **NEW 2026-10-12 — HIGHEST PRIORITY: this repo's own safety floor is a default, not an enforced
   restriction.** `runbooks/staying-current.md` asserts *"Branch pushes are `claude/`-prefixed only, so it
   physically cannot touch `main`"* and `SKILL.md` step 8 asserts the prefix *"keeps it inside the Routine's
@@ -6395,18 +7671,6 @@ instead of deleting it or leaving it here indefinitely.
   measurement — Medium-High. A human call: confirm it against a real `/goal` run's `/usage` breakdown.**
   Independent practitioner corroboration of the cliff itself (not of the `/goal` consequence): Willison,
   Oct 7 — *"so there's a hidden price increase there"*.
-- ⚠️ **NEW 2026-10-12 — correct the Google Cloud Spend Caps quote, and log a launch-stage disagreement.**
-  The KB's quote *"the system automatically restricts further cost-incurring usage"* **is no longer on the
-  page.** Current verbatim: *"When a spend cap budget is enforced, usage of your specified services is
-  automatically paused for the remainder of the budget period unless you manually lift the spend cap."* It
-  still enforces, with quotable leakage — *"spend cap enforcement isn't instantaneous"*, *"Any in-flight
-  requests of the specified service are processed to completion, accruing charges as applicable"*, and
-  ⚠️ ***"You remain responsible for any overage costs accrued due to reporting latency"*** (the strongest
-  statement yet of invariant (a): a ceiling bounds new work, not the bill). Scope: **one project × one
-  eligible service, monthly.** ⚠️ **New caveat: Google's own two surfaces disagree on stage** — the release
-  notes carry only the dated **July 27, 2026, Status: Preview** entry with no GA entry through Sept 4, while
-  the spend-caps doc page carries **no Preview or Pre-GA banner for the feature itself**. **High** that no GA
-  was announced; **Medium** on the current stage.
 - ⚠️ **NEW 2026-10-12 — correct the AWS cell: the graduated controls are *opt-in*, and the five-service list
   belongs to one tier only.** The heading is *"Customize your spend limit settings with **optional** early
   cost controls"*. Per tier: ~7 days *"new resources stop launching"* via an AWS-managed SCP, **no service
@@ -6570,22 +7834,92 @@ instead of deleting it or leaving it here indefinitely.
   Every September 2026 entry in the platform release notes is pricing, refusal billing, cache
   diagnostics or compliance; v2.1.280–283 contain no spend-limit item. **One full pass with no
   delivery.** This repo cares specifically whether what ships is visibility or **enforcement**.
-- **Google Cloud Spend Caps: still not GA — and the KB's *stage* was wrong** *(new 2026-09-28;
-  **corrected and re-checked 2026-10-05**)*. The KB said *"still private preview"*, citing the Apr 22
-  Next '26 post. They went **public preview on 2026-07-28** (*"During this Public Preview, you can
-  apply Spend Caps to a single project and service for a fixed monthly timeframe."*) and they **do
-  enforce** (*"the system automatically restricts further cost-incurring usage"*). **The GA question
-  stays open:** the live doc (updated **2026-09-30**, in-window) still reads *"This feature is in
-  Preview"* under Pre-GA terms, and Cloud Billing release notes carry nothing after 2026-09-04.
-  Re-check; a GA'd project-level ceiling would still be the first from a hyperscaler — though **AWS
-  has now shipped one to a limited audience** (see the guardrails section), so the "first" framing may
-  need retiring next pass. Also track: the eligible-service list **dropped Maps** since April.
 - **Adopt OpenRouter's `cost-per-session-by-harness-and-model` endpoint as a live data source?**
   *(new 2026-09-28 — a human call.)* Disclosed methodology, per-turn-bucket and per-harness,
   weekly refreshed, **CC BY 4.0**. It would let this KB query current cost data each pass instead of
   citing undated analyst predictions. The first such source found.
 
 **Tooling / docs**
+- ✅ **RESOLVED 2026-10-19 — Gemini CLI's `maxSessionTurns` is a real stop-at-limit iteration cap, not history
+  retention; archived.** Settled from the shipped `@google/gemini-cli@0.64.0` tarball: **three enforcement
+  sites, zero history-trimming sites.** ⚠️ **The docs remain wrong in two of three places *and* in the
+  settings dialog**, so **record it as a cap and note that a reader following the configuration reference
+  will get it backwards.** The zero-polarity half of this finding is a new live item (guardrails section).
+- ✅ **RESOLVED 2026-10-19 — opencode's v2.0.x tag dates; archived.** v2.0.27 → v2.0.32 all dated (six
+  in-window), `"private": true` confirmed at tag, and the `sst` → `anomalyco` org move confirmed from
+  byte-identical `git ls-remote` tag lists. ⚠️ **Note the lockstep pattern: v1.19.1/v2.0.30 were cut 29
+  minutes apart, so v2.0.x is an active parallel channel, not an abandoned branch.**
+- ✅ **RESOLVED 2026-10-19 — "three peers are version- but not date-trackable here"; archived, and the fix is
+  a method, not an access grant.** `git ls-remote --tags <https url>` plus
+  `git clone --depth 1 --branch <tag> --filter=blob:none` and `git log -1 --format=%cI` **work through the
+  proxy on third-party repos**, which dated opencode, Goose, Codex, Gas City, pi-temporal and the ralph
+  derivatives this pass. **No `add_repo` was needed, and the standing suggestion to grant read access to
+  `openai/codex`, `block/goose` and `sst/opencode` can be dropped.** ⚠️ Keep the two caveats:
+  `--shallow-since` **fails outright** when its cutoff is later than the last commit (itself a dormancy
+  signal), and a `--depth N` clone still fabricates a file's last-modified date at the boundary.
+- ⚠️ **NEW 2026-10-19 — `claude plugin eval`'s residual gap is narrower and now documented as deliberate.**
+  ✅ v2.1.299 fixed the sharp edge: a run whose request failed with *"a rate limit or a plan usage limit"* now
+  *"scores 0 with no grader results, and the command exits non-zero"* (*"Before v2.1.299, such a run was
+  graded on what it had produced"*). ⚠️ **But the enum is unchanged** (`cost_ceiling | interrupted |
+  auth_failed`) and the doc states the residual plainly: *"Runs that end with a usage-limit or rate-limit
+  error score 0 without grading… **The suite still finishes and isn't marked `partial`.**"* ➜ **So the doc's
+  own advice to leave `partial` runs out of trend charts does not protect you: a rate-limited suite silently
+  deposits a 0 into the trend.** **Carry forward with exactly that framing.** ⚠️ Also now first-party:
+  `--max-cost-usd` bounds *"the run's list-price cost estimate, **not** … plan usage"*, is checked only
+  *"before each run starts"*, and *"runs that already started finish, **so spend can pass the ceiling by
+  those runs**"*; and `skippedPaidGraders` is *"true when the cost ceiling skipped this run's judge graders,
+  so its score isn't comparable"* — **first-party confirmation that a metered verifier's ceiling is a
+  verifier kill-switch.**
+- ⚠️ **NEW 2026-10-19 — v2.1.299 narrowed MCP allow rules, which is a silent tightening for existing loops.**
+  *"`mcp__a` no longer allows a server named `a__b` or `a_`; write `mcp__<server>__*` with the server's whole
+  normalized name"*, plus *"agent `tools:` lists [now] take only the named MCP server's tools."* **An existing
+  prefix rule narrows and a loop that relied on it starts prompting.** Worth a runbook note.
+- ⚠️ **NEW 2026-10-19 — Factory's "10 runs/hour" automation cap could not be located.** Not refuted, but
+  **not on the `droid-exec` overview page this pass** — the KB should mark that cell unverified until found.
+- ⚠️ **NEW 2026-10-19 — Amp is a content block, not a negative.** ~6 npm publishes/day through the window but
+  epoch+SHA version strings and **no changelog in the package**, so **whether anything loop-relevant changed
+  is unknown.** Needs a different route (its own release notes) or an explicit "not trackable" cell.
+- ⚠️ **NEW 2026-10-19 — the Haiku tripwire was aimed at a page that cannot answer it; re-point it.**
+  `claude-haiku-4-5-20251001` is **still `Active`, Deprecated `N/A`**, four days past *"Not sooner than
+  October 15, 2026"* — ✅ **so a "not sooner than" date is a floor that can pass without action, not a
+  schedule** (a reusable lesson for dated tripwires). ⚠️ **But the item was about non-Anthropic providers, and
+  the deprecations page states its dates *"apply to Anthropic-operated platforms… Partner-operated platforms
+  (Amazon Bedrock and Google Cloud) set their own retirement schedules"* — so the Bedrock and Vertex model
+  tables govern it, and those were not read. That is the residual gap.** ⚠️ **The premise may also be stale:**
+  Haiku **5.5** is now listed on Bedrock, Google Cloud, Foundry and Claude Platform on AWS, with Haiku 4.5
+  under *"Legacy models (still available)"* — so *"Haiku 4.5 is the `/goal` evaluator on every non-Anthropic
+  provider"* **should not be repeated until the per-provider alias mapping is confirmed** (**Medium**; no page
+  states the alias→model mapping per provider). ⚠️ **And there is no evaluator-only override:**
+  `ANTHROPIC_DEFAULT_HAIKU_MODEL` applies *"everywhere it uses the small fast model, not only for `/goal`
+  evaluation"*, so pinning the evaluator repoints summarization and all background work too.
+- ⚠️ **NEW 2026-10-19 — `experimental-ext-server-card` is dormant since 2026-08-12 and has not graduated**,
+  while **SEP-2127 "Server Cards" merged Oct 6** — a spec-ahead-of-implementation gap. (`ext-server-card`
+  resolves to the same HEAD, i.e. a redirect, not a new repo.) Also: **`ext-tasks` had zero in-window
+  commits**, and the KB's **Oct 8** date for the MCP *Governance* WG charter is unverified — its merge commit
+  is **2026-10-10** (**Medium**; either way pre-window).
+- ⚠️ **NEW 2026-10-19 — `gascity` must be referenced org-qualified as `gastownhall/gascity`.**
+  `github.com/steveyegge/gascity` prompts for credentials, i.e. is not publicly readable — a dead end a
+  future pass would otherwise re-burn effort on.
+- ⚠️ **NEW 2026-10-19 — Gas City's `internal/workladder` is a direction to watch, not shipped behaviour.**
+  Three in-window commits land a counted escalation ladder whose defaults *"cannot pace at zero"*, with
+  `MaxRecycles = 1` — **the thing `progress_stall_timeout` deliberately leaves off** — but it is
+  **unreleased and absent from `CHANGELOG.md`.** Re-check whether it ships and whether it changes the
+  "stall detection disabled by default" finding.
+- ⚠️ **NEW 2026-10-19 — Agent Router's `serviceQuota` is still *"accepted but not yet enforced
+  end-to-end"***, and its merged quota work (`#2695`, `#2766`, Oct 9) plus cross-namespace backends (Oct 16)
+  are **all unreleased** (newest tag `v1.2.0`, 2026-10-06). **A ceiling you configure is accepted silently and
+  does nothing** — track the release that enforces it.
+- ⚠️ **NEW 2026-10-19 — AG2 `v1.2.0` has been tagged-but-unpublished for 8 days** (PyPI still 1.1.2,
+  2026-10-03). Carry forward.
+- ⚠️ **NEW 2026-10-19 — `agentgateway` and `Agent2Agent (A2A)` are AAIF projects the KB was not tracking.**
+  agentgateway is directly in scope and is now the KB's positive counterexample on zero-valued ceilings; A2A
+  is unassessed. **Add a tracking row for each.**
+- ⚠️ **NEW 2026-10-19 — two in-window review-tool facts to keep current:** **Qodo is at 3.1 (Oct 15), not
+  3.0**, and its *"automatic rule deactivation for rules whose findings are rarely fixed"* is **a new vacuity
+  mechanism**; and **roborev shipped v0.72.0 (Oct 16)** with `review --type goal` and a `--rebuttal` flow.
+  ⚠️ **Kodus was not reached this pass — a gap, not a negative** (the five-tool set is 4/5 covered).
+  ⚠️ **CodeRabbit's reported monthly spending cap is Low** (aggregator snippet only) and **needs first-party
+  confirmation before "no tool does both" is asserted in either direction.**
 - ⚠️🔴 **NEW 2026-10-12 — CORRECTION to a claim the KB has repeated for weeks: "no peer harness has shipped
   a validator stop, iteration cap, stall detector or dollar ceiling" is false on three of the four legs, and
   was already false before this window.** Verified by the lead, not relayed. **Goose** ships a **default-ON**
@@ -6617,30 +7951,6 @@ instead of deleting it or leaving it here indefinitely.
   no budget ceiling, no stall detector**, and zero hits for `budget|iteration|limit|stall|watchdog|cost|usd`.
   The `Budget`/`Spend limit` strings on `developers.openai.com/codex/cli` are unrelated site-nav links.
   **Correct the row.**
-- ⚠️ **NEW 2026-10-12 — Gemini CLI's `maxSessionTurns` is documented two incompatible ways.** At the v0.63.0
-  tag the setting reads *"Maximum number of user/model/tool turns **to keep** in a session. -1 means
-  unlimited"* — which describes **history retention** — while a sibling page describes stop-at-limit
-  behaviour (*"Interactive mode: The CLI shows an informational message and stops sending requests to the
-  model… Non-interactive mode: The CLI exits with an error"*). **Record it as an opt-in turn cap with
-  inconsistent docs and re-check; do not assert which it is.**
-- ⚠️ **NEW 2026-10-12 — three peers are version-trackable but not *date*-trackable in this session; record
-  it so future passes stop re-burning effort.** GitHub API access is scoped to `espi/loops`, so
-  `mcp__github__*`, `gh api`, `api.github.com` and `releases.atom` all **403** for third-party repos, and
-  `crates.io/api/v1` 403s through the proxy. Consequently: **Goose v1.54.0** (version from `Cargo.toml` on
-  `main` + a tag probe) is **undated** — and note Block's Goose is **not on crates.io**, where the
-  `goose`/`goose-cli` crates are **unrelated** packages; **opencode v2.0.x** tag dates are unobtainable; and
-  **Cursor CLI** has only vendor-asserted `v2026.MM.DD` headings with no registry cross-check. ✅ **The
-  working fallback, which should be the documented default:** `git ls-remote --tags <url>` to enumerate and
-  `git clone --depth 1 --branch <tag>` + `git log -1 --format=%cI` to date — this worked on ~15 repos this
-  pass. **A human call: either grant read access to `openai/codex`, `block/goose` and `sst/opencode`, or
-  accept the three cells as version-only.**
-- ⚠️ **NEW 2026-10-12 — opencode's v2.0.x invisibility is explained; only the dates stay open.** `opencode-ai`
-  on npm has **only majors 0 and 1** (`latest` 1.19.0) and the unscoped `opencode` package **404s**, while
-  git tags **v2.0.0 … v2.0.27 do exist** — and `v2.0.27/package.json` carries `"name": "opencode"`,
-  `"version": "2.0.27"` and **`"private": true`**, so npm publication is **deliberately blocked**. It also
-  declares `"repository": "https://github.com/anomalyco/opencode"`, so **the project appears to have moved
-  org from `sst` to `anomalyco`.** **Untrackable via npm by construction, not oversight.** Carried forward in
-  reduced form: **dates only.**
 - ⚠️ **NEW 2026-10-12 — the MCP standards picture needs three corrections and one tracking change.**
   (a) ✅ **The MCP Skills extension HAS a conformance suite; the bare Agent Skills format does not** — stop
   conflating them. `modelcontextprotocol/conformance` carries `src/scenarios/server/skills/*` and
@@ -6665,19 +7975,6 @@ instead of deleting it or leaving it here indefinitely.
   "independently governed, not AAIF" (**Medium**). And ⚠️ **`agentskills.io`'s published docs are richer than
   `agentskills/agentskills` @ HEAD (2026-08-09), so the real publishing source was not located** — the
   "no version/tag/release" finding is **High**, the claim that the git repo is canonical is **Medium**.
-- ⚠️ **NEW 2026-10-12 — rewrite, do not close, the `claude plugin eval` budget-masquerade caveat; it is now
-  two paths and only one is wired.** ✅ **Resolved half:** the `--max-cost-usd` path is instrumented — exit
-  **2**, `results.json` with `partial: true`, `partialReason: cost_ceiling`, and a per-run
-  `skippedPaidGraders` flag, with the instruction to *"leave `partial: true` documents and runs with
-  `skippedPaidGraders` out of any trend you chart."* ⚠️ **Still open:** `partialReason` takes exactly
-  *"`cost_ceiling`, `interrupted`, or `auth_failed`"* — **a plan-usage or rate-limit exhaustion is not among
-  them**, while the docs state the cost ceiling is *"not on plan usage"* and that eval runs *"count against
-  your plan's usage limits or your API bill."* **So a usage-limit hit mid-suite still reads as a score rather
-  than an incomplete run.** Two further notes: `--max-cost-usd` **defaults to "No ceiling"** and is **a
-  ceiling with documented overshoot** (*"runs that already started finish"*); and `--concurrency` *"share[s]
-  your account's rate limit, so this shortens wall-clock time rather than raising throughput"* — **raising
-  `-j` increases the chance of hitting the uninstrumented ceiling without buying anything.** ⚠️ **Dating
-  honesty: the state is verified, the change date is not** — the instrumentation may predate the window.
 - ⚠️ **NEW 2026-10-12 — the first-party plugin evaluator reads the maker's trace, so the doctrine and the
   shipped tool disagree.** `plugin-evals`, verbatim: *"`trace` | The session as JSON, one message per line. A
   `regex` grader sees every message; an `llm` judge sees the first 12 and the last 12."* **The mitigation is
@@ -6749,19 +8046,93 @@ instead of deleting it or leaving it here indefinitely.
   secondary-only, verify against an LF primary before putting it in the primer as prose.**) Keep
   treating a skill authored here as **portable-with-testing, not drop-in**.
 **Research / infrastructure**
-- ⚠️🔴 **NEW 2026-10-12 — the weekly window sweep systematically misses relevant *older* work, and three
-  papers prove it.** The fan-out is scoped to "what changed since the last pass", so a paper published
-  before the KB started looking is invisible to it. Three such papers surfaced this pass by **title search**,
-  each with metadata verified by the lead against its arXiv abstract page, **contents unread, no claim made
-  about what they say**: `arXiv:2609.27871` **"Bounded Loops: Pre-Run Spend Bounds, Proved Termination, and
-  Verified Completion for Agent Harnesses"** (v1 **2026-08-20**, cs.SE, 3 authors) — **the title maps onto
-  all three hard stops plus verification, and this is the highest-value unread lead the KB has**;
-  `arXiv:2608.21884` **"Loop Engineering: Building Blocks, Adoption, and Impact"** (v1 **2026-08-22**, cs.SE,
-  5 authors incl. **Treude** and **Baltes**) — **an academic paper on this repo's exact subject that the KB
-  has never cited**, reportedly also characterising an Osmani **Jul 25** post revising Yegge's eight stages
-  (unverified); and `arXiv:2607.00038` **"Stop Hand-Holding Your Coding Agent: Engineering the Loops that
-  Replace Step-by-Step Prompting"** (v1 **2026-06-28**, cs.SE, solo). **Read all three next pass, and a human
-  call: a one-off backfill sweep on core terms, not bounded by a date window, would be cheap and high-yield.**
+- ✅ **RESOLVED 2026-10-19 — all three backfill papers read, and the method gap they proved is now a live
+  human call rather than a research question.** `2609.27871` (*Bounded Loops*), `2608.21884` (*Loop
+  Engineering*, Treude/Baltes, now **v2**) and `2607.00038` (*Stop Hand-Holding Your Coding Agent*) were read
+  in full and are recorded in the academic section. 🔴 **The method gap is confirmed in the strongest possible
+  way: a whole-changelog grep this pass surfaced v2.1.217's `--max-budget-usd` failure from July, which a
+  weekly window-scoped fan-out had missed for three months.** ➜ **The human call stands and is now
+  evidence-backed: a one-off backfill sweep on core terms, not bounded by a date window, is cheap and
+  high-yield — and the same applies to grepping the *whole* changelog, not just the in-window slice, for each
+  hard-stop token.** ⚠️ **New lead from `2608.21884`'s bibliography, unverified:** `arXiv:2601.18341` Robbes
+  et al., *"Agentic much? Adoption of coding agents on GitHub"*.
+- ✅ **RESOLVED 2026-10-19 — both of Osmani's uncited statistics now have primaries; archived.** The *"570
+  review comments … only 14%"* figure is **Bacchelli & Bird, ICSE 2013 (Microsoft Research)**, confirmed
+  verbatim from the PDF — ⚠️ **but it is a 2013, pre-AI study of *human* review, so the framing caveat must
+  travel with it.** The *"8× as much code per day"* figure is **Anthropic's own**
+  (`anthropic.com/institute/recursive-self-improvement`), 🔴 **and Anthropic disclaims it in the same
+  paragraph: *"Lines of code is an imperfect measure… almost certainly an overstatement of the true
+  productivity gain."*** ➜ **Record the caveat sentence permanently alongside the figure so it cannot be
+  stripped.** ⚠️ Do not conflate with the same org's *"67% increase in merged pull requests"*, nor with the
+  Oct 15 post's repo-wide *"2,500 in May to more than 30,000 in September"*.
+- ✅ **RESOLVED 2026-10-19 — the AAIF membership question, on a Linux Foundation primary; archived.** The LF
+  press release names the founding contributions as *"Anthropic's Model Context Protocol (MCP), Block's
+  goose, and OpenAI's AGENTS.md"* and **"Agent Skills" appears nowhere**; `aaif.io/projects` confirms
+  (six projects, Agent Skills absent) and **confirms Agent Router as AAIF-hosted.** ⚠️ **The *date* of Agent
+  Router's move stays open and Low** — the project list carries no dates.
+- ⚠️ **NEW 2026-10-19 — three fetch techniques that remove long-standing coverage holes; put them in the
+  runbook.** (a) **Full-text feeds beat page fetches:** `ghuntley.com/rss`, `addyo.substack.com/feed` and
+  `steve-yegge.medium.com/feed` all return complete `content:encoded` bodies — **this bypasses the Substack
+  and Medium 403s that have blocked direct reads for months**, and closes Yegge's coverage hole entirely.
+  (b) **`code.claude.com/docs/en/changelog.md` is a better primary than the rendered page**: 1.1 MB instead
+  of 4.8 MB, with explicit `<Update label="…" description="October 18, 2026">` date attributes, so it is
+  cheaper *and* immune to the year-hallucination trap. (c) **The shipped npm tarball is the strongest primary
+  for a CLI** — Gemini CLI's bundles its own `docs/` tree *and* the compiled settings schema, which is how
+  `maxSessionTurns` was settled; ⚠️ **but its bundled changelog lags the version it ships in by three
+  releases, so the tarball is authoritative for *behaviour*, not for *what changed*.**
+- ⚠️ **NEW 2026-10-19 — the byline/date traps recurred, and one of them moved.** On `ghuntley.com` the skew
+  **migrated from the visible byline into the machine-readable `datetime` attribute** (`/remix/` rendered
+  `datetime="2026-10-15"` against an RSS `pubDate` of Wed, 14 Oct 23:30 GMT). ➜ **Widen the rule: date only
+  from the RSS `pubDate`; neither the visible byline nor the on-page `datetime` attribute is safe.** And the
+  **feed-header trap reproduced identically on `lucumr.pocoo.org`** (header `updated` Oct 9 vs newest entry
+  Oct 6) — **dating from the header would have manufactured a phantom in-window post.**
+- ⚠️ **NEW 2026-10-19 — grep the author's own archive before declaring a statistic uncited.** Both backlog
+  statistics above were resolved from text and hyperlinks **already inside Osmani's own feed** — no new
+  research was needed. **Worth a standing first step for any "no citation captured" caveat.**
+- ⚠️ **NEW 2026-10-19 — two host migrations and two path corrections for the runbook.**
+  **`cloud.google.com/billing/docs/*` now 301s to `docs.cloud.google.com/billing/docs/*`** (same failure
+  shape as the already-recorded `docs.claude.com` → `code.claude.com` hop, and WebFetch returns the redirect
+  rather than following it); the Google spend-caps path is **`budgets-spend-caps`**, not `spend-caps`, which
+  404s on the new host; **`platform.claude.com/docs/en/release-notes/overview.md`** is the correct release-
+  notes path (`/en/release-notes/api.md` returns a Next.js shell), with `platform.claude.com/llms.txt`
+  enumerating the real paths; and **`docs.aws.amazon.com/accounts/latest/reference/create-spend-limit.html`**
+  serves clean text where the `cost-management/latest/userguide/*` path renders as a JS shell.
+  ⚠️ **gartner.com 403s confirmed again** on both `/en/newsroom` and individual press-release pages; wire
+  syndication is a usable route to the *text* but caps confidence at Medium.
+- ⚠️ **NEW 2026-10-19 — the arXiv API behaved, and one documented fallback is worth keeping.** Two batched
+  `id_list` calls in one session both returned **HTTP 200** (22/22 IDs), so **last pass's second-call 429 did
+  not reproduce**; `-sSL` plus a real User-Agent handles the 301-empty-body trap. ✅ `arxiv.org/html/<id>`
+  served a full render for `2608.21884v2`, so no scrambled-font decoding was needed. ⚠️ **And
+  `api.github.com/repos/kenn-io/roborev/contents/*` 403s while `raw.githubusercontent.com` works** — the raw
+  host cannot list directories, so **fetch known filenames** (`changelog.md`, `configuration.md`,
+  `integrations/github.md` all resolved).
+- ⚠️ **NEW 2026-10-19 — blacklist additions, and a repeat offender worth naming as a *source pattern*.**
+  Add **`$78,000 / 826 threads`** (dev.to/mech_app_ai, Sep 27 — no named primary, only a Hacker News thread;
+  headline `$78,000` vs body *"162 paid invoices totaling $79,664.88"*, never reconciled; ~2,550 threads with
+  no raw logs). ➜ **`dev.to/mech_app_ai` is now a two-time manufacturer of round-number agent-cost headlines
+  (it also flattened Mandiant into "a $50,000 cloud bill") — treat the account as a distortion source, not a
+  lead.** Also **not citable**: Revefi *~$73,750* (a hypothetical retailer scenario), the Cycles "State of AI
+  Agent Incidents 2026" *$32.40–$2,300* range (modelled scenarios by the report's own admission), a Logic42
+  *$8,000 weekend burn*. New recap-grade domains seen: `requesty.ai`, `mindstudio.ai` (including an unsourced
+  *"$500 in an hour"*). ⚠️ **And keep two Huntley figures apart from each other and from the blacklist:** his
+  attributable *"roughly US$6,000, and I did it three times over"* for CURSED, versus his hypothetical
+  *"I'd be up past US$200,000 a month at real prices"*, versus the blacklisted anonymous *"$6,000
+  overnight"*. Dex Horthy's *"about $10.42 an hour"* is **Medium, secondhand via Huntley, no link.**
+- ⚠️ **NEW 2026-10-19 — dated tripwires for the next passes.** 🔴 **Gartner's Symposium opened Oct 19, the day
+  this window closed, so the "no new analyst data" negative finally has a resolvable cause: expect material in
+  the Oct 19–26 window.** Named targets: a keynote-derived release off *"Reaching Escape Velocity - Shaping
+  an Effective Enterprise AI Economy"* (Plummer and Moyer, who *"will discuss the economics of AI"*), the
+  **inaugural "Hype Cycle for Agentic AI 2026"** session (**Oct 20**), and the "AI Value and Cost Management"
+  track. Later: **Barcelona Nov 9–12, Yokohama Nov 4–6.** Other live dates: **`claude-sonnet-4-5-20250929`
+  retires 2026-11-30**; **GPT-5.6 Sol's promotional pricing runs *"at least through November 21, 2026"*** with
+  ⚠️ **no published post-promotion price — keep the cautious wording and do not quote a magnitude**; and
+  watch for **LiteLLM v1.107.0** (rc1 shipped Oct 18) and whether **#44259** finally merges.
+- ⚠️ **NEW 2026-10-19 — a Ronacher wording rule, to stop mis-recording his status.** His **blog carried
+  nothing in-window** (newest entry Oct 6). He *was* active off-surface, co-hosting the podcast Huntley wrote
+  up on Oct 16, **but the episode could not be independently confirmed**, so all Ronacher-attributed content
+  this window is **Medium, secondhand via Huntley only.** Correct wording: *"Ronacher's blog carried nothing
+  in-window; he appeared in-window on his own podcast per Huntley's account, which was not independently
+  verified."* ⚠️ **The "Jev" item is NOT advanced** — Huntley's classifier remarks never name Jev.
 - ⚠️ **NEW 2026-10-12 — the YYMM-is-not-a-date trap fired again, in the opposite direction.**
   `arXiv:2609.27871` carries a **`2609`** prefix but its v1 is **20 August 2026**. Last pass the trap ran the
   other way (`2610.00015v1` = 2026-07-27). **Both directions are now on record; the machine-verify rule earns
@@ -6875,12 +8246,6 @@ instead of deleting it or leaving it here indefinitely.
   `2609.38822` and **509 directions** in `2609.29921` (and 47,150 skills in the blacklisted blog
   figures) — **it does not name one fixed thing.** Also note **not to merge the reliability ceilings**:
   Incident-Arena's *"below 64.3%"* is not comparable with LoopsBench/LoopArena's ~25%.
-- ⚠️ **NEW 2026-10-05 — two statistics Osmani cites that must not be restated as fact.** From "The
-  Code Nobody Reads" (Sep 28): *"Of the 570 review comments the researchers classified, only 14% were
-  about defects."* (**no citation captured**) and *"In the second quarter of 2026, the typical Anthropic
-  engineer was merging about eight times as much code per day as in 2024."* (**no Anthropic primary
-  located**). Attribute to Osmani or omit. The second would be a genuinely useful figure if an
-  Anthropic primary exists — worth one targeted check.
 - ⚠️ **NEW 2026-10-05 — Steinberger's coverage gap should be worded permanently, not re-discovered.**
   His blog is verifiably quiet since **Feb 15, 2026** (`steipete.me/rss.xml`), but he publishes mainly
   on **x.com, which is unfetchable here**, so *"Steinberger published nothing in-window"* **cannot be
@@ -7026,6 +8391,19 @@ instead of deleting it or leaving it here indefinitely.
   test. **LoopGain is the third candidate for retirement** — still **zero releases** for a third
   consecutive pass, with headline numbers that exist only as `loopgain.ai` marketing copy.
 
+
+_(Resolved and archived 2026-10-19: **nine items.** Google Cloud Spend Caps' GA question (→ **GA'd
+2026-10-13**, and GA did not fix the leakage) together with its companion quote/launch-stage item; Gemini
+CLI's `maxSessionTurns` doc ambiguity (→ **a real stop-at-limit cap**, settled from the shipped tarball, with
+the zero-polarity discovery it produced carried forward as a new item); opencode's v2.0.x tag dates; "three
+peers are version- but not date-trackable here" (→ resolved **by a method, not an access grant**, so the
+standing request for third-party repo access is dropped); the three unread backfill papers (→ **all read**,
+with the method half carried forward as an evidence-backed human call); Osmani's two uncited statistics
+(→ **both have primaries**, one of which its own publisher disclaims); the AAIF membership question
+(→ resolved on a **Linux Foundation primary**); and `claude plugin eval`'s budget-masquerade caveat
+(→ **half fixed in v2.1.299**, rewritten and carried forward in narrower form). Six further resolutions are
+documented **in place** above, marked `✅ RESOLVED 2026-10-19`, because each left a narrower successor
+question. See [`archive/resolved-caveats.md`](archive/resolved-caveats.md).)_
 
 _(Resolved and archived 2026-09-29: two items that earlier passes had **dropped from this backlog
 without archiving** — **"~700 of 1,200 agents / ~$400K"** → resolved against METR's Aug 26 report:

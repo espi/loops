@@ -831,3 +831,141 @@ Thirteen items left the live backlog this pass. Each bullet below is the item's 
   not a window item.
   - **→ Archived 2026-10-12 as spent — the list was cleared on 2026-10-05 and nothing depends on it. (A **new** and larger reading debt opened this pass: three out-of-window papers the KB had never cited, listed under Research / infrastructure in the live backlog.)**
 
+
+## Archived 2026-10-19
+
+Nine items resolved in the 2026-10-19 pass (window Oct 12–19). Each was resolved against a primary read
+**by the lead**, not relayed from a research agent. Six further resolutions are documented in place in
+`sources.md` (marked `✅ RESOLVED 2026-10-19`) because they left a narrower successor question behind.
+
+**How they resolved, in one line each:**
+
+- **Google Cloud Spend Caps "still not GA"** → ✅ **GA'd 2026-10-13**, confirmed from the release-notes
+  page's own dated entry: *"Spend cap budgets are now generally available for a limited set of services."*
+  **The first GA'd project-level spend ceiling from a hyperscaler.** ⚠️ But **GA did not fix the leakage** —
+  *"spend cap enforcement isn't instantaneous"*, *"Any in-flight requests … are processed to completion,
+  accruing charges as applicable"*, *"You remain responsible for any overage costs accrued due to reporting
+  latency"* — so the KB's invariant (a) survives intact and is now stated by Google itself. The companion
+  "correct the quote / launch-stage disagreement" item resolved with it: the quote was replaced and the
+  two-surface disagreement settled in favour of GA.
+- **Gemini CLI's `maxSessionTurns` documented two incompatible ways** → ✅ **settled from the shipped
+  `@google/gemini-cli@0.64.0` tarball: it is a real stop-at-limit iteration cap** (three enforcement sites,
+  zero history-trimming sites). The docs stay wrong in two of three places and in the settings dialog, which
+  is recorded as a reader hazard rather than an open question — and the **zero-polarity discovery it produced
+  (`0` means both "stop immediately" and "unlimited" in one binary) is carried forward as a new live item.**
+- **opencode's v2.0.x tag dates** → ✅ **dated**: v2.0.27–v2.0.32, six in-window, plus `"private": true`
+  confirmed at tag and the `sst` → `anomalyco` org move confirmed from byte-identical `ls-remote` tag lists.
+- **"Three peers are version- but not date-trackable here"** → ✅ **resolved by a method, not an access
+  grant**: `git ls-remote --tags` plus a filtered single-tag clone and `git log -1 --format=%cI` work through
+  the proxy on third-party repos. **The standing suggestion to grant read access to `openai/codex`,
+  `block/goose` and `sst/opencode` is dropped** — it was never needed.
+- **The three unread backfill papers** → ✅ **all three read in full** (`2609.27871`, `2608.21884` v2,
+  `2607.00038`) and recorded in the academic section. The **method** half of that item — a one-off backfill
+  sweep not bounded by a date window — is **carried forward as a human call, now evidence-backed**, because
+  a whole-changelog grep this pass surfaced v2.1.217's `--max-budget-usd` failure from **July** that three
+  months of weekly window-scoped passes had missed.
+- **Osmani's two uncited statistics** → ✅ **both have primaries.** *"570 review comments … only 14%"* is
+  **Bacchelli & Bird, ICSE 2013 (Microsoft Research)**, confirmed verbatim from the PDF (⚠️ a 2013, pre-AI
+  study of *human* review — the framing caveat travels with it). *"8× as much code per day"* is **Anthropic's
+  own**, from the Anthropic Institute's "Recursive self-improvement" — 🔴 **and Anthropic disclaims it in the
+  same paragraph** (*"Lines of code is an imperfect measure… almost certainly an overstatement of the true
+  productivity gain"*), so the caveat is now recorded permanently beside the figure.
+- **The AAIF membership question** → ✅ **resolved on a Linux Foundation primary.** The LF press release names
+  the founding contributions as *"Anthropic's Model Context Protocol (MCP), Block's goose, and OpenAI's
+  AGENTS.md"*; **"Agent Skills" appears nowhere**, and `aaif.io/projects` confirms (six projects, Agent Skills
+  absent) while **confirming Agent Router as AAIF-hosted**. ⚠️ Only the *date* of Agent Router's move stays
+  open (Low) — the project list carries no dates.
+- **`claude plugin eval`'s budget-masquerade caveat** → ✅ **half fixed in v2.1.299**, which made a run that
+  died on a rate or plan-usage limit *"score 0 with no grader results"* and exit non-zero (*"Before v2.1.299,
+  such a run was graded on what it had produced"*). ⚠️ **Rewritten and carried forward in narrower form**,
+  because the residual is now documented as deliberate: *"The suite still finishes and isn't marked
+  `partial`"*, so a rate-limited suite silently deposits a 0 into a trend the docs tell you to trust.
+
+**The original text of each archived item, as it stood in `sources.md`:**
+
+- **Google Cloud Spend Caps: still not GA — and the KB's *stage* was wrong** *(new 2026-09-28;
+  **corrected and re-checked 2026-10-05**)*. The KB said *"still private preview"*, citing the Apr 22
+  Next '26 post. They went **public preview on 2026-07-28** (*"During this Public Preview, you can
+  apply Spend Caps to a single project and service for a fixed monthly timeframe."*) and they **do
+  enforce** (*"the system automatically restricts further cost-incurring usage"*). **The GA question
+  stays open:** the live doc (updated **2026-09-30**, in-window) still reads *"This feature is in
+  Preview"* under Pre-GA terms, and Cloud Billing release notes carry nothing after 2026-09-04.
+  Re-check; a GA'd project-level ceiling would still be the first from a hyperscaler — though **AWS
+  has now shipped one to a limited audience** (see the guardrails section), so the "first" framing may
+  need retiring next pass. Also track: the eligible-service list **dropped Maps** since April.
+
+- ⚠️ **NEW 2026-10-12 — correct the Google Cloud Spend Caps quote, and log a launch-stage disagreement.**
+  The KB's quote *"the system automatically restricts further cost-incurring usage"* **is no longer on the
+  page.** Current verbatim: *"When a spend cap budget is enforced, usage of your specified services is
+  automatically paused for the remainder of the budget period unless you manually lift the spend cap."* It
+  still enforces, with quotable leakage — *"spend cap enforcement isn't instantaneous"*, *"Any in-flight
+  requests of the specified service are processed to completion, accruing charges as applicable"*, and
+  ⚠️ ***"You remain responsible for any overage costs accrued due to reporting latency"*** (the strongest
+  statement yet of invariant (a): a ceiling bounds new work, not the bill). Scope: **one project × one
+  eligible service, monthly.** ⚠️ **New caveat: Google's own two surfaces disagree on stage** — the release
+  notes carry only the dated **July 27, 2026, Status: Preview** entry with no GA entry through Sept 4, while
+  the spend-caps doc page carries **no Preview or Pre-GA banner for the feature itself**. **High** that no GA
+  was announced; **Medium** on the current stage.
+
+- ⚠️ **NEW 2026-10-12 — Gemini CLI's `maxSessionTurns` is documented two incompatible ways.** At the v0.63.0
+  tag the setting reads *"Maximum number of user/model/tool turns **to keep** in a session. -1 means
+  unlimited"* — which describes **history retention** — while a sibling page describes stop-at-limit
+  behaviour (*"Interactive mode: The CLI shows an informational message and stops sending requests to the
+  model… Non-interactive mode: The CLI exits with an error"*). **Record it as an opt-in turn cap with
+  inconsistent docs and re-check; do not assert which it is.**
+
+- ⚠️ **NEW 2026-10-12 — opencode's v2.0.x invisibility is explained; only the dates stay open.** `opencode-ai`
+  on npm has **only majors 0 and 1** (`latest` 1.19.0) and the unscoped `opencode` package **404s**, while
+  git tags **v2.0.0 … v2.0.27 do exist** — and `v2.0.27/package.json` carries `"name": "opencode"`,
+  `"version": "2.0.27"` and **`"private": true`**, so npm publication is **deliberately blocked**. It also
+  declares `"repository": "https://github.com/anomalyco/opencode"`, so **the project appears to have moved
+  org from `sst` to `anomalyco`.** **Untrackable via npm by construction, not oversight.** Carried forward in
+  reduced form: **dates only.**
+
+- ⚠️🔴 **NEW 2026-10-12 — the weekly window sweep systematically misses relevant *older* work, and three
+  papers prove it.** The fan-out is scoped to "what changed since the last pass", so a paper published
+  before the KB started looking is invisible to it. Three such papers surfaced this pass by **title search**,
+  each with metadata verified by the lead against its arXiv abstract page, **contents unread, no claim made
+  about what they say**: `arXiv:2609.27871` **"Bounded Loops: Pre-Run Spend Bounds, Proved Termination, and
+  Verified Completion for Agent Harnesses"** (v1 **2026-08-20**, cs.SE, 3 authors) — **the title maps onto
+  all three hard stops plus verification, and this is the highest-value unread lead the KB has**;
+  `arXiv:2608.21884` **"Loop Engineering: Building Blocks, Adoption, and Impact"** (v1 **2026-08-22**, cs.SE,
+  5 authors incl. **Treude** and **Baltes**) — **an academic paper on this repo's exact subject that the KB
+  has never cited**, reportedly also characterising an Osmani **Jul 25** post revising Yegge's eight stages
+  (unverified); and `arXiv:2607.00038` **"Stop Hand-Holding Your Coding Agent: Engineering the Loops that
+  Replace Step-by-Step Prompting"** (v1 **2026-06-28**, cs.SE, solo). **Read all three next pass, and a human
+  call: a one-off backfill sweep on core terms, not bounded by a date window, would be cheap and high-yield.**
+
+- ⚠️ **NEW 2026-10-05 — two statistics Osmani cites that must not be restated as fact.** From "The
+  Code Nobody Reads" (Sep 28): *"Of the 570 review comments the researchers classified, only 14% were
+  about defects."* (**no citation captured**) and *"In the second quarter of 2026, the typical Anthropic
+  engineer was merging about eight times as much code per day as in 2024."* (**no Anthropic primary
+  located**). Attribute to Osmani or omit. The second would be a genuinely useful figure if an
+  Anthropic primary exists — worth one targeted check.
+
+- ⚠️ **NEW 2026-10-12 — rewrite, do not close, the `claude plugin eval` budget-masquerade caveat; it is now
+  two paths and only one is wired.** ✅ **Resolved half:** the `--max-cost-usd` path is instrumented — exit
+  **2**, `results.json` with `partial: true`, `partialReason: cost_ceiling`, and a per-run
+  `skippedPaidGraders` flag, with the instruction to *"leave `partial: true` documents and runs with
+  `skippedPaidGraders` out of any trend you chart."* ⚠️ **Still open:** `partialReason` takes exactly
+  *"`cost_ceiling`, `interrupted`, or `auth_failed`"* — **a plan-usage or rate-limit exhaustion is not among
+  them**, while the docs state the cost ceiling is *"not on plan usage"* and that eval runs *"count against
+  your plan's usage limits or your API bill."* **So a usage-limit hit mid-suite still reads as a score rather
+  than an incomplete run.** Two further notes: `--max-cost-usd` **defaults to "No ceiling"** and is **a
+  ceiling with documented overshoot** (*"runs that already started finish"*); and `--concurrency` *"share[s]
+  your account's rate limit, so this shortens wall-clock time rather than raising throughput"* — **raising
+  `-j` increases the chance of hitting the uninstrumented ceiling without buying anything.** ⚠️ **Dating
+  honesty: the state is verified, the change date is not** — the instrumentation may predate the window.
+
+
+- ⚠️ **NEW 2026-10-12 — three peers are version-trackable but not *date*-trackable in this session; record
+  it so future passes stop re-burning effort.** GitHub API access is scoped to `espi/loops`, so
+  `mcp__github__*`, `gh api`, `api.github.com` and `releases.atom` all **403** for third-party repos, and
+  `crates.io/api/v1` 403s through the proxy. Consequently: **Goose v1.54.0** (version from `Cargo.toml` on
+  `main` + a tag probe) is **undated** — and note Block's Goose is **not on crates.io**, where the
+  `goose`/`goose-cli` crates are **unrelated** packages; **opencode v2.0.x** tag dates are unobtainable; and
+  **Cursor CLI** has only vendor-asserted `v2026.MM.DD` headings with no registry cross-check. ✅ **The
+  working fallback, which should be the documented default:** `git ls-remote --tags <url>` to enumerate and
+  `git clone --depth 1 --branch <tag>` + `git log -1 --format=%cI` to date — this worked on ~15 repos this
+  pass. **A human call: either grant read access to `openai/codex`, `block/goose` and `sst/opencode`, or
+  accept the three cells as version-only.**

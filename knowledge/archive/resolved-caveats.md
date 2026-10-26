@@ -9,6 +9,52 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-10-26
+
+Three items from the standing backlog resolved in the 2026-10-26 pass (window Oct 19–26). Each was
+resolved against a primary source **read by the lead**, not relayed from a research agent.
+
+- **AG2 `v1.2.0` has been tagged-but-unpublished** *(opened 2026-10-19)*. **Resolved.** PyPI's current
+  version is **1.2.1**; `1.2.0` uploaded **2026-10-21T20:23:36Z** and `1.2.1` at **20:21:17Z** — both
+  in-window, and ⚠️ **1.2.1's files landed about two minutes *before* 1.2.0's**, which is the signature of a
+  release held back and superseded on the spot. `git ls-remote --tags` now shows `v1.2.1` as newest, so tag
+  and PyPI are back in sync. **The tag→publish gap was 10 days (tag 2026-10-11), not the 8 days this KB
+  recorded** — a small correction worth noting because the KB dated the gap from the wrong end. A **new,
+  narrower** item replaces it in the live backlog: the 1.2.0/1.2.1 contents were not diffed for loop
+  primitives.
+- **Factory's "10 runs/hour" automation cap could not be located** *(opened 2026-10-19, unfound for two
+  passes)*. **Resolved**, verbatim from `docs.factory.ai/software-factory/automations`: *"| **Rate-capped** |
+  The automation already started 10 runs this hour. The limit resets at the top of the next hour. |"*
+  ⚠️ **The reason two passes missed it is the durable lesson, and it stays live as a method note: the figure
+  is a row in a webhook *delivery-status* table, not in a limits section** — so searching for a "limit" or
+  checking the `droid-exec` overview page could never find it, and it applies only to webhook-triggered
+  runs (themselves *"Private Preview"*). **A vendor's rate limit may be documented as a status value rather
+  than as a limit.** Same page also yielded a 60-requests-per-minute `429`, a 10-minute dedupe window, and
+  *"Factory-managed Droid Computers host up to 10 automations each, with at most 5 scheduled for the same
+  minute."*
+- **"Agent Skills did not go to the Linux Foundation's AAIF"** *(carried at Medium, secondary-only, with an
+  explicit instruction to verify against an LF primary before putting it in the primer as prose — which is
+  exactly what saved it from becoming a false primer claim)*. **Resolved by reversal.** Anthropic donated
+  the standard to the AAIF on **2026-10-22**, verified first-party: *"Today, we are donating the standard to
+  the **Agentic AI Foundation (AAIF)** under the Linux Foundation, which we co-founded with Block and OpenAI
+  last year, and to which we donated the Model Context Protocol (MCP)"*, including *"the Agent Skills name
+  and logo, the GitHub organization, and the agentskills.io domain"*, with **David Soria Parra and Mahesh
+  Murag as Lead Maintainers**; corroborated by the Linux Foundation's own Oct 22 release.
+  ⚠️ **Only the premise is archived — the governance half of the original item stays open in the live
+  backlog** (the roadmap of *"versioned releases, a formal proposal process, and security guidance"* is
+  *"proposed"*, so there is still no version to test a skill against), **and the spec repo has had no
+  commits since 2026-08-09**, so the donation hands over the GitHub organization of a repo that has not
+  moved in ten weeks. The KB's *"portable-with-testing, not drop-in"* conclusion is unchanged.
+  **Method note worth keeping: this item is the clearest payoff so far from the rule that a secondary-only
+  claim is marked Medium and kept out of the primer until a primary confirms it — the claim turned out to be
+  not merely unverified but backwards.**
+
+Two further items were **narrowed rather than resolved** and stay in the live backlog: the npm
+`stable`/`latest` operator hazard (the gap closed from 11 versions to 2, but the structural point and the
+newly-found `requiredMinimumVersion` remedy remain actionable) and the `allowed-tools` human call (the
+repo-side half is answered — none of this repo's four skills declares the field — while a sharper live half
+replaces it: a `-p` loop honours a third-party repo's grants).
+
 ## Archived 2026-10-05
 
 Six items from the standing backlog resolved in the 2026-10-05 pass. Each was

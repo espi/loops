@@ -10816,7 +10816,7 @@ instead of deleting it or leaving it here indefinitely.
   chase next pass.** 🆕 Related and documented: **`CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`**, *"Stall timeout in
   milliseconds for subagents… Default `600000` (10 minutes)"* — **the closest thing to a first-party
   no-progress primitive, and it is a timer.**
-- ⚠️ **NEW 2026-11-02 — Overalls launched into a different category than the KB recorded, and ships hard stop
+- ⚠️ **NEW 2026-11-02 — Overalls is in a different category than the KB recorded, and ships hard stop
   #1 as magic numbers and hard stop #3 not at all.** `overalls.dev`, verbatim: *"**RESEARCH PREVIEW** Overalls
   launches on **3 November 2026**"*; *"a **self-hosted platform for development machines and the AI agents
   that work on them**"*, every machine *"a persistent **Firecracker microVM**"*; *"**it keeps working after you
@@ -10829,7 +10829,8 @@ instead of deleting it or leaving it here indefinitely.
   the site's own framing is *"estimated cost"* with *"**Usage that wasn't measured shows as unknown, never as
   zero**"* (✅ good form on the unpriceable-call rule). ➜ **"Every token accounted for" is accounting, not
   enforcement — the repo's own distinction, in a product whose headline is token accounting.**
-  **Next pass: it launched Nov 3; re-check whether a budget surface appears.**
+  **Next pass: it launches 2026-11-03, the day after this window closed — re-check whether a budget surface
+  appears, and whether it cuts a first tag.**
 - ⚠️ **NEW 2026-11-02 — Gas City traded a terminal stall timeout for a ladder that never stops, and the
   v2 default is still unreleased.** Under the v2 reconciler, `progress_stall_timeout` and
   `session_circuit_breaker` are *"deprecated and ignored (the work ladder replaces them)"*, and the
@@ -11375,8 +11376,8 @@ instead of deleting it or leaving it here indefinitely.
   Harness (n=700, "26% wasted"), IDC severity bands. ⚠️ **And the Mandiant distortion keeps spreading** —
   `shashi.co` (2026-10-09) headlines *"Mandiant says one runaway AI agent racked up $50,000 in cloud charges in
   an hour"*, dropping the database-lock availability angle. **Always cite Mandiant directly.**
-- ⚠️ **NEW 2026-11-02 — dated tripwires for the next passes.** 🔴 **Overalls launched 2026-11-03** — check for
-  a budget/stop-condition surface and its first tag. **Gartner Yokohama Nov 4–6 and Barcelona Nov 9–12** both
+- ⚠️ **NEW 2026-11-02 — dated tripwires for the next passes.** 🔴 **Overalls launches 2026-11-03**, the day after this
+  window closed — check for a budget/stop-condition surface and its first tag. **Gartner Yokohama Nov 4–6 and Barcelona Nov 9–12** both
   land in next week's window (expect the economics material Orlando lacked); ⚠️ **a possible prior-pass miss
   worth a human look: Gartner Insights doc 8509377, *"Track These Agentic AI Costs Before They Deplete Your
   Budget"*, 14 October 2026 — on topic, pre-window, paywalled (Low, title+date only).**

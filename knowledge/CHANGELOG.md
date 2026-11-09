@@ -3,6 +3,299 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-11-09 — Seven-day pass (Nov 2–9): the harness's own success signal failed open four times in one week, and a security vendor files caps under a heading reading "Alerts"
+
+Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,
+verification & skills); all five returned. **Six prior `update-knowledge` PRs were open and unmerged** —
+#26 (Sep 29), #27, #28, #29, #31 and #32 (Oct 26 – Nov 2), each stacked on the last — so per the skill's
+step 1 this pass branched from **#32's head**, not from `main`, which was **~15,800 lines stale**; this PR is
+stacked on #32. (#30, the 2026-10-25 artifact-audit PR, is also open but touches no `knowledge/` file.)
+⚠️ **The skill file had again changed in the stack** (step 5's 750-line primer budget, enforced by
+`kb-size.yml`), so it was re-read from the stacked head rather than from `main`.
+
+**Window shape, established from primaries rather than assumed:** exactly **three** Claude Code releases
+(v2.1.317 Nov 2, v2.1.318 Nov 3, v2.1.319 Nov 6, dated from npm publish times), and the *academic* window was
+**Mon Nov 2 – Fri Nov 6** — an arXiv per-day count returns **0 for Nov 7–8** (weekend), and today contributes
+nothing. **All 22 arXiv IDs were machine-verified in two batched `id_list` calls (22/22, HTTP 200)** for
+ID ↔ exact title ↔ v1 `published` ↔ primary category, plus shared-authorship checks.
+
+### The headline: the pass/fail signal a loop reads is itself a fail-open surface
+
+`CLAUDE.md` requires *"a single deterministic success check … that returns clear pass/fail"*. **Claude Code's
+own success signal failed open four times in this one window**, all verbatim: `claude -p` *"exiting 0"* when a
+full disk *"lost its transcript or `~/.claude.json` writes"* (**v2.1.317**) and when *"its actions were refused
+because no safety check was available"* (**v2.1.319**); and *"`claude -p` and Agent SDK sessions **reporting
+success** when an API error cut off a reply"* plus a mod's `turn.step` hook *"making a stopped reply **finish
+as a success** in headless runs"* (both **v2.1.318**).
+➜ **A deliberate non-window sweep of the whole changelog puts the class at ~19 vendor-confirmed instances**,
+including 🔴 ***"sandboxed Bash commands on Linux reporting exit code 0 for failed commands"*** (v2.1.275) and
+*"workflow agents sometimes skipping their step, and the run **still reporting success**"* (v2.1.301).
+⚠️ **Same window, same shape one layer down, in the tools a check is built from:** *"Claude treating **partial
+Grep and Glob results as complete** when a search hit its time limit"* — **a timed-out search reads as a clean
+negative**, which is first-party vacuity in the verification substrate.
+➜ **The rule now in §5A as a fifth property: never read the harness's exit status or success field as the
+verdict; run the check as a separate process and read *its* output.** ✅ **`templates/ralph/run.sh` already
+does** — it evaluates `$SUCCESS_CHECK` independently and requires a completion marker *and* a pass —
+⚠️ **but it now discards information it did not previously have: it ignores every non-zero `rc` except the
+timeout, which was defensible while those paths exited `0` and is not any more. A human call for
+`templates/`.**
+
+### A new cost primary ends a five-window drought — and restates this repo's thesis from two directions
+
+**Mandiant / Google Threat Intelligence Group, "LLMJacking: monetizing compromised cloud models" (2026-11-02,
+named authors, in-window)** — re-fetched and **verbatim-verified by the lead**, all ten quotes:
+*"fraudulent charges … exceeding $100,000 USD in a single day, with cumulative charges at some organizations
+reaching $1 million USD"*, *"more than 500,000 LLM API calls in less than eight hours"*, *"massive bills … **in
+just minutes or hours**."* ⚠️ **Credential abuse, not a runaway loop — but two mechanisms transfer exactly and
+are new to this KB:** the actor *"requested quota increases via the cloud provider's API"* and *"subscribed
+victim accounts to Pay-As-You-Go agreements"* (➜ **a ceiling reachable through the credential it constrains is
+not a ceiling**), and it defeated per-key limits by *"continuously creating and deleting short-lived service
+accounts"* (➜ **a ceiling keyed on something the capped party supplies resets on rotation** — which converges
+with two independent source reads this pass: Cloudflare buckets on client-supplied `agent_id`, LiteLLM on
+client-supplied `session_id`).
+🔴 **And the report files *"granular API quotas"* and *"spending caps"* under a heading reading "Budget
+Alerts"** — the alert/enforcement conflation this repo exists to correct, in a top-tier security vendor's own
+recommendations. **Now quoted in §6 beside "a cost alert is not enforcement."**
+⚠️ **Citation hygiene:** a secondary (`helpnetsecurity.com`) already renders *"LLM services were not enabled at
+the time of compromise"* as deliberately *disabled*, which would license a stronger claim than the primary
+supports. **Cite `cloud.google.com` directly** — the same failure mode as `shashi.co` on the $50K case.
+
+### Two agents contradicted each other on the two most load-bearing claims, and the lead's re-read split them
+
+This is step 4 working, and it is worth recording as method rather than as trivia.
+1. ❌ **The guardrails agent reported that LiteLLM's falsy-zero bug had been *fixed* in the router paths and
+   had "moved" to `rust_bridge/preflight.py`, and that the KB's pointers were stale.** **Wrong.** Read on
+   `main`: the bug is **still live in all three router paths**, now at **lines 321/336/351**, with
+   `if config.max_budget is None` used correctly at **line 312 — nine lines above**. ✅ **But its additional
+   finding is real and worse:** a **fourth** site, `rust_bridge/preflight.py:42`, in the *pre-invocation* path:
+   `if max_budget and _current_cost > max_budget` — **falsy-zero *and* a strict `>`**. ➜ So the KB's claim
+   stands in substance; **only the line numbers needed correcting** (289/304/319 → 321/336/351), plus the new
+   site. ⚠️ **v1.108.0 shipped the bug stable again (2026-11-04)**, and the fix branch has been dormant since
+   2026-10-02.
+2. ❌ **The ecosystem agent reported Cloudflare's spend-limits page "unchanged, clean negative".** **Wrong —
+   it missed an entire new section.** The page (modified **2026-11-04**) now documents, verbatim, a
+   *"**Behavior when a limit is reached**"* option that does not stop: *"**Fall back to a cheaper model** …
+   AI Gateway automatically routes requests to the fallback model **instead of blocking them**."*
+   🔴 **A "spend limit" whose configured exhaustion behaviour is "keep going, cheaper" is a throttle, not a
+   ceiling** — and it **silently swaps the model underneath a verification step exactly when spend is
+   highest.** ✅ **The same page gained an *unforgeable* bucket key** (gateway-assigned `cf.user_id`,
+   *"You do not need to pass user IDs from your client application"*) — 🔴 **but *"Service-token requests do
+   not include `cf.user_id`"*, i.e. it is unavailable to precisely the headless loops this repo runs.**
+
+### Corrections to this routine's own prior claims (six, two of them from last week)
+
+1. ❌ **"v2.1.313 and v2.1.315 were never published" (2026-11-02) is half wrong.** The npm registry shows
+   **v2.1.315 published 2026-10-30T21:05:24Z** with **no changelog entry**; only 313 was never published.
+   ⚠️ **This pass's own rule caught its own violation — "a version with no changelog entry still exists
+   (silent/staged releases), so absence of a heading proves nothing" — which is exactly the inference that
+   was made.**
+2. ❌ **"[the six zero-disableable backstops are] all on by default" is wrong for `API_FORCE_IDLE_TIMEOUT`**,
+   which is unset-active only *"on providers other than the direct Anthropic API"* — **so the 5-minute
+   body-idle stop is off by default for direct-API users, i.e. most loop authors.** ✅ The family grows to
+   **seven** with `CLAUDE_ENABLE_STREAM_WATCHDOG` (*"on by default for all providers"* when unset, force-
+   disableable with `0`).
+3. ❌ **The primer's "Overalls launches 2026-11-03" is superseded: it launches 2026-11-12.** Verified by the
+   lead at `overalls.dev` (*"RESEARCH PREVIEW Overalls launches on 12 November 2026"*, `Last-Modified:
+   Thu, 05 Nov 2026`) and corroborated at source — README commit **`f522aa0c`, 2026-11-05**, changed the
+   string. ➜ **A launch slip inside the window, not a KB error, and it means every post-launch claim about
+   Overalls is premature.** ✅ All pre-launch findings re-verified unchanged: **zero tags**, **no dollar or
+   token ceiling anywhere in the repo**, caps still bare literals (`iteration > 72`, `inference_count >= 64`,
+   `compaction_count >= 8`) absent from `docs/`. **Tripwire re-armed for 2026-11-12.**
+4. ❌ **`sources.md`'s *"`addyosmani.com/blog/rss.xml` and `/feed.xml` both 404, so the `.com` index must be
+   scraped"* is wrong.** `addyosmani.com/feed.xml` returns a real 10-item feed (newest *"Brownfield Agentic
+   Engineering"*, **Sep 14 2026**). **The index does not need scraping.**
+5. ⚠️ **The `stable` npm tag has re-widened from 2 versions to 8** — `stable` = **2.1.311** (Oct 26) against
+   `latest` = **2.1.319** (Nov 6). ➜ **A harness pinning `stable` today runs with none of this window's
+   fail-open fixes**, which is the standing *"assert the version you actually got rather than trust the tag"*
+   item vindicated for the second time.
+6. ⚠️ **A malformed duplicate row was removed from the primer's lineage table** — two *different*
+   "Orchestration loops" rungs, the first truncated mid-sentence with no closing pipe (a botched edit that
+   predates this pass, present in #32's head). **Repo-internal, found while measuring the size budget.**
+
+### Rejected: one agent "correction" that would have corrupted a correct entry
+
+❌ **The key-voices agent reported that `sources.md` wrongly says Steinberger has "no enumerable feed".**
+It does not — **that phrase (lines 437, 528) is about Boris Cherny.** The KB already records
+`steipete.me/rss.xml`; the lead's own fetch confirms **107 items, newest "OpenClaw, OpenAI and the future",
+Sun 15 Feb 2026**, matching the KB exactly. **No edit made.** ✅ **Usable half: his blog is enumerable *and*
+dormant ~9 months, so the row can be marked dormant and stop consuming passes** (as Aider was).
+
+### Resolved and archived (seven), plus one retirement
+
+- ✅ **`permissions.blockWritesOutsideWorkingDirectories` is now documented** in `settings-reference` (it was
+  0 occurrences last pass) — ⚠️ **with two narrowings that change the recommendation:** it *"doesn't limit
+  shell commands, MCP tools, or the programs hooks run"* (so it is **no blast-radius stop for a loop that
+  shells out**), and 🔴 **turning it on *removes the `EnterWorktree`/`ExitWorktree` tools*, which conflicts
+  with the worktree-based ralph pattern.**
+- ✅ **Cursor CLI's `/goal` is CONFIRMED to exist** (page moved to `cursor.com/docs/cli/reference/slash-
+  commands`): *"Give the agent a long-lived objective to work towards until it's fully complete. **Rolling
+  out.**"* ⚠️ **And it ships with none of the three hard stops documented anywhere.** Closes an item that was
+  twice recorded as "unconfirmable (docs 404)".
+- ✅ **All three unlocatable repo rows resolved.** **`pi-temporal` is `temporalio/pi-temporal`** (last pass's
+  "unfindable" was a false negative) — both tags 2026-10-08, no in-window commits, README confirms *"token and
+  wall-clock budgets"* and **no dollar ceiling**; ⚠️ its finer KB claims (200-step cap, replay-safe check)
+  stay **Medium**, unre-verified. **`ralph-orchestrator` is `mikeyobrien/ralph-orchestrator`** (PyPI 1.2.3,
+  dormant ~10 months). **`snarktank/ralph` is real and dormant** (HEAD 2026-02-01) — ⚠️ **and it is a PRD
+  plugin, not a loop harness, so it carries no hard stops: recategorise or retire the row.**
+- ✅ **The MCP Skills "expect breaking changes" framing is split and improved:** the *extension* is at Beta,
+  but **SEP-2640 is Final** and *"the specification is a released revision and is **not edited in place**"*,
+  with changes shipping as a **new release** — **so the revision you pin stays put.**
+- ✅ **Huntley's eighteen-month-recap dating inconsistency resolved:** publication is **2026-09-27**
+  (`article:published_time` == feed `pubDate`); every Oct 9 date is `article:modified_time`.
+- ✅ **The Y-Combinator-hackathon lead chased and deliberately *not* cited:** it is a third-party report
+  Huntley *embeds*, its link resolves to a bare `https://github.com/`, and it carries **no iteration count, no
+  cost figure and no verification account** — only *"6 repos overnight"*. **Added to the do-not-cite list.**
+- ✅ **LoopGain retired** per its own "one more pass" rule (PyPI 0.6.5 unchanged since 2026-09-30).
+- ✅ **`claude-sonnet-4-5` / Opus 4.8 fast-mode retirement dates re-confirmed** (both 2026-11-30, the latter
+  with **no mode fallback** — the documented path is a model migration).
+
+### New this pass (substantive, all primary-verified)
+
+- ⭐ **Claude Code ships exactly one no-progress breaker, on by default, and this KB never recorded it: the
+  `rapid_refill_breaker`.** If the context refills to the autocompact threshold within 3 turns of a
+  compaction, 3 times running, the query loop aborts with that `terminal_reason` (v2.1.89, verbatim: *"detects
+  when context refills to the limit immediately after compacting three times in a row and stops with an
+  actionable error instead of burning API calls"*). ⚠️ **It is named in one doc line — the SDK's
+  `terminal_reason` enum — and in no changelog entry, and it fails open whenever compaction is disabled: a
+  loop that turns off autocompact to manage its own context silently removes the only no-progress breaker it
+  had.** High on existence/version; **Medium** on current thresholds (the shipped CLI is no longer inspectable).
+- 🔴 **`/goal`'s stall stop is now a *documented* fail-open chain, not an inference.** `goal.md` says that when
+  Claude *"keeps answering the evaluator without making progress (no tool use for several turns in a row)"*
+  Claude Code stops the loop, and links the **Stop-hook block cap** as *"the underlying mechanism"*. Since
+  `env-vars` documents `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP=0` as *"disable the cap"* while `hooks.md` still says
+  only *"To raise the cap"*, **`/goal`'s only stall stop is one a single `0` removes, and none of `goal.md`,
+  `hooks.md` or `hooks-guide.md` says so.** **A human call for `guardrails/`.**
+- ⚠️ **A stall threshold that is a *dependent variable*:** `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` (default 10
+  min, the only first-party subagent stall knob) has its default *"rise with"* `CLAUDE_STREAM_IDLE_TIMEOUT_MS`
+  — **so widening an unrelated network timeout silently widens the stall detector.**
+- ⚠️ **`/loop`'s dead-man's switch — which this primer recommended copying — is gone.** v2.1.319: *"Changed
+  self-paced `/loop` to end when a turn finishes without rescheduling, instead of scheduling a fallback
+  wakeup"*. ✅ **The new default is strictly safer**, ⚠️ **but `CLAUDE_CODE_LOOP_KEEPALIVE=1` restores the
+  looser behaviour and is documented nowhere, while `scheduled-tasks.md` still describes the removed
+  20-minute wakeup** (grepped, verbatim, still present).
+- ✅ **Two adoptable primitives shipped in-window:** `onFailure: "block"` **extended to Agent SDK hook
+  callbacks** (v2.1.317) — ⚠️ callbacks only, so it does not cover a shell hook on a missing interpreter — and
+  🆕 **`permissions.denyInsteadOfPrompting`** (v2.1.319), *"a tool call that would wait on a permission prompt
+  is **denied and the turn continues**"*, ⭐ **the direct fix for the stall mode where an unattended loop hangs
+  forever on a prompt**; ⚠️ **changelog-only.**
+- 🔴 **Containment leaked again on the worktree path a ralph loop re-enters:** after v2.1.314's *"sandbox
+  protections not applying to a worktree entered by `claude -p --resume`"*, **v2.1.319 fixed *"a sandbox escape
+  when creating a worktree"*** — two releases, same surface.
+- ⚠️ **`pooled_budget` now has three releases of feature work and zero documentation.** v2.1.319 added
+  `admin.pooled_conflict_rule` / `admin.pooled_priority_order`; `pooled` has **0 occurrences** across the
+  spend-limits, gateway-config, costs, env-vars, settings-reference and platform admin-API pages; **and the
+  spend-limits page still states the opposite verbatim** (*"not a shared pool"*). ⚠️ **Meter defect #8, in a
+  brand-new ceiling one release after it shipped:** v2.1.317 fixed `/usage` *"showing a developer's own spend
+  limit as 100% used after their group's pooled budget ran out"* — **exhaustion attributed to the wrong
+  ceiling.**
+- ⚠️ **Six passes running, Anthropic ships cost *visibility* and the ceiling does not move** — newest is
+  project **cost-code tags (Nov 6, beta)**, tracking only; plus a gateway cost report (v2.1.317) for *"reading
+  past spend"*. ✅ One correct-meter detail worth a line: a data-residency multiplier *"also counts toward
+  `--max-budget-usd`"*, so the ceiling meters the **billed** figure.
+- 🔴 **A ceiling that resets only *upward*:** AWS's spend-limit minimum is recomputed from prior-month spend —
+  *"if that was high, **it becomes the minimum**"* — **so overrunning once raises the floor of what you may
+  set next.** ⚠️ **And its "limited availability" framing stays unsupported** (grepped: zero hits for
+  `limited availability`, `preview`, `generally available`; sole gating is *"You must be on a Paid Plan"*).
+- ⚠️ **Managed Agents: the server rejects a `0` budget with a 400, but four SDKs *omit* a zero-value or unset
+  budget struct from the request, so the session is created unbudgeted.** ➜ **"Test every ceiling at zero"
+  relocated from server to client: assert on the response (`session.budget` non-null), not the request.**
+- ⭐ **The teaching pair for the whole zero-polarity class, one comparison operator wide:** goose's
+  `max_turns = 0` **fails closed** (`if assistant_turn_count(messages) < self.max_turns` → `0 < 0` false, so
+  the stop fires at once) with an unset default of **1000, never unbounded**; ralph-tui gates on
+  `maxIterations > 0`, so `0` **silently removes hard stop #1**, its validator blesses it (*"Max iterations
+  must be 0 or greater"*), and its own log prints the cap as **`'∞'`**. ⚠️ Nuance neither agent caught: goose
+  reads `0` two ways in one file — the **enforcement** path stops immediately, the **turn-budget display**
+  treats `0` as no-budget — and `GOOSE_MAX_TURNS=0` is never validated, so it is safe by accident.
+- ⭐ **MartinLoop v0.9.0 (2026-11-03, in-window) is the reference shape for zero semantics:**
+  `live ? parsed > 0 : parsed === 0` — **a live run *refuses* zero and a provider-free run *requires* it**,
+  i.e. `0` is a meaningful sentinel in both directions. ✅ Its exit-precedence file is **byte-identical** to
+  v0.8.10, so the KB's precedence claim stands; ⭐ **and it carries a clause the KB lacked: `turn_cap` is
+  suppressed when the goal is already met, so *"completing on the final permitted iteration is legitimate
+  success, not an overrun."***
+- 🔴 **opencode v2.2.6 (Nov 6) *removed* a stop:** `opencode run` now waits on background jobs with *"**no
+  time limit**: a job that never exits, such as a dev server or file watcher, keeps the run open"* — ➜ **a
+  ralph step that spawns a dev server never returns, so neither the iteration counter nor the budget meter
+  ticks. Wrap it in an external `timeout`.** (Verified at tag in `noninteractive.ts`: no deadline, no timer.)
+- ⚠️ **Codex's token ceiling remains `Stage::UnderDevelopment`, `default_enabled: false`, undocumented, and
+  fails open when unconfigured** — `record_usage` returns *not exhausted* on an uninitialised lock.
+- ⚠️ **The 24-concurrent-hooks cap is still undocumented — and `hooks.md` states a *different* one**
+  (*"more than 12 … 12 of those run at once"*, per **event**, against the changelog's **24 per session**,
+  subagents included). **And `/goal` *is* a Stop hook.**
+- 🆕 **`agentgateway` (AAIF-hosted) added as a second correct reference implementation:** unconditional
+  `used >= budget.limit.amount` on a `Decimal`, and 🔴 **`on_budget_exceeded` is a *required* field with no
+  `serde(default)` and no `Default` impl — the author must choose `Audit` or `Block`.** ✅ Also ships an
+  **`UNBOUNDED_WINDOW`** lifetime budget *"whose usage never resets"* — **for a loop that is the right
+  default, since a windowed ceiling can reset mid-loop and hand the loop a fresh allowance.**
+- ⚠️ **Verification literature, all machine-verified:** `arXiv:2611.05590` (*"Verified but Vacuous"*, v1
+  2026-11-03, cs.AI) gives the vacuity claim an **independent second failure domain** (no author overlap with
+  `2609.27871`) and the sharpest number yet — *"99.1% verifier acceptance on HumanEval while only **1.9%**
+  carry a certificate binding to a spec-defined predicate"*. Also recorded in `sources.md`: `2611.02950`
+  (checks should be **refutation-shaped**: *"a wrong action often passes every check that asks whether it is
+  right"*), `2611.03575` + `2611.04299` (**harmful success** — disjoint author sets — *"apparent task success
+  may reassure users that an agent behaved correctly"*), `2611.05662` (*"a single false pre-screening note …
+  **overturns up to 40% of a tool-using judge's correct verdicts**"*), `2611.09291` (a judge must be
+  *"recalibrated as the system it judges evolves"*), `2611.08417` (**benchmark maintenance debt**, and
+  *"**resource budgets are part of the measurement specification**"*), and `2611.05094` (*"**The weak point was
+  the orchestrator, which runs and judges its own checks**"* — it recorded 11 undeclared changes and **stopped
+  work in only four**; ⚠️ nine features, authors' own runs, no control group — **Medium**).
+- ⚠️ **`arXiv:2606.04056`** (*"Token Budgets: An Empirical Catalog of 63 LLM-Agent Budget-Overrun
+  Incidents…"*, v1 **2026-06-02**, cs.SE, single author — machine-verified) is **out of window but absent from
+  this KB entirely**, and it is a catalog of **63** incidents where the KB had four. 🔴 **Its load-bearing
+  finding: difficulty scales with *fan-out*, not loop length** — a *"4-line Python counter"* matches a
+  type-enforced crate at **0/30 overshoot** single-agent, while unlocked concurrent delegation overshoots
+  **30/30** and a *properly locked* counter **0/30**. ➜ **A simple counter suffices for a sequential loop; the
+  moment it fans out, the counter must be locked** — which converges with Managed Agents' per-**thread**
+  overshoot and Cloudflare's concurrency caveat. ⚠️ **Cite the four-class labels and the 63 count, never the
+  eight-cluster taxonomy: the authors call it *"exploratory"* at κ = 0.44.** ⚠️ **And a pre-reservation ceiling
+  cannot bound a thinking model** (*"providers bill for hidden reasoning tokens not bounded by
+  `max_output_tokens`"*), which hits `/goal` evaluators and ralph loops alike.
+
+### Key voices: a near-null window, one real finding
+
+Every voice checked at its own surface and dated **from feed entries, never channel headers** — ⚠️ **all three
+known trap domains fired again** (ghuntley.com, lucumr.pocoo.org, steve-yegge.medium.com headers running
+10–16 days ahead of their newest entries), 🔴 **plus a new trap: on `ghuntley.com`, sitemap `lastmod` is
+`modified_time`, not publication** — which nearly produced a false in-window finding.
+**The one finding: Simon Willison, Nov 9** — the review gate failing by **disengagement**: an agent-written PR
+description that details *"the steps taken to verify it"* is *"not necessarily slop, but it reads like
+slop!"*, so *"**I want human editorial judgement**"*. ➜ **A thorough self-reported verification narrative can
+displace the reading of it — the human-factors twin of self-attestation.**
+Nulls, all evidenced: Huntley (newest Oct 20), Ronacher (Oct 29), Yegge (Oct 27), Osmani (Substack Oct 14;
+`.com` Sep 14), Simmons (Oct 31 — 🔴 **his Saturday essay cadence broke in-window, first gap since Sep 12**),
+Steinberger (Feb 15, dormant). **Cherny remains structurally unverifiable.**
+✅ **Simmons' canonical source identified: `drjoshcsimmons.com/feed.xml`** (85 items, 65 on-domain).
+⚠️ **Standing-fact note: Osmani's own feed bio now reads *"Member of Technical Staff at Anthropic, where he
+works on Claude Code"*** — independence context, since this KB credits him with coining "Loop Engineering"
+while crediting Cherny.
+
+### Blacklist
+
+🔴 **`beri.net` escalated from "vector" to known fabricator — a second invented overrun headline** (*"78% Hit
+Surprise AI Bills"*) alongside the already-blacklisted 73%, both attached to real vendor launches.
+⚠️ **The `$47K / 11-day` figure is now self-refuting** and should be recorded as the worked example of
+*"magnitudes do not cross sources"*: coverage attaches the same magnitude to **two mutually exclusive
+incidents** (Nov 2025 LangChain infinite loop over 11 days; Feb 2026 retry storm over a weekend).
+New do-not-cite: `dailyaiworld.com`, `braindetox.kr` (a **new** adjacent *"$6,531 AWS Bill"* — ⚠️ **do not
+merge with the blacklisted $6,000 pair**), `docs.litellm.ai/blog/jev-auto-router-benchmark` (*"96% Lower
+Cost"* on **80 cases × 3**), and `revefi.com` — ⚠️ **not a fabricator but must be labelled: its figures are an
+explicitly *"hypothetical modeled scenario"*, not an incident.**
+
+### Method and housekeeping
+
+- ⚠️ **Anthropic's Claude Code docs have moved:** `docs.claude.com/en/docs/claude-code/*` now 301s to
+  **`code.claude.com/docs/en/*`**, where `<page>.md` works. **Doc URLs in this repo need updating.**
+- ⚠️ **`gartner.com` is now behind a Cloudflare challenge for this proxy** — newsroom, RSS, archive, sessions
+  and individual releases all **403** — so only search snippets are reachable, which is not enough for a
+  verbatim claim. **Yokohama (Nov 4–6) is a clean negative**; ⚠️ **Barcelona is Nov 9–12 (not Nov 10–12), i.e.
+  day 1 is today**, and a third symposium (**Kochi, Nov 16–18**) is new to the KB. Doc **8509377** stays
+  **Low** (title+date only).
+- **The primer was condensed to stay inside its 750-line budget** (it opened this pass at exactly 750). Moved
+  verbatim to `archive/primer-detail-2026-11.md`: §5A.1 judge/verifier detail, §5A.2 per-paper digests, §5A
+  items 9–12 detail, and §3's per-voice quote detail. **Nothing was retracted** — each is still true as
+  recorded; the primer keeps a synthesis and a pointer, per step 5.
+- ⚠️ **The re-verify backlog is now ~190 open items and still growing faster than it resolves.** That trend is
+  itself the standing human call.
+
 ## 2026-11-02 — Seven-day pass (Oct 26 – Nov 2): the check's provenance question is answered by a measurement, and the answer is *order*, not authorship — plus a first stall primary and four corrections to this routine's own prior claims
 
 Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,

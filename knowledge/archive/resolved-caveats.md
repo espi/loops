@@ -1090,3 +1090,79 @@ Nine items resolved in the 2026-10-19 pass (window Oct 12–19). Each was resolv
   `git clone --depth 1 --branch <tag>` + `git log -1 --format=%cI` to date — this worked on ~15 repos this
   pass. **A human call: either grant read access to `openai/codex`, `block/goose` and `sst/opencode`, or
   accept the three cells as version-only.**
+
+
+## Archived 2026-11-09
+
+Seven items resolved, one retired, and two superseded by sharper successors that stay live in `sources.md`.
+
+- ✅ **`permissions.blockWritesOutsideWorkingDirectories` is undocumented.** *(opened 2026-11-02.)* **Resolved
+  2026-11-09: it is now in `settings-reference` with a full section, a table row and an example**, confirming
+  *"in every permission mode, including `bypassPermissions`"* and *"Requires Claude Code v2.1.314 or later"*.
+  ⚠️ **The two narrowings found with it are live in `sources.md`, not archived**, because they change the
+  recommendation: it *"doesn't limit shell commands, MCP tools, or the programs hooks run"*, and turning it on
+  **removes the worktree tools**. The worktree-sandbox half also stays live, now with a second instance
+  (v2.1.319's *"sandbox escape when creating a worktree"*).
+- ✅ **Cursor CLI's `/goal` status is unconfirmable (docs 404).** *(Opened 2026-10-26, carried twice.)*
+  **Resolved 2026-11-09:** the page moved to `cursor.com/docs/cli/reference/slash-commands` and lists
+  *"`/goal [objective]` … **Rolling out.**"* — **and it documents none of the three hard stops.** The
+  comparison-table consequence is live in the primer.
+- ✅ **`pi-temporal` could not be located at all.** *(Opened 2026-11-02 as a 🔴 item.)* **Resolved 2026-11-09:
+  it is `temporalio/pi-temporal`** — last pass's "unfindable" was a false negative. Both tags 2026-10-08, no
+  in-window commits, README confirms token + wall-clock budgets and **no dollar ceiling**. ⚠️ **Its two finer
+  claims stay live at Medium**, unre-verified in source.
+- ✅ **`ralph-orchestrator` and `snarktank/ralph` unlocatable.** **Resolved 2026-11-09:**
+  `mikeyobrien/ralph-orchestrator` (PyPI 1.2.3, dormant ~10 months) and `snarktank/ralph` (HEAD 2026-02-01) —
+  ⚠️ **the latter is a PRD *plugin*, not a loop harness, so the recategorise-or-retire call stays live.**
+- ✅ **"MCP Skills at Beta, where a revision may make breaking changes."** **Resolved 2026-11-09 by splitting
+  it:** the *extension* is Beta, but **SEP-2640 is Final** and *"the specification is a released revision and
+  is not edited in place"*, with changes shipping as a **new release** — **the revision you pin stays put.**
+- ✅ **Huntley's eighteen-month-recap has internally inconsistent dating.** *(A standing human call.)*
+  **Resolved 2026-11-09:** publication is **2026-09-27** (`article:published_time` == feed `pubDate`); every
+  Oct 9 date is `article:modified_time`. **General rule for the domain, now live in `sources.md`: trust feed
+  `pubDate`; ignore `lastmod` and `modified_time`.**
+- ✅ **The unchased Y-Combinator-hackathon lead in Huntley's recap.** **Chased and closed 2026-11-09 as
+  deliberately not citable:** it is a third-party report Huntley *embeds*, its link resolves to a bare
+  `https://github.com/`, and it carries **no iteration count, no cost figure and no verification account** —
+  only *"6 repos overnight"*. **Moved to the do-not-cite list rather than the knowledge base.**
+- ✅ **LoopGain retired** under its own "one more pass then retire" rule (PyPI 0.6.5 unchanged since
+  2026-09-30). **Aider dropped to a dormant one-liner** (0.86.2, 2026-02-12, ~9 months).
+- ❌ **"Overalls launches 2026-11-03" and the post-launch tripwire.** **Superseded 2026-11-09: it launches
+  2026-11-12** (`overalls.dev` verbatim; README commit `f522aa0c`, 2026-11-05). All pre-launch findings
+  re-verified unchanged — **zero tags, no dollar or token ceiling anywhere in the repo, caps still bare
+  literals absent from `docs/`** — and the item is replaced by a re-armed tripwire for 2026-11-12, live in
+  `sources.md`.
+- ❌ **A relayed "correction" that was rejected, recorded so it is not re-proposed.** A research agent
+  reported that `sources.md` wrongly says Steinberger has *"no enumerable feed"*. **It does not — that phrase
+  is about Boris Cherny**, and the KB already records `steipete.me/rss.xml`, which the lead's own fetch
+  confirms (107 items, newest **Feb 15 2026**). **No edit was made.** ✅ The usable half is live: his blog is
+  enumerable *and* dormant ~9 months, so the row is marked dormant.
+
+### Items moved verbatim out of `sources.md` on 2026-11-09
+
+- ⚠️🔴 **NEW 2026-11-02 — containment failed open on the exact path a ralph loop takes.** Claude Code
+  **v2.1.314** (Oct 30): *"Fixed **sandbox protections not applying to a worktree entered by `claude -p
+  --resume` or `--continue`**."* §6 records that a ralph-style loop re-enters with `--resume`; on that path the
+  sandbox was simply not applied. ➜ **Another "a declared gate is not a gate", this time on this repo's own
+  template's execution path.** ✅ **And the adoptable counterpart shipped in the same release:**
+  `permissions.blockWritesOutsideWorkingDirectories` — *"Write, Edit and NotebookEdit refuse paths outside the
+  working directories **in every permission mode**"* — **which means it holds under `bypassPermissions`.**
+  ⚠️ **Changelog-only: zero occurrences in `settings-reference.md`, which documents the *reads* sibling.**
+  **A human call for `guardrails/checklist.md` and the templates: adopt it as an unattended-loop default.**
+
+- ⚠️ **NEW 2026-11-02 — Overalls is in a different category than the KB recorded, and ships hard stop
+  #1 as magic numbers and hard stop #3 not at all.** `overalls.dev`, verbatim: *"**RESEARCH PREVIEW** Overalls
+  launches on **3 November 2026**"*; *"a **self-hosted platform for development machines and the AI agents
+  that work on them**"*, every machine *"a persistent **Firecracker microVM**"*; *"**it keeps working after you
+  close your laptop**"*; *"Claude Code and Codex come pre-installed too, with **no API keys on the machine**
+  and **every token accounted for**."* ⚠️ **PLACEMENT CORRECTION: it is a *substrate*, a peer to opencode's
+  "best substrate" row, not an orchestration loop.** 🔴 **From source: `iteration > 72` and
+  `inference_count >= 64` → `Ledger.rollback(:iteration_limit)`, and `compaction_count >= 8` →
+  `:compaction_no_progress` — bare integer literals in `marshall/.../model_calls.ex`, absent from `docs/` and
+  from the site. And no dollar or token ceiling exists:** Ziggy's accounting obligations carry **none**, and
+  the site's own framing is *"estimated cost"* with *"**Usage that wasn't measured shows as unknown, never as
+  zero**"* (✅ good form on the unpriceable-call rule). ➜ **"Every token accounted for" is accounting, not
+  enforcement — the repo's own distinction, in a product whose headline is token accounting.**
+  **Next pass: it launches 2026-11-03, the day after this window closed — re-check whether a budget surface
+  appears, and whether it cuts a first tag.**
+

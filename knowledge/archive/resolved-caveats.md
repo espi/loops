@@ -698,3 +698,136 @@ being archived**; both are archived here, and their correct facts restored to `s
   post's own byline/view-count claims remain unconfirmed and stay in
   sources.md at Medium confidence, but the actionable technical question
   (does `/schedule` exist, what does it do) is resolved. See primer §3–4.
+
+## Resolved 2026-10-12 (Oct 5–12 pass)
+
+Thirteen items left the live backlog this pass. Each bullet below is the item's text as it stood in
+`sources.md`, followed by how it resolved.
+
+- ⚠️ **NEW 2026-10-05 — can a mod load before `sec-default`?** Claude Code's new **mods** layer
+  (Oct 1) contains both a new observation channel and a load-order-dependent control: *"a mod that
+  loads first can record every call that every other mod makes"*, and *"a built-in mod called
+  `sec-default` ("security default") loads first. It stops mods that users install from doing risky
+  things"*. **The same ordering primitive that lets `sec-default` contain other mods is what lets a
+  first-loading mod audit them**, so the containment rests on load order. Unverified question: can an
+  installed mod load before `sec-default`? Pairs with §5A.9 (a loop's instruments are observable and
+  removable by the thing they monitor) and the trojanized-hooks result (`arXiv:2609.03884`). Note
+  hooks are **not** deprecated (*"hooks can't rewrite events, draw new UI, or replace features. Mods
+  can."*), so this repo's hook-delivered guardrails are unaffected.
+  - **→ Substantially ANSWERED 2026-10-12, and the concern was real in a stronger form than asked: Claude Code v2.1.290 fixed *"a case where a user-installed mod could make an organization's guard skip its check; such a mod is now unloaded"*, and v2.1.292 fixed a mod's guard hook with a `.catch` *"being skipped silently"* and interface calls during a hooks-worker restart *"running without the hooks other plugins put on them"*. A **user** mod could suppress an **organization's** guard. Fixed; the general property (mod containment is load-order dependent) stands as documented behaviour rather than an open question.**
+
+- ⚠️ **NEW 2026-10-05 — two standards baselines were unverifiable: `agentskills.dev` and
+  `agentplugins.org` both returned HTTP 503 on three attempts each.** So the Agent Skills *"no
+  releases, tags or version, no conformance suite"* baseline could not be re-checked against the spec's
+  own site, and whether **Agent Plugins 1.0** is still a working draft is unconfirmed. **Carry both
+  forward unresolved; if these hosts stay down the KB needs alternate primaries.** (What *was* checkable:
+  `anthropics/skills` — implementations, not spec — had one in-window commit and still shows no spec
+  version, tag or release.) ⚠️ **Contrast worth keeping:** **MCP now names a Conformance maintainer
+  group** (`MAINTAINERS.md`, PR #3408, Oct 1) and has made prior working-group discussion a **gate**
+  for SEPs (PR #3336, merged Sep 28: *"Prior discussion with the relevant working or interest group in
+  Discord is a requirement."*) — while Agent Skills still has no conformance suite and no version.
+  - **→ RESOLVED 2026-10-12 from alternate primaries, without either host. Agent Skills: `git clone agentskills/agentskills` (HEAD `69ef37e`, 2026-08-09, **zero tags**) plus the live `agentskills.io/specification` — still no version, status, revision date or conformance suite, only a frontmatter reference validator. Agent Plugins: `git clone agentplugins/agent-plugins-spec` (HEAD `ff8ab5e`, 2026-08-19). Both hosts remain unreachable (`agentskills.dev` 503 for a fourth pass; `agentplugins.org` now fails at TLS, a different blocker), but they no longer block anything. **Recommend repointing the KB's primaries to `agentskills.io` + the git repos and retiring `agentskills.dev`.****
+
+- ⚠️ **NEW 2026-10-05 — the MCP Tasks extension path was not located.**
+  `modelcontextprotocol.io/specification/2026-07-28/extensions/tasks` 404s, and no in-window spec-repo
+  commit touched the Tasks extension, the Extensions framework or the stateless core. The KB cites the
+  Tasks extension (bounded async work) as part of the `2026-07-28` revision; **find the correct URL
+  before citing it again.**
+  - **→ RESOLVED 2026-10-12. It is not in the main spec repo's `specification/` tree — it moved to its own repository, `github.com/modelcontextprotocol/ext-tasks`, with docs at `modelcontextprotocol.io/extensions/tasks/overview` and a chartering SEP at `seps/2663-tasks-extension.md` (**SEP-2663**, `Status: Final`, Created 2026-04-27, identifier `io.modelcontextprotocol/tasks`). **And it corrected the KB's framing**: Tasks was *removed* from core, not shipped in it — *"This proposal removes the version of tasks specified in the `2025-11-25` release from the core protocol and moves it to an Extension."***
+
+- ⚠️ **NEW 2026-10-05 — Factory has a `/loop`-class primitive the §4 matrix omits.** Factory Droid's
+  dated JSON changelog (`"date": "2026-09-29"`) carries *"Scheduled loops indicator — A pill above the
+  chat input lists a session's loops and can **pause, resume, or stop** them (app)"*, and a `loop`
+  command with an `interval` reportedly dates to CLI 0.111.0 (~Apr 2026, **secondary — verify**).
+  - **→ RESOLVED 2026-10-12 and characterized. The primitive is **Custom Automations**, which is Routines-shaped rather than `/loop`-shaped: cloud-side, laptop-closed, triggered *"on a schedule, when a message lands in a Slack channel, on a GitHub event, or when another service sends a webhook"*, with Pause/Resume, a real rate ceiling (*"Rate-capped | The automation already started 10 runs this hour"*), an overlap guard and an automatic pause. Separately it has a validator layer (`--validator-model`) that validates milestones inside a mission rather than a user-authored stop condition. No dollar ceiling, no `--max-turns`.**
+
+- ⚠️ **NEW 2026-10-05 — the KB's Gas City row points at the wrong repository.** This KB tracks
+  `gastownhall/gastown` (tags still stop at **v1.2.1**); Gas City ships from **`gastownhall/gascity`**,
+  which carries **v1.5.0** (2026-10-05) and v1.4.x. Verified with `git ls-remote` against both. The row
+  should be re-keyed; **the repo currently cited has been dormant since June.**
+  - **→ RESOLVED 2026-10-12. Confirmed by `git ls-remote --tags`: `gastownhall/gascity` newest tag **v1.5.0** (tag commit `f664746`, 2026-10-04T19:52:39-07:00 = Oct 5 UTC, corroborated by the in-repo `CHANGELOG.md` header `## [1.5.0] - 2026-10-05`), while `gastownhall/gastown` **still stops at v1.2.1**. The KB row is keyed to `gascity`.**
+
+- ⚠️ **NEW 2026-10-05 — Amp is not trackable at release granularity; record the limit, stop paying for
+  the attempt.** `@sourcegraph/amp` published **~80 builds in the window** on a rolling
+  `0.0.<epoch>-g<sha>` scheme with **no versioned changelog**, so presence or absence of loop
+  primitives **cannot be asserted by release-diffing.** Either find a real changelog source or mark
+  Amp's matrix cells "not trackable by this method".
+  - **→ RESOLVED 2026-10-12 as a **correction in the opposite direction**. Measured from npm `time` on `@sourcegraph/amp`: **41 publishes in 2026-10-05 → 2026-10-11** (not ~80), 4,445 versions total, each carrying a deterministic `0.0.<epoch>-g<sha>` identifier with an exact publish timestamp. **Amp *is* trackable at release granularity via the npm registry; what it lacks is semver and per-build release notes.****
+
+- ⚠️ **NEW 2026-10-05 — Aider should be reclassified as dormant.** Latest PyPI release is **0.86.2,
+  uploaded 2026-02-12** — roughly eight months quiet. The §4 matrix lists it among live peer harnesses.
+  - **→ RESOLVED 2026-10-12. PyPI `info.version` **0.86.2**, earliest file `upload_time_iso_8601` **2026-02-12T00:42:52Z**, and the five releases before it (0.85.3–0.86.1) all landed in **August 2025** — so 0.86.2 was itself an isolated release after a ~6-month gap. **No release in ~8 months.** The matrix row is reclassified dormant.**
+
+- **Google's membership of the Agent Plugins Core Maintainers** *(carried forward; **re-confirmed
+  negative on the primary for the sixth consecutive week, 2026-09-28**)*. `MAINTAINERS.md` still
+  lists exactly five — Clare Liguori (Amazon), Roshan Sadanani (Cursor), Harald Kirschner
+  (Microsoft), Gav Verma (OpenAI), Jonathan Hefner (Vercel, Lead) — with **no Google**, while
+  GitHub's blog reported Google joining day-of. `spec/1.1.0.md` still reads *"Status: Working
+  Draft"*, with **no repo commits since Aug 19, 2026**. Two corrections worth keeping: the correct
+  repo path is **`agentplugins/agent-plugins-spec`** (`agent-plugins/spec` 404s). **Recommendation
+  for a human: archive the GitHub-blog "Google joined" claim as contradicted by the governance file
+  for six weeks**, rather than carrying it indefinitely.
+  - **→ RESOLVED 2026-10-12 on the **eighth consecutive negative**, per the standing instruction to archive rather than keep re-checking. `MAINTAINERS.md` at HEAD, read in full: *"The Agent Plugins Technical Steering Committee consists of the following Core Maintainers"* — **Clare Liguori (Amazon), Roshan Sadanani (Cursor), Harald Kirschner (Microsoft), Gav Verma (OpenAI), Jonathan Hefner (Vercel)**, Lead Core Maintainer Jonathan Hefner. **No Google.** File unchanged since 2026-08-19. Related wording fix carried into the live file: `GOVERNANCE.md` mentions no foundation, so "independently governed, not AAIF" becomes "governed by its own TSC; no foundation affiliation stated".**
+
+- **Review-tool list hygiene** *(new 2026-09-28; **"Diamond" half RESOLVED 2026-10-05**)*.
+  ✅ **Diamond is settled on a primary** and archived: Graphite's own blog states *"As of 10/08/2025,
+  the Diamond name has been deprecated, and AI code review capabilities now slot under Graphite
+  Agent."* — a rename/merge, not a discontinuation. ⚠️ **But refuse the ownership chain:** secondary
+  results claimed Graphite was acquired by Cursor/Anysphere and Cursor then by SpaceX (Aug 2026). **No
+  primary for either; the second is implausible. Do not enter it.** **Still open:** **Qodo Merge (v1)
+  is legacy and current is Qodo Review (v2)** — rename in the KB (**Medium** on the naming, no primary
+  fetched); and **Kodus / Kody** (`kodustech/kodus-ai`) stays a tracked newcomer with no merge gate and
+  no budget ceiling found (README and release titles only; `docs.kodus.io` still not read, and
+  `docs.codacy.com/release-notes/cloud/` 404s).
+  - **→ RESOLVED 2026-10-12 — both remaining halves characterized as negatives. **Qodo**: the current product is **Qodo 3.0** (changelog 1 Oct 26) and legacy v1 commands were *"permanently removed on October 1, 2026"*, so the KB's rename item was corrected rather than applied; **no enforced spend cap** (no budgets page exists) and **no merge gate documented**. **Kodus/Kody**: **no enforced spend cap by construction** — *"You use your own API key and pay tokens directly to your AI provider"*, *"Unlimited PRs using your own API key"*, only a 14-day/35-review trial with enforcement unstated — and **no merge gate documented**. Both negatives are "not documented", weaker than "absent".**
+
+- **roborev's MCP path is not covered by its invocation gate** *(new 2026-09-21; **ANSWERED
+  2026-09-28 — resolved, but it produced a new finding worth keeping live**)*. The v0.62.0 gate is
+  **skill frontmatter** (`disable-model-invocation: true`; Codex `allow_implicit_invocation: false`)
+  and **MCP tools are not skills**, so it does not extend. MCP is constrained by **capability
+  scoping, not approval**: *"no MCP tool starts a review."* But **four state-changing MCP tools are
+  model-invocable with no roborev-side approval** — `roborev_add_comment`, `roborev_close_review`,
+  `roborev_snooze`, `roborev_complete_fix` — so **a model can close a review, i.e. dismiss
+  findings.** The asymmetry in one line: **snooze is human-only as a Factory skill and ungated as
+  the MCP tool `roborev_snooze`.** Kept live (rather than archived) as a **standing verifier-
+  independence caution**: adding an MCP surface to a review tool can widen the maker→checker channel
+  even when the skill layer is gated.
+  - **→ RESOLVED 2026-10-12 — answered previously and now re-confirmed verbatim through **v0.71.0** (03 Oct 2026, the latest release; nothing shipped in the Oct 5–12 window). From the v0.68.0 notes: *"MCP tools read reviews and record comments, closures, snoozes, and completed hook fix sessions"* while *"Review creation stays on the CLI"* — the four state-changing MCP tools remain outside the skill-frontmatter gate. Stable, documented behaviour rather than an open question. One new detail carried into the live file: roborev **does** emit a CI status, so a user can gate merges on it via branch protection even though roborev itself never blocks.**
+
+- ⚠️ **NEW 2026-10-05 — the AWS Bedrock cell needs the first-party treatment the Azure cell just got.**
+  Azure's "alert-only" claim is now settled on a Microsoft primary. **Bedrock's is not**: the useful
+  write-ups are on `repost.aws`, which is AWS **community** content, not first-party docs. Same
+  weakness, same fix. Also still unverified against a primary: **OpenAI's** per-key/hard-limit scope
+  (`help.openai.com` **403s to WebFetch**).
+  - **→ RESOLVED 2026-10-12 — the first-party source was found and the cell is filled. `docs.aws.amazon.com/bedrock/latest/userguide/cost-management` is titled *"Track usage and costs in Amazon Bedrock"* and **documents no cap, budget ceiling or stop mechanism at all**: every native mechanism outputs *"Billed dollars"* at *"Aggregated, per usage type per day"* into Cost Explorer/CUR 2.0, and *"The finest grain is per usage type per day… they do not produce a per-request row."* **It is a meter, not a control.** It also supplied the pass's best quote for the identity-vs-credential framing: *"When a gateway or proxy calls Amazon Bedrock on behalf of many users, Amazon Bedrock records the gateway's IAM role as the caller's identity."***
+
+- ✅ **Huntley's Loom — dormancy RESOLVED on primary evidence; the KB's *description* of it is now the
+  open question** *(resolved 2026-10-05)*. The item existed because *"`ghuntley/loom` commit activity
+  remains unverifiable (GitHub access is scoped to `espi/loops`)"*. **It is now verified against the
+  git object itself**, which no summarizer can guess: `git clone --depth 1` through the proxy gives
+  **HEAD `7ba5132`, committed `2026-02-11T14:43:02+11:00`**, and `git ls-remote --tags` returns **zero
+  tags** — so **no Loom activity since Feb 11, 2026.** (Method now recorded for reuse.)
+  ⚠️ **New, narrower question:** this KB glosses Loom as *"a 'factory' orchestrator of ralph loops"*.
+  The current README instead says *"Loom is an AI-powered coding agent built in Rust. It provides a
+  REPL interface..."*, warns *"Loom is a research project. If your name is not Geoffrey Huntley then
+  do not use."*, and mentions orchestration only as *"State machine for conversation flow and tool
+  orchestration"*; **"factory" and "ralph" do not appear.** Since HEAD is February, **when the framing
+  changed cannot be dated**, so treat the gloss as **unverified against the current README** rather
+  than as a change. A human should decide whether to drop the "factory orchestrator" wording.
+  - **→ FULLY RESOLVED 2026-10-12 — the remaining half (the KB's *description*) is answered, and the KB's gloss was wrong. `git clone --depth 1` → HEAD **`7ba5132`, 2026-02-11T14:43:02+11:00**, **zero tags**, unchanged for eight months. The README's own characterization: *"Loom is an AI-powered coding agent built in Rust. It provides a REPL interface for interacting with LLM-powered agents that can execute tools…"* — *"a Cargo workspace with 30+ crates"* plus a Svelte frontend, a Kubernetes remote-execution component (Weaver), OAuth/ABAC and feature flags, warning *"Loom is a research project. If your name is not Geoffrey Huntley then do not use."* **The words "ralph" and "factory" appear nowhere in the README.** The gloss *"a 'factory' orchestrator of ralph loops"* is **unsupported and retired**; Loom is a single-agent Rust coding harness, a Claude-Code-class tool. Because HEAD is February, *when* the framing changed cannot be dated.**
+
+- ✅ **The "read next pass" list is cleared — all four were read this pass**, and one produced a
+  correction to this KB (see the archive). Replacement reading list, in priority order:
+  **arXiv:2609.36049** (*"Improving scalable oversight with co-trained monitors"*, Sep 28, cs.LG) —
+  priority precisely because **co-training a monitor is the shape of thing this repo's doctrine is
+  suspicious of**, and it should be read before anyone cites it approvingly; **arXiv:2610.00917**
+  (*"Finding the Right Fit: Model-Harness Interactions across Agent Tasks"*, Oct 1) and
+  **arXiv:2610.00906** (*"ActiveSaddler: Automated Curriculum Learning for Agent Harness
+  Optimization"*, Oct 1) — both bear on the harness-as-unit thesis; **arXiv:2610.03055**
+  (*"hacktrace"*, Oct 2) — abstract only so far, and its claim that **82–91% of *passing* solutions
+  were cheating** is load-bearing enough to need the full text; **arXiv:2610.00015** (*"Praxa, an
+  Evidence-Bound Harness for Governed AI Agent Execution"*) — thematically very close to this repo,
+  and note its API `published` date is **2026-07-27** despite the `2610` ID, so it is a backlog read,
+  not a window item.
+  - **→ Archived 2026-10-12 as spent — the list was cleared on 2026-10-05 and nothing depends on it. (A **new** and larger reading debt opened this pass: three out-of-window papers the KB had never cited, listed under Research / infrastructure in the live backlog.)**
+

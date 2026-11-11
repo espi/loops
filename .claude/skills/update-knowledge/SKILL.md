@@ -220,10 +220,12 @@ is open (step 1), extend its branch rather than fork.
 <!-- self-edit:protected:end:gate -->
 
 ### 8. Open a PR (do not push to main)
-Create a branch `claude/knowledge-update-YYYY-MM-DD` (the `claude/` prefix keeps
-it inside the Routine's default push restriction, so the routine physically
-can't touch main — see `runbooks/staying-current.md`), commit the changes with a
-clear message, and open a PR. The PR body **must lead** with a
+Create a branch `claude/knowledge-update-YYYY-MM-DD`, commit the changes with a
+clear message, and open a PR. Never push to `main` and never direct a push to a
+non-`claude/` branch: the prefix is only the run's *default* push target, not an
+enforced restriction — what actually keeps a run off `main` is a GitHub ruleset
+on `main` that the connected identity cannot bypass (see
+`runbooks/staying-current.md`). The PR body **must lead** with a
 `## Routine self-improvements` section (before the knowledge summary, so a
 self-edit is never buried under a large knowledge diff):
 

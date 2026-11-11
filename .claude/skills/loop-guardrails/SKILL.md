@@ -25,8 +25,12 @@ For the given loop (file path, command, or config), verify all of:
      unlimited, so for an unattended run flag it ⚠️ unless something outside the
      agent's reach also caps the run
    - Agent SDK → `max_turns` / `maxTurns`
-   - `/goal` → bounded by the validator, but confirm the condition is actually
-     reachable and provable from the agent's surfaced output
+   - `/goal` → **not a cap on its own.** The condition is a stop condition the
+     agent narrates and a tool-less evaluator grades; an in-condition clause
+     (`… or stop after 20 turns`) is judged the same way, and a resume resets
+     its turn count. Flag it ⚠️ unless an external cap sits alongside:
+     `claude -p "/goal …" --max-turns N` (headless) or a harness counter. Also
+     confirm the condition is reachable and provable from surfaced output
    Anything relying on `--max-turns`/`max_turns` needs **Claude Code v2.1.281+**
    (earlier versions could retry a turn indefinitely, ignoring it). If missing,
    add it. Default cap: 20.

@@ -421,9 +421,9 @@ tools a check is built from:** *"Claude treating **partial Grep and Glob results
 hit its time limit"* — **a timed-out search reads as a clean negative**, first-party vacuity. ➜ **The rule:
 never read the harness's exit status or success field as the verdict. Run the check as a separate process and
 read *its* output.** ✅ `templates/ralph/run.sh` already does — it evaluates `$SUCCESS_CHECK` independently and
-requires a completion marker *and* a pass — ⚠️ **but it now discards information it didn't used to have: it
-ignores every non-zero `rc` except the timeout, which was defensible while those paths exited 0 and is not
-any more.** **High.**
+requires a completion marker *and* a pass — and (fixed 2026-11-11) no longer ignores a non-zero `rc`: a
+failed call can't declare completion, and `MAX_FAILED_ITERS` consecutive failures stop the loop (exit 7).
+**High.**
 
 **3–7. Five results unchanged; prose in [`archive/primer-detail-2026-11.md`](archive/primer-detail-2026-11.md),
 records in `sources.md`.** **3.** The agent's account of its work is not evidence (files skipped in **67.9%**

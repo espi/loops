@@ -144,12 +144,16 @@ the flag names drift.
 
 ## Why this matters (the receipts)
 
-- Uber capped engineers at **$1,500/month per tool** after burning its annual AI
-  budget in ~4 months.
+- Mandiant (Case study 6): a null value broke a tool, the agent entered *"an
+  unconstrained, recursive reasoning loop"*, made 15,000+ calls and ran up
+  **~$50,000 in under an hour** — and locked a database that halted business
+  transactions. A runaway loop is an availability incident, not only a bill.
+- METR: a stolen API key ran for ~3 weeks and **~$600,000** of credits, with no
+  way to put a spending limit on that kind of key.
 - Tesla capped employee AI tool spending at **$200/week** (approval required
-  above that) effective July 6, 2026 — the third named company, after Uber and
-  Microsoft, enforcing hard per-person ceilings rather than billing alerts.
-- A multi-agent system reportedly **looped 11 days and ran up $47K**.
+  above that) effective July 6, 2026 — organizations are enforcing hard
+  per-person ceilings rather than billing alerts (Uber caps per person too; no
+  figure is confirmed by a primary source).
 - Every turn re-bills the full accumulated context; a 20-step loop can cost
   ~10x a naive per-step estimate.
 

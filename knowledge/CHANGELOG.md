@@ -3,6 +3,271 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-11-02 — Seven-day pass (Oct 26 – Nov 2): the check's provenance question is answered by a measurement, and the answer is *order*, not authorship — plus a first stall primary and four corrections to this routine's own prior claims
+
+Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,
+verification & skills); all five returned. **Five prior `update-knowledge` PRs were open and unmerged** —
+#26 (Sep 29), #27 (Sep 28 – Oct 5), #28 (Oct 5–12), #29 (Oct 12–19) and #31 (Oct 19–26, each stacked on the
+last) — so per the skill's step 1 this pass branched from **#31's head**, not from `main`, which was
+**12,891 lines stale**; this PR is stacked on #31. (#30, the 2026-10-25 artifact-audit PR, is also open but
+touches no `knowledge/` file — no conflict.) ⚠️ **The skill file itself had changed in the stack** (step 5
+gained a 750-line primer budget enforced by `kb-size.yml`), which is why it was re-read from the stacked head
+rather than from `main`.
+
+**Every load-bearing claim below was re-fetched and verified by the lead rather than relayed**, and that
+discipline changed three conclusions this pass: the Claude Code changelog was fetched raw (1,151,295 bytes),
+the in-window slice (v2.1.311 Oct 26 – v2.1.316 Oct 31) cut out and grepped, each finding re-checked against
+**the doc page for the feature itself**; **all 19 new arXiv IDs machine-verified in one `id_list` call
+(19/19, HTTP 200)** for ID ↔ title ↔ v1 date ↔ primary category, plus two shared-authorship checks;
+and peer-harness claims settled by **reading source at the tag**. **Eight backlog items resolved and
+archived — two of them by being falsified — and three more corrected in place.**
+⚠️ **Note on window length: v2.1.313 and v2.1.315 were never published, and the *academic* window was five
+days, not eight** (an arXiv `submittedDate` query for Oct 31 – Nov 2 returns zero entries: weekend plus
+Monday announcement lag).
+
+### The headline: the in-loop check's provenance clause now has a measurement, and it is cheaper than the rule this KB proposed
+
+The KB's most consequential open item (2026-10-12) said `CLAUDE.md` *"says nothing about who wrote the
+check"*, and proposed — as a human call — that **the check must not be authored by the loop it gates.**
+**`arXiv:2607.05139`** (Konstantinou, Tambon, Papadakis; v1 **2026-07-06**, cs.SE; machine-verified) measures
+the same effect **with authorship held constant and only the ORDER changed**. It names **error propagation**
+— *"faults in generated code are systematically replicated in associated test artifacts… **incorrect
+implementations and tests are mutually consistent, masking defects rather than revealing them**"* — and
+reports: *"**generating tests after faulty code significantly reduces fault detection effectiveness compared
+to generating tests independently (14% vs. 25%)**."*
+➜ **So the operational rule is narrower, cheaper and more actionable than a second author: write the check
+from the requirement *before* the implementation, not from the code after it.** ✅ Corroborated in-window as
+an experimental control by **`arXiv:2610.36584`** (withhold the implementation from the test author: *"passing
+tests for **82.8%** of instances, yet only **33.8%** are behaviorally adequate"*), and stated independently
+from practice by Simmons — *"**The useful question is where the expected behavior came from, not how many
+agents agreed with it**"*, since *"**a second model can misunderstand the same requirement**."*
+⚠️ **Substrate rule applied: `2607.05139` and `2610.11835` share an author (Papadakis), so they are ONE
+failure domain**; the independent second is `2610.13065` (Vechev group). ⚠️ **And a brake on over-claiming at
+the window's largest *n*: `arXiv:2610.35297` (114,134 PRs, 391 Java repos) finds agent-added tests *not*
+detectably worse on structure, oracles, smells or coverage, and *"more often have an oracle"* — so this must
+not be generalised into "agent-written tests are low quality."**
+🔴 **A fourth property arrives alongside it, from two directions: the check must run on the version about to
+land.** Simmons: *"The check was accurate when it ran. **Its answer belongs to a different version**"*;
+measured on parallel agents by **`arXiv:2609.25396`** (interference *"in 97% of runs"* on constructed tasks,
+with *"**a message describing the completed concurrent change** recovered 82% of runs"*) — ⚠️ **cite the
+mechanism and the mitigation, never the 97%: the field arm is a near-null (1 of 834) and the authors
+disclaim the rate.** ⭐ Adopt `arXiv:2610.41130`'s phrasing: *"the harness is versioned as part of the system
+under test."*
+
+### The KB gains its first properly-sourced *stall* primary, and the mechanism is sharp
+
+It has had three cost-overrun primaries for months and **no stall primary at all.** Gas City commit
+`b66d5254e` (**2026-11-02T04:59:44+00:00**, HEAD of `main`), verbatim: *"On **2026-10-31 the Cursor provider
+pool ran out of usage**… From 07:00 to 17:44Z `adopt-pr-review-codex`: **spawned about 1,400 seats, and none
+claimed**; **held 48 PRs for a median 412 minutes**; **raised no alert.** The ladder's first signal for an
+unclaimed trigger was **its recycle at 22m30s**, but those seats **idle-drained at about 10.6 minutes**.
+**Only 16 of 1,133 recycles ever fired.**"*
+➜ 🔴 **Two new failure shapes.** **(a) A no-progress detector whose sampling interval exceeds the lifetime of
+the unit it monitors is structurally blind, not mis-tuned** — 16 of 1,133. **(b) Hard stop #3 firing
+*upstream* produced a 10.7-hour undetected stall *downstream*, which an iteration-keyed detector cannot see
+at all, because no iteration occurs** — ⚠️ **and `guardrails/budget.env`'s `LOOP_STALL_LIMIT=3` is exactly
+that shape.** 🔴 **And a third finding in the same commit body: the alerting path was itself too slow to see
+the stall it existed to report** — *"read the whole event history, every rotated archive included, on every
+orders pass until it fired… about 4 minutes per order, **enough to push the first stall past the script's
+15-minute lookback**"* — **§5A.9's "a monitor with a bounded window can be waited out", with no adversary at
+all.** ✅ The shipped guard states this repo's doctrine as a design principle: *"**No judgment:** the
+thresholds are consts… **No provider error text is read.**"* ⚠️ Context: under v2's work ladder,
+`progress_stall_timeout` is *"deprecated and ignored"* and the replacement *"nudges back off from 3 to 60
+minutes and **never stop**"* — **a terminal timeout traded for a ladder with no terminus.** ✅ **The v2 default
+and the new guard are still unreleased** (only the rolling `edge` tag), which resolves last pass's tripwire.
+
+### Four corrections to claims this routine itself wrote, two of them from last week
+
+1. ❌ **`autoContinueAtUsageLimit` is NOT an unbounded wall-clock wait** (claimed 2026-10-26). It **re-arms
+   *"at most twice in a row"***, and 🔴 **it is *"not offered at all"* to `-p` runs or background sessions** —
+   so it never applied to any loop in this repo. Found by reading the page the setting's own doc links to
+   rather than stopping at `settings-reference`. ⚠️ **The surviving finding is in-window and real:** the bound
+   **was failing open**, again via restart — v2.1.314, *"continuing more than three times… when a task
+   restarted itself between waits (**a /goal check-in, a background or scheduled task**)"* — and the bound is
+   undocumented.
+2. ❌ **"No reviewer documents what its spend cap does to its merge gate" is FALSIFIED.** Four do — roborev,
+   Anthropic Code Review, Kodus, Greptile — and **three of the four designs are fail-safe.** ✅ **The claim the
+   evidence supports is sharper: every reviewer that documents its cap documents it as *not a gate*; none
+   turns exhaustion into an approval, and none into a blocking failure either — so the spend cap is reliably
+   safe *and* reliably useless as a hard stop, which is why the ceiling must live in the loop harness.**
+   🔴 **Kodus states this repo's non-negotiable in a product warning:** *"**This is a notification, not a cap.**
+   Kodus never blocks or pauses reviews when the limit is hit… To actually stop spend, set a hard limit in
+   your **model provider's** dashboard — **that's the only thing that can enforce it.**"*
+3. ❌ **Goose v1.56.0 did not "remove the recipe `max_turns` cascade"** (claimed 2026-10-26). Reading
+   `resolve_max_turns` at both tags shows the recipe setting **still present, demoted from rank 1 to rank 2**
+   by a new `delegate`-tool argument, with the v1.57.0 doc stating the full five-level ladder. ✅ The **25 →
+   1000 subagent default raise stands**, confirmed at source. ➜ **Method lesson: this KB inferred a behaviour
+   change from a doc-wording change. Read the code at both tags before recording a cap as removed.**
+4. ⚠️ **roborev's fail-closed read-only fix is in 0.74.0 (2026-10-27), not 0.73.0** — so it is an **in-window**
+   change, and 0.74.0 goes much further (below).
+Plus a **repo-internal** correction: two backlog items asserted that *"`guardrails/budget.env` and the
+templates set `CLAUDE_CODE_RETRY_WATCHDOG=1`"*. ⚠️ **They do not — the variable has zero occurrences anywhere
+outside `knowledge/`**, as do `autoContinueAtUsageLimit`, `STOP_HOOK_BLOCK_CAP` and
+`RESUME_INTERRUPTED_TURN_MAX_AGE_MS`. The human calls are therefore larger than recorded: **adopt the
+watchdog *and* its bounds, or decline it deliberately.**
+
+### Hard stop #3: its exhaustion signal has been ignored by the harness's own retry layer — twice
+
+**v2.1.311 (Oct 26)**: *"Fixed Claude Code **retrying requests the API marked not to retry**, which could hold
+a turn for minutes or, **in unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`), indefinitely**."* A
+non-window grep found the first instance: **v2.1.239 (Aug 21)**, *"now fails immediately on organization
+spend-limit and out-of-credits errors **instead of waiting indefinitely** for a reset"*, with `env-vars` still
+recording *"Before v2.1.239, the watchdog retried these indefinitely."* And `errors.md` documents that a
+gateway spend-limit block *"marks each blocked `429` response **`x-should-retry: false`**, so Claude Code
+shows this message without retrying."* ➜ **"Key a retry wrapper on `x-should-retry`, not a status code" is now
+a rule the vendor's own harness has broken twice, ten weeks apart, and the result is an unbounded wall-clock
+hold in exactly the mode an unattended loop is told to set.** ⚠️ The link to the budget case is the lead's
+inference; the changelog does not name it.
+
+### ✅ And the cumulative ceiling this KB said was missing has shipped — undocumented, with its own page denying it
+
+**v2.1.316 (Oct 31)**: *"Added **pooled group budgets** to the Claude apps gateway: **one monthly budget that
+a group's members share, on top of each member's own limit**, set with `pooled_budget` on the spend limits
+admin API."* §6 had recorded *"two first-party surfaces with per-unit caps and **no cumulative ceiling above
+them**, which is this routine's own shape."* ⚠️ **But `pooled_budget` has zero occurrences across all six
+relevant doc surfaces, while the spend-limits page still states the opposite verbatim: *"A group or
+organization cap is a per-seat default that each member inherits, **not a shared pool**."***
+⚠️ **Related, and it sharpens a four-pass negative into a precise one: observability shipped 2026-10-29** (the
+Usage and Cost Analytics API — read-only, and newly groupable **by API key**) — **enforcement still has not,
+now five passes.**
+
+### Zero-polarity turns out to be systematic, not arbitrary — one case becomes six
+
+Last pass called `STOP_HOOK_BLOCK_CAP` *"the only known case where a zero turns off a Claude Code backstop
+that is on by default."* A deliberate **non-window** sweep (whole-changelog grep on
+`indefinitely|looping forever|runaway` → 37 hits across the file's life, each candidate then re-read on its
+own `env-vars` entry) finds **six**: `STOP_HOOK_BLOCK_CAP` (8), `GOAL_CHECKIN_MINUTES` (30),
+`API_FORCE_IDLE_TIMEOUT`, `WEBFETCH_DEADLINE_MS`, `MCP_TOOL_IDLE_TIMEOUT`, `TOOL_MEMORY_LIMIT`.
+🔴 **The pattern: every *wall-clock / idle / resource* backstop is disableable with `0`, and every
+*count-or-dollar* ceiling refuses it.** ➜ **So the stops this repo most needs for hard stop #2's wall-clock
+limb are precisely the ones the vendor made disableable.** ✅ Two good forms to copy:
+`API_FORCE_IDLE_TIMEOUT` keeps a second watchdog *"even when you set `0` here"*, and `MCP_TOOL_IDLE_TIMEOUT`
+**clamps a minimum.** ⚠️ **And a new entry in the family where the obstacle is policy, not code: AWS's
+*"minimum allowed value is the greater of $20 or a conservative estimate of your likely spend"*, because
+*"hitting a spend limit is a disruptive experience"* — a ceiling you are not permitted to set low enough to
+verify**, whose graduated tiers are moreover *forecast*-driven.
+🔴 **And the sweep produced a clean, striking negative: `no-progress` has never appeared in the Claude Code
+changelog — not once, in any version — nor in `env-vars`, `settings-reference`, `hooks` or `routines`**,
+against five mentions each for `--max-turns` and `--max-budget-usd`. **Anthropic has shipped an iteration cap
+and a dollar ceiling and has never once named no-progress detection**; every first-party stall instrument is a
+timer. **A third vindication of the standing "the window sweep misses older work" item** — the fourth being
+that `arXiv:2607.05139` above is four months pre-window and was found via a practitioner's citation.
+
+### Three more things that bear directly on this repo's own envelope
+
+- 🔴 **The self-edit gate is validated on the axes it enforces, and the missing piece is now named** —
+  by the same group whose paper the primer's §2 leans on. `arXiv:2610.34938` (Treude; Baltes) ran Claude Code
+  on *"30 SWE-bench Verified issues"*, coded *"125 proposals"*, and found **18 of 43** *"recommended a
+  practice **regardless of what had happened**"* (✅ **vacuous proposals, which step 7's repo-internal-evidence
+  requirement already rejects by construction**), while of seven informative evaluations *"**four showed no
+  reduction**, and some changes **added work on unrelated issues**"*, concluding that self-evolution *"**needs
+  ways to… revise or remove changes that do not**"* help. ➜ **`self-edit-guard.yml` enforces scope, protected
+  regions and a per-pass cap; it does not enforce *removal of an edit that did not help*. Recorded as the next
+  guardrail to build — a human call — not as a passing grade.** ⚠️ **Shared-authorship caveat stated: this is
+  one group's programme, not independent corroboration of `arXiv:2608.21884`.**
+- 🔴 **The channel this repo fences is measurably the riskier one.** `arXiv:2610.39122`: attack success rises
+  **14.0–48.8 pp under *skill* evolution** against **3.0–39.3 pp under RL** — **editing a Markdown skill
+  degraded robustness *more* than updating weights did.** **A counter-intuitive argument for the rule that a
+  web-sourced routine edit is human-only.**
+- ✅ **The countermeasure for the standing `allowed-tools` exposure now exists as shipped software.**
+  **roborev 0.74.0 (2026-10-27, in-window)**: *"**Strict Claude Code reviews run in a fresh, locked-down
+  session that loads only `Read`, `Glob`, `Grep`, and the granted MCP tools, ignores user and project Claude
+  settings, and fails if Claude reports any other tool or server**"*, with *"**Only global config**"* defining
+  the permitted tools. ➜ **Fail-closed; the reviewed repository cannot widen the reviewer's grant; and the
+  decisive configuration sits in a channel the target cannot write.** **The existence proof the KB's
+  highest-priority security item has been asking a human to decide about.**
+
+### MartinLoop is real, and it decides a question this repo has never answered
+
+The "unverified lead" from last pass resolves to **`Keesan12/martin-loop` v0.8.10 (2026-10-26)** — ⚠️ with
+**every secondary-sourced version number in the lead wrong.** It formalises an **"Eight-Exit Runtime"**
+carrying all three hard stops plus a verifier *and* `wall_clock`, and its `exits.ts` states a precedence
+doctrine the primer lacked: *"**`wall_clock`, `budget_cap`, and `turn_cap` all outrank `goal_met`** —
+governance limits… cannot be overridden by a simultaneously verified goal"*; *"`goal_met` outranks
+`error_threshold` and `no_progress`"*; **completing *on* the last permitted iteration is *"legitimate success,
+not an overrun"***; and `human_interrupt`/`external_event` outrank all, as *"**authority external to the run's
+own evidence**."* ✅ **It also rejects `--budget-usd 0`** (verified at three call sites), which matters more
+than `agentgateway`'s equivalent because **it is a loop harness, not a gateway.**
+
+### Also this pass
+
+- 🔴 **Containment failed open on the exact path a ralph loop takes** — v2.1.314, *"sandbox protections **not
+  applying to a worktree entered by `claude -p --resume` or `--continue`**"* — ✅ against which the same
+  release shipped `permissions.blockWritesOutsideWorkingDirectories`, refusing out-of-tree writes *"**in every
+  permission mode**"*, so it holds under `bypassPermissions`. ⚠️ **Changelog-only**, like the new
+  **24-concurrent-hooks cap** (and `/goal` *is* a Stop hook).
+- 🔴 **A public skill is untrusted *policy*, not only untrusted code** — `arXiv:2610.37734` finds **~1 in 17**
+  of 1.53M skills carrying an oversight-loosening directive (*"proceed without approval… bypass checks with
+  `--no-verify`"*), **70.1% unconditional**, **2.4% of families accounting for half of all copies**, and
+  **scanners catching at most 46% at precision below 0.4.** **A copied skill can delete your verification
+  step.**
+- 🔴 **Two vendors ship vacuity as the default, in the same inversion:** CodeRabbit *"skips the review content
+  but still checks the other requirements and **can approve the pull request**"* when path filters exclude
+  everything, and Greptile *"**With no cap, the ceiling is Critical**… whatever it changes"*, reading **the
+  5/5 score the reviewer assigned itself.** ⭐ CodeRabbit's own one-liner is the cleanest anti-vacuity rule
+  found anywhere, from a vendor rather than a paper: *"**A configured limit requires an assessment covering
+  the current commit.**"* 🔴 **And Anthropic Code Review cannot be a hard stop by design** — *"A review
+  **never approves or blocks** your pull request, and **the check run never concludes as a failure**"* — so a
+  required status check on it is **structurally vacuous**; ✅ though Anthropic writes this repo's rule for its
+  own output (*"**Treat that as no verdict rather than as zero findings**"*, *"**Fail the job if you want to
+  gate the merge**"*) and ships the **first vendor brake on non-convergence** (*"Code review not repeated —
+  earlier findings still open"*).
+- ⚠️ **A new hard-stop-#1 failure shape: a cap dropped because it was indistinguishable from the default.**
+  LangGraph 1.2.17 fixed `merge_configs` comparing `recursion_limit` **by value** against the default, so an
+  explicitly-set cap equal to the default was silently discarded; the fix is a sentinel **type**. **Also new
+  to this KB: LangGraph's default is 10007, not 25** (this KB never carried the stale number).
+- ⚠️ **Codex gained an explicit audit-only mode for its token budget — and the lead corrected the research
+  agent's reading of its sign.** 0.166.0 added `enforce_limit` to the exhaustion test; the agent read it as a
+  weakening, but `config/mod.rs:3069` reads `enforce_limit: config.enforce_limit.unwrap_or(true)` — **the safe
+  value is the default**, the same shape as `agentgateway`'s `Audit`/`Block`. ⚠️ Caveats survive: the feature
+  is gated behind `features.rollout_budget.enabled` (*"off by default"*), and `enforce_limit` is undocumented.
+- 🔴 **"Zero official MCP SDKs have shipped Skills-over-MCP" is now false** — *"The TypeScript SDK ships the
+  extension in v2.4.0 and FastMCP in v4.1.2"* — ⚠️ **with a dating trap: that is
+  `@modelcontextprotocol/server@2.4.0`, not `@modelcontextprotocol/sdk`, whose latest is 1.32.2 with no 2.x at
+  all.** And **SEP-3392 (Final, Oct 27) gave MCP extensions a maturity ladder, on which Skills was moved
+  stable → beta (Oct 29): *"at Beta a revision may make breaking changes."*** ⚠️ **Meanwhile, eleven days after
+  the AAIF donation, the Agent Skills spec repo has not moved** — HEAD still 2026-08-09, zero tags, no TSC, no
+  conformance suite.
+- ⚠️ **Overalls needed a *placement* correction, not just a name one.** First-party it is *"a self-hosted
+  platform for development machines and the AI agents that work on them"* on Firecracker microVMs — a
+  **substrate**, not an orchestrator. It ships hard stop #1 as **hard-coded magic numbers** (`iteration > 72`,
+  `inference_count >= 64`) and **no dollar or token ceiling at all**, so *"every token accounted for"* is
+  accounting, not enforcement.
+- ⚠️ **The `ralph-wiggum` plugin's URLs are dead:** renamed **`ralph-loop`** (2026-01-06) and moved to
+  `anthropics/claude-plugins-official`. The `MAX_ITERATIONS -gt 0` hole is unchanged at the new path, and
+  🔴 **the plugin announces it at runtime: *"No completion promise set - loop runs infinitely."***
+- ✅ **Resolved against primaries:** CodeRabbit's incomplete-analysis path (URL fixed); the Kodus gap (a
+  tooling gap, not a vendor silence); Codex 0.164.0's negative (settled at source — **verbatim GitHub release
+  bodies are unretrievable here, so go to source at the tag**); LangGraph 1.2.17, the `skills-over-mcp` charter
+  (scope excludes loop control) and AG2 1.2.x (clean negative); `ralphex` and Aider dormancy; and the
+  Overalls launch tripwire. ⚠️ **Cursor CLI's `/goal` status is now unconfirmable** — its slash-commands page
+  **404s.**
+- ⚠️ **Method notes added:** an arXiv `submittedDate` range query covered the whole academic window for
+  **zero** WebSearch calls (⚠️ but `max_results=60` silently truncates — confirm the last day separately); the
+  **feed-header dating trap** now has a third domain and the field is **`lastBuildDate`**, not `updated`;
+  **Osmani's personal blog is not a subset of his Substack** and the lag is ≥7 weeks; and 🔴 **a subagent's
+  negative about a URL is only as good as the host it checked** — a research agent declared two Anthropic
+  citations unverified after searching only `anthropic.com`, when both are live on `claude.com` and
+  `claude.dev`. ✅ **Reading one of them resolved a long-standing Medium citation: the "Loop engineering" post
+  is now readable (the 403 is gone), and it is dated June 30, 2026, not Jul 7 — a date this KB carried for
+  months.**
+- ⚠️ **Blacklist addition, and a new distortion shape worth naming because the sponsor and sample size check
+  out:** the circulating *"73% of organizations reported AI costs exceeded original projections"* is **not in
+  the FinOps Foundation primary** (which reports *"1,192 respondents"*, *"$83bn+"* and **no overrun figure at
+  all**). **Do not cite the 73%; `beri.net` added.**
+- **Primer housekeeping, per step 5's 750-line budget:** the primer stayed **at exactly 750 lines** while
+  absorbing this pass, by moving §5A items 3–7, 8, 9, 10, 11, 12 and §6's per-vendor ceiling inventory
+  verbatim into the new [`archive/primer-detail-2026-11.md`](archive/primer-detail-2026-11.md) and replacing
+  each with a synthesis plus a pointer. **Nothing was retracted in the move.**
+
+### Routine self-improvements
+
+**Applied (auto-gated): none this pass.** Step 7's gate is default-deny, and no candidate cleared it: every
+path and intra-repo link in `SKILL.md` was checked on disk (all nine resolve), its eight step headings are
+numbered 1–8 consistently, all thirteen *"step N"* cross-references point at the right step, and no typo or
+markdown glitch was found. **No `self-edit:` commit exists in this PR.** Suggestions for a human are in the
+PR body.
+
 ## 2026-10-26 — Seven-day pass (Oct 19–26): the caps disagree with themselves about whether they can be turned off, and a non-window sweep found five native backstops the routine had never recorded
 
 Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails &

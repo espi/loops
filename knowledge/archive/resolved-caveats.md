@@ -9,6 +9,81 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-11-02
+
+Eight items, two of them resolved by being **falsified** rather than confirmed. Three further corrections
+stayed in place in `sources.md` because each left a narrower successor question.
+
+- ❌ **"No reviewer documents what its spend cap does to its merge gate."** *(opened 2026-10-12 as the
+  verifier-kill-switch item; promoted to a standing claim 2026-10-19; **falsified 2026-11-02**.)* Four vendors
+  document it, and three of the four designs are fail-safe: **roborev** (*"The cap never stops jobs… At or
+  above the daily limit, the cheapest available candidate runs"*), **Anthropic Code Review** (*"skips reviews
+  when any of these runs out"*, *"also skips reviews once what's left is less than the expected cost of one
+  review"*), **Kodus** (*"**This is a notification, not a cap. Kodus never blocks or pauses reviews when the
+  limit is hit.**… To actually stop spend, set a hard limit in your model provider's dashboard — **that's the
+  only thing that can enforce it**"*) and **Greptile** (*"When credits run out, new reviews pause until you add
+  more"*, *"Only completed reviews spend credits"*). **Replaced in place by the sharper claim it supports:
+  every reviewer that documents its cap documents it as *not* a gate — none converts exhaustion into an
+  approval, and none into a blocking failure either — so the ceiling must live in the loop harness.** Kodus's
+  callout is the best citation this KB has for *"a cost alert is not enforcement."*
+- ❌ **"The default behaviour at a usage limit is an unbounded wall-clock wait" (`autoContinueAtUsageLimit`).**
+  *(opened 2026-10-26; **corrected 2026-11-02**.)* Wrong twice over, found by following the doc link the
+  setting itself points at rather than stopping at `settings-reference`: it is **bounded at three** (*"re-arms
+  the wait on its own **at most twice in a row**"*), and it is **not offered to `-p` runs or background
+  sessions at all**, which is how every loop in this repo runs. The surviving finding — carried forward in the
+  live backlog — is that the bound was **failing open via restart** (v2.1.314, *"continuing more than three
+  times… when a task restarted itself between waits (a /goal check-in, a background or scheduled task)"*) and
+  that the bound is undocumented. ⭐ One primitive worth keeping: *"the `key=value` form **can't turn it back
+  on**, because the setting grants unattended execution"* — a control deliberately easier to tighten than to
+  loosen.
+- ✅ **CodeRabbit's incomplete-analysis path.** *(opened 2026-10-12; blocked on a 404 from 2026-10-26;
+  **resolved 2026-11-02**.)* The working path is `docs.coderabbit.ai/pr-reviews/automatic-approvals`, and the
+  answer is a **documented vacuous approval that is on by default**: *"If every changed file is excluded by
+  path filters, CodeRabbit skips the review content but still checks the other requirements and **can approve
+  the pull request**. With a risk limit set, it **withholds approval instead, because the commit has no risk
+  assessment**."* The mitigation is opt-in, and the vendor's own one-liner is the cleanest anti-vacuity rule
+  found anywhere: *"A configured limit requires an assessment covering the current commit."*
+- ✅ **"Kodus was not reached — a gap, not a negative."** *(opened 2026-10-19; **resolved 2026-11-02**.)* It
+  was a tooling gap: `docs.kodus.io/llms.txt` serves a clean index with `.md` endpoints. The five-tool review
+  sweep is now 5/5, and the route generalises — CodeRabbit, Qodo, Greptile and Kodus all serve `llms.txt`.
+- ✅ **"Codex 0.164.0's 'no new caps' negative needs a verbatim re-read."** *(opened 2026-10-26; **resolved
+  2026-11-02** by a better method.)* Verbatim release bodies are unretrievable in this environment
+  (`github.com` 403s to curl; WebFetch declines release prose), so it was settled at **source at the tag**
+  instead. The negative holds for 0.164.0 — and the method lesson is the real result: **the window's actual
+  guardrail change appears in no release note at all** (the `enforce_limit` gate in 0.166.0).
+- ✅ **Three of four "declared gaps from this pass."** *(opened 2026-10-26; **resolved 2026-11-02**.)*
+  **LangGraph 1.2.17** inspected — a genuine hard-stop-#1 fix (an explicitly-set cap silently dropped when it
+  equalled the default). **The `skills-over-mcp` WG charter** read in full — and the relevant finding is a
+  negative: nothing in its scope touches budgets, caps, stall detection or spend, and out-of-scope explicitly
+  includes *"Plugin/bundle packaging"*, so **it will not deliver a loop-control surface.** **AG2
+  1.2.0/1.2.1/1.2.2** diffed — not one changed line touches AG2's classic loop guardrails. ⚠️ **Cursor CLI
+  stays open in the live backlog** (`cursor.com/docs/cli/slash-commands` 404s).
+- ✅ **"Two unverified leads to chase: MartinLoop and LoopTroop."** *(opened 2026-10-26; **resolved
+  2026-11-02** — both real.)* **MartinLoop** is `Keesan12/martin-loop` v0.8.10 (2026-10-26), an "Eight-Exit
+  Runtime" that carries all three hard stops plus a verifier *and* an explicit precedence rule, and rejects a
+  zero dollar cap. **LoopTroop** is `looptroop-ai/LoopTroop` / npm `looptroop` **0.6.2 (2026-10-30)**.
+  ⚠️ **Every version number in the original lead was wrong**, and **there is no LoopTroop 0.4.x at all** — a
+  reminder that a dev.to-sourced version is not a version.
+- ✅ **"`umputun/ralphex` is a ralph derivative the KB does not track" + "mark the Aider row dormant."**
+  *(opened 2026-10-26; **resolved 2026-11-02**.)* `ralphex` latest tag **v1.7.0 = 2026-09-07T12:14:53-05:00**
+  from a primary, so the row is writable at **High**; `aider-chat` is **0.86.2, 2026-02-12** — ~8.6 months,
+  dormant confirmed.
+- ✅ **"Overalls launches 2026-11-03 — first thing to check next pass."** *(opened 2026-10-26; **resolved
+  2026-11-02**, checked a day ahead of launch.)* It needed a **placement** correction as well as a name one:
+  first-party, it is *"a self-hosted platform for development machines and the AI agents that work on them"*
+  built on Firecracker microVMs — a **substrate**, not an orchestration loop. It ships hard stop #1 as
+  hard-coded magic numbers (`iteration > 72`, `inference_count >= 64`) and **no dollar or token ceiling at
+  all**, so *"every token accounted for"* is accounting, not enforcement. A narrower successor tripwire (check
+  for a budget surface after launch) is carried forward live.
+
+**Corrected in place rather than archived**, because each left a live successor question: **roborev**'s
+fail-closed read-only fix re-attributed **0.73.0 → 0.74.0** (so it is an in-window change, and 0.74.0's
+locked-down strict-review session is the pass's most important tool finding); **Goose**'s *"v1.56.0 removed the
+recipe `max_turns` cascade"* **retracted** — reading `resolve_max_turns` at both tags shows it was *demoted*,
+not removed, and this KB had inferred a behaviour change from a doc-wording change; and the repo-internal
+claim that *"`guardrails/budget.env` and the templates set `CLAUDE_CODE_RETRY_WATCHDOG=1`"* corrected to
+**they do not — the variable has zero occurrences anywhere outside `knowledge/`.**
+
 ## Archived 2026-10-26
 
 Three items from the standing backlog resolved in the 2026-10-26 pass (window Oct 19–26). Each was

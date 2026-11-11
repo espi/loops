@@ -31,7 +31,7 @@ written down and kept current.
 |------|------------|
 | [`knowledge/`](knowledge/) | Living knowledge base — primer, curated sources, changelog, and an `archive/` for resolved/superseded material. Kept current by the `update-knowledge` skill. |
 | [`.claude/skills/`](.claude/skills/) | Reusable, invocable skills: `new-loop`, `loop-guardrails`, `update-knowledge` (weekly knowledge refresh), `artifact-audit` (monthly drift check on the repo's own artifacts). |
-| [`templates/`](templates/) | Runnable starters — ralph bash loop, `/goal` recipes, `/loop` maintenance prompt. |
+| [`templates/`](templates/) | Runnable starters — ralph bash loop, `/goal` recipes, `/loop` maintenance prompt, overnight UI-audit kit. |
 | [`guardrails/`](guardrails/) | The three hard stops: budget/iteration defaults + a preflight checklist. |
 | [`runbooks/`](runbooks/) | Step-by-step playbooks for common loops. |
 

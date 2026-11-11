@@ -1,7 +1,8 @@
 <!--
   UX findings log — the "report" half of the audit. The loop appends a block per
   subjective issue (discoverability, dead-ends, CTAs, copy, empty/error states).
-  This is your morning review queue. Rename to FINDINGS.md in your project.
+  This is your morning review queue. Copy it into your project's ui-audit/ dir
+  as-is; the loop appends entries below.
 -->
 
 # UX findings

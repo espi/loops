@@ -6,8 +6,10 @@
   `/loop <prompt>` to let Claude self-pace (1 min–1 hr).
 
   Reminder: /loop is SESSION-SCOPED — it only fires while Claude Code is running
-  and idle, and stops when the terminal closes. For laptop-closed scheduling use
-  a cloud Routine instead. Recurring tasks auto-expire after 7 days.
+  and idle, and stops when the terminal closes (backgrounding the session carries
+  /loop tasks over to a background session; a self-paced loop is NOT restored on
+  --resume — run /loop again). For laptop-closed scheduling use a cloud scheduled
+  task (formerly Routine) instead. Recurring tasks auto-expire after 7 days.
 -->
 
 # Loop maintenance prompt

@@ -48,8 +48,10 @@ no-op if nothing changed.
 ## Scheduled (recommended) — cloud Routine
 
 To make it self-maintaining with your laptop closed, schedule it as a **cloud
-Routine** (Claude Code on the web). Routines run on Anthropic's cloud, need no
-open session, and support intervals down to ~1 hour — use weekly here.
+scheduled task** (formerly "Routine" — the docs, the `/routines` alias, and the
+claude.ai/code/routines URL still carry the old name, which this runbook keeps
+for continuity). Routines run on Anthropic's cloud, need no open session, and
+support intervals down to ~1 hour — use weekly here.
 
 > **Prerequisite:** a Routine clones the repo's **default branch** (`main`) on
 > every run, so the `update-knowledge` skill and `knowledge/` must be merged to
@@ -61,7 +63,8 @@ Routines can't be created from inside a Claude Code *web* session (the
 `/schedule` command is disabled there). Use one of:
 
 - **Web/Desktop:** go to [claude.ai/code/routines](https://claude.ai/code/routines)
-  → **New routine**, and fill in the fields below.
+  → **New task** (some accounts still show **New routine**), and fill in the
+  fields below.
 - **CLI (local session only):**
   ```
   /schedule weekly on Monday at 8am, run the /update-knowledge skill for the loops repo and open a PR with any changes
@@ -75,7 +78,7 @@ Routines can't be created from inside a Claude Code *web* session (the
 | **Repository** | `espi/loops` |
 | **Trigger** | Schedule → Weekly (e.g. Monday 08:00 local) |
 | **Environment / network** | Needs web research. **Trusted** (default) lets `WebSearch` work but blocks `WebFetch` to arbitrary domains; set **Full** (or **Custom** allowing `code.claude.com`, `platform.claude.com`, `github.com`, `simonwillison.net`, `anthropic.com`) so it can read primary docs. |
-| **Branch pushes** | Leave default (`claude/`-prefixed only) — this forces a PR instead of touching `main`. The skill opens its PR from a `claude/knowledge-update-*` branch, so it stays inside this restriction; **do not** enable "Allow unrestricted branch pushes" (that would remove the floor). |
+| **Branch pushes** | The `claude/` prefix is the run's **default push target, not an enforced restriction** — the docs state a run pushes to a `claude/`-prefixed branch *"unless your prompt directs it to push to another branch"*, and point to **GitHub branch protection rules or rulesets** as the way to control which branches a run can push to. So: add a **ruleset on `main`** that the connected GitHub identity cannot bypass (a rule that identity can bypass doesn't block a run's push). The skill's prompt never directs pushes elsewhere and its branch is `claude/knowledge-update-*` — keep that convention, but treat the ruleset as the control. |
 | **Env vars** | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=6` and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1` (bound the ~5-agent fan-out and forbid recursion); optionally `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION=100`. **Corrected 2026-09-07:** this row previously said `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=12` — that variable was **removed in v2.1.224** and setting it now does nothing. There is no native per-session *total* spawn cap any more; concurrency + depth are what remain. |
 | **Connectors** | None required; remove extras. The PR is opened as your GitHub identity. |
 
@@ -90,11 +93,13 @@ they only hold if the Routine is configured to let them:
   Note they bound *width and recursion, not lifetime total* — no native
   per-session spawn cap exists since v2.1.224. Keep the schedule **weekly**,
   not hourly.
-- **Budget:** the account subscription usage limit + the per-account daily
-  routine-run cap *reject* runs when exhausted — a real ceiling **only if
-  metered overage / usage credits is OFF** for the account (otherwise spend
-  silently spills onto metered billing instead of stopping). Keep overage off,
-  or set a spend alert, so this routine can't quietly run up cost. A true
+- **Budget:** the account subscription usage limit *rejects* further runs when
+  exhausted — a real ceiling **only if metered overage / usage credits is OFF**
+  for the account (otherwise spend silently spills onto metered billing instead
+  of stopping). The platform's own scheduling caps are **hourly, not daily**
+  (100 scheduled runs/hour per account), and an over-limit run **waits** for
+  the reset rather than failing — pacing, not a ceiling. Keep overage off, or
+  set a spend alert, so this routine can't quietly run up cost. A true
   *per-run dollar* ceiling isn't available for cloud Routines — that needs the
   Agent SDK's `max_budget_usd`; the account-limit + subagent-cap + one-pass
   structure is the realistic envelope here.
@@ -103,9 +108,11 @@ they only hold if the Routine is configured to let them:
 
 ### Prompt (paste verbatim)
 
-Routines run autonomously with no approval prompts, so the prompt must be
-self-contained — but it should point at the skill file rather than embed a
-frozen copy of its steps. **This bit us once already**: an earlier version of
+Routine runs start in **auto mode** with no human at the terminal; an action
+that matches an ask rule, or repeated blocks, raises a permission prompt that
+**waits in the run's session** until someone answers it — so the prompt must be
+self-contained, steer clear of ask-rule territory, and it should point at the
+skill file rather than embed a frozen copy of its steps. **This bit us once already**: an earlier version of
 this prompt spelled out the procedure inline, the skill later gained two new
 steps (re-checking the standing re-verify backlog, archiving resolved
 caveats), and the Routine kept firing the stale embedded steps because a
@@ -141,8 +148,8 @@ weekly, with these differences:
 | Field | Value |
 |---|---|
 | **Name** | Monthly loops artifact audit |
-| **Trigger** | Schedule → there is no Monthly preset (presets are hourly / daily / weekdays / weekly): pick the closest preset (Weekly), then run `/schedule update` from a local CLI session to set a monthly cron (e.g. 1st of the month, 08:00 local) |
-| **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=6` and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`; **Full/Custom** network for primary-doc checks; `claude/`-only branch pushes; overage off). See "Budget & caps" above. |
+| **Trigger** | Schedule → there is no Monthly preset: create the task, then select **Custom** in its edit dialog (web) — or run `/schedule update` from a local CLI session — and set a monthly cron (e.g. 1st of the month, 08:07; a few minutes past the hour avoids the documented late starts on :00) |
+| **Everything else** | Same as the weekly (repo `espi/loops`; env with `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=6` and `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`; **Full/Custom** network for primary-doc checks; branch-protection ruleset on `main` in place; overage off). See "Budget & caps" above. |
 
 Prompt (paste verbatim — points at the skill file, same anti-staleness reason as
 the weekly):
@@ -219,13 +226,19 @@ manipulated:
 3. **The fence is machine-checked, not self-graded.** `self-edit-guard` enforces
    scope, protected regions and the per-pass cap in CI. A compromised agent
    asserting "this edit is in scope" changes nothing.
-4. **Branch pushes are `claude/`-prefixed only**, so it physically cannot touch
-   `main`.
+4. **Pushes land on `claude/`-prefixed branches by convention, and `main` is
+   guarded by GitHub branch protection.** The prefix is only the run's default
+   push target (a prompt can direct pushes elsewhere), so the enforcement is a
+   ruleset on `main` that the connected GitHub identity cannot bypass —
+   configure it (see the Branch pushes row above); the prefix alone is not a
+   floor.
 
 **What would invalidate this.** Treat any of these as a stop-and-rethink, not a
 config tweak:
 
-- Enabling unrestricted branch pushes, or making the routine able to merge.
+- Prompting the routine to push to a non-`claude/` branch, dropping (or
+  granting bypass to) `main`'s branch-protection ruleset, or making the routine
+  able to merge.
 - Widening the auto-edit envelope beyond `update-knowledge/SKILL.md`, or
   removing `self-edit-guard` as a check.
 - Giving the routine connectors or credentials that reach beyond this repo.
@@ -252,10 +265,14 @@ by `.github/workflows/self-edit-guard.yml`. To make that a *hard* merge gate
 rather than a red X you have to notice, add `self-edit-guard` as a **required
 status check** in `main`'s branch-protection rules.
 
-> **Branch prefix — reconciled.** Step 8 of the skill opens the PR from a
-> `claude/knowledge-update-YYYY-MM-DD` branch, which sits inside the Routine's
-> default `claude/`-only push restriction — so the "human merges every PR"
-> floor holds without enabling unrestricted pushes. Keep it that way: if you
-> ever rename the skill's branch, keep the `claude/` prefix, or the routine
-> will lose the ability to push (or you'll be tempted to disable the
-> restriction, which removes the floor).
+> **Branch prefix — reconciled (corrected 2026-10-25).** Step 8 of the skill
+> opens the PR from a `claude/knowledge-update-YYYY-MM-DD` branch. An earlier
+> version of this note called the `claude/` prefix a "default push
+> restriction" the routine physically couldn't escape — the current docs say
+> otherwise: a run pushes to a `claude/`-prefixed branch *"unless your prompt
+> directs it to push to another branch"*, and branch control is done with
+> **GitHub branch protection rules or rulesets**. So the "human merges every
+> PR" floor is held by two things you own: the skill's prompt (which never
+> directs a push elsewhere — keep the `claude/` prefix if you ever rename the
+> branch) and a **ruleset on `main`** that the connected GitHub identity
+> cannot bypass. Configure the ruleset; don't rely on the prefix.

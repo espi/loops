@@ -95,8 +95,10 @@ A scheduled **one-shot** (one trigger → one audit pass → one PR → exit), n
   The old per-session `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` total cap was
   **removed in v2.1.224 (Aug 7 2026)** and can no longer be relied on — there is
   no native cap on a session's *total* lifetime spawns.
-- **Budget** — the subscription / daily-run cap is the ceiling, real only with
-  metered overage off (see `runbooks/staying-current.md` → "Budget & caps").
+- **Budget** — the subscription usage limit is the ceiling (the platform's own
+  scheduling caps are *hourly*, and an over-limit run waits rather than fails),
+  real only with metered overage off (see `runbooks/staying-current.md` →
+  "Budget & caps").
 - **Stall** — N/A for a one-shot; the no-op exit is the termination.
 - **No auto-apply.** Unlike `update-knowledge` step 7, nothing here is
   auto-applied — every change is human-reviewed. It never edits `knowledge/`

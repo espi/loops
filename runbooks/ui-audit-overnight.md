@@ -49,29 +49,48 @@ This must run **on your Mac** (the app is on localhost; a cloud Routine can't se
 it) and **in the session that has the browser MCP**. That session is
 **session-scoped** — if the laptop sleeps, it stops. So keep it awake.
 
-**Recommended — in your existing interactive session (has the MCP), capped:**
+**Recommended — headless via `templates/ralph/run.sh`** (all three stops
+enforced outside the agent's reach; needs Claude Code v2.1.281+). An overnight
+run is exactly the case where the stops must not depend on the agent:
+
+1. Confirm your browser MCP works in non-interactive mode — it does if it's
+   configured at user or project scope (`claude mcp list` shows it). Quick test:
+   `claude -p --max-turns 3 "use the browser MCP to open <BASE_URL> and report the page title"`.
+2. Copy `templates/ralph/run.sh` next to `ui-audit/` and set its CONFIG:
+   `PROMPT_FILE="ui-audit/PROMPT.md"`, `MAX_ITERATIONS` ≈ `pages × accounts × 1.5`,
+   `MAX_BUDGET_USD` to the number you won't exceed, `SUCCESS_CHECK` to your
+   regression suite (e.g. `"npm test"`).
+3. Protect the loop's own checks, so the agent can't edit what grades it:
+   `PROTECTED_PATHS="ui-audit/PROMPT.md ui-audit/STANDARDS.md run.sh tests/"`.
+   (`PAGES.md`, `FINDINGS.md`, `PROGRESS.md` are the agent's to update.)
+4. Allowlist exactly what the audit needs — the default is deny-by-default:
+   `AGENT_CMD=(claude -p --permission-mode acceptEdits --permission-prompts none --allowedTools "mcp__<browser>__*" "Bash(npm test:*)" "Bash(git add:*)" "Bash(git commit:*)")`.
+5. Run it awake: `caffeinate -ids bash run.sh`.
+
+**Fallback — in your interactive session**, only if the browser MCP can't run
+headless, and only while you can check on it:
 
 ```bash
-# keep the Mac awake for the whole run
 caffeinate -ids &
-
-# then, inside your Claude Code session, run the ralph-wiggum plugin:
+# inside the Claude Code session:
 /ralph-loop "$(cat ui-audit/PROMPT.md)" --completion-promise "COMPLETE" --max-iterations 40
 ```
 
-> `--max-iterations` is the real cap — it defaults to *unlimited*, so always set
-> it. Size it to your page count: roughly `pages × accounts × ~1.5` for fix
-> headroom. Cancel anytime with `/cancel-ralph`.
+> Treat this as supervised, not unattended. The plugin's iteration count lives
+> in `.claude/ralph-loop.local.md` inside the agent's worktree (and
+> `max_iterations: 0` means unlimited), the stall rule is an instruction the
+> agent grades itself on, and nothing enforces a dollar ceiling. Cancel with
+> `/cancel-ralph`.
 
-## The three hard stops (mapped)
+## The three hard stops (mapped, headless run)
 
-1. **Max iterations** — `--max-iterations 40` (and a finite `PAGES.md` bounds the work).
-2. **No-progress** — the prompt stops after 3 iterations with no commit/status change.
-3. **Budget ceiling** — overnight is the blow-out scenario. Before bed, note your
-   spend; set a number you won't exceed and check `/usage` in the morning. For a
-   *hard* dollar kill-switch, run headless via `templates/ralph/run.sh` instead
-   (wire its `cost_so_far` meter) — but confirm your browser MCP is available to
-   non-interactive `claude -p` first; if it isn't, stay in the interactive session.
+1. **Max iterations** — `MAX_ITERATIONS` in `run.sh`, plus per-call
+   `--max-turns` and a wall-clock timeout (and a finite `PAGES.md` bounds the work).
+2. **No-progress** — `run.sh` stops after 3 iterations with no worktree change.
+   The prompt's own "stop after 3 no-progress iterations" rule is a second
+   layer, not the stop.
+3. **Budget ceiling** — `MAX_BUDGET_USD`, metered from each call's
+   `total_cost_usd` and passed down as each call's `--max-budget-usd`.
 
 ## Morning review
 

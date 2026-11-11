@@ -3,6 +3,138 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-10-05 — Seven-day pass (Sep 28 – Oct 5): hard stop #1 has now failed open three ways, a ceiling leaked through its own meter, and a hyperscaler shipped the mode this repo had only argued for
+
+Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,
+verification & skills); all five returned. **PR #26 was open and unmerged** and rewrites `knowledge/`
+heavily, so per the skill's step 1 this pass **branched from #26's head (`09e3980`)**, not from `main`,
+which was stale by that whole diff; this PR is stacked on #26. Every load-bearing claim below was
+**re-fetched and verbatim-verified by the lead** rather than relayed: the Claude Code changelog was pulled
+raw (942 KB), the in-window range sliced and grepped locally; **all 35 arXiv IDs were machine-verified in a
+single batched `id_list` call** (HTTP 200, 35/35, no 406) for ID ↔ title ↔ v1 date ↔ primary category; and
+the LiteLLM bug was read **from the source on `main`**, not from its issue tracker. **Six backlog items
+resolved and archived, five corrected, twenty-one opened.**
+
+### The headline: hard stop #1 has now failed open three distinct ways
+
+- Last pass recorded the first (**v2.1.281**, *"ignoring `--max-turns`"*). Two more are now on record:
+  **v2.1.285** — *"Fixed `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` re-running a turn that had ended at
+  `--max-turns`"*, i.e. **a resume could undo the cap**; and one that is **still true today, by design** —
+  with `--input-format stream-json` a queued message *"starts a new turn with its own limit"*, so
+  `--max-turns` bounds a **turn-chain, not a session**. None needed a misconfiguration.
+- ⚠️ **And two failure shapes that are not "the cap was wrong" at all.** A ceiling can leak through its
+  **meter**: v2.1.286 fixed the gateway spend meter *"pricing 1-hour prompt cache writes at the cheaper
+  5-minute rate, and counting only the first model call's input tokens on streamed turns that run a
+  server-side tool"* — the meter is what the enforcing `429` is computed from, so **a correctly-configured
+  ceiling silently admitted more spend than it was set to**, and agentic loops maximise the error. And a
+  **zero can mean "no cap"**: `max_turns: 0` *"runs the session without a turn limit"* while
+  `max_budget_usd: 0` is rejected and `CLAUDE_CODE_MAX_TURNS=0` is rejected — **three polarities in one
+  product.** This is the KB's own LiteLLM caveat turning up first-party.
+- ⚠️ **Correction to a live KB claim:** the KB said LiteLLM *"has now fixed"* `max_budget = 0`. Read from
+  `budget_limiter.py` on `main`, the falsy-zero guard is **still live in all three router paths**
+  (lines 251/266/281); only the **proxy** org/project budget was fixed, **PR #43292 was closed unmerged
+  on 2026-10-03**, and #44259 is open. Two vendors do model the right fix — **`null` means unlimited so
+  that `0` can mean block.**
+
+### `/goal`'s documented bound is a self-reported cap — this repo's doctrine, applied to the reference implementation
+
+- `goal.md` says the way to bound a run is a clause like *"or stop after 20 turns"*, which *"Claude reports
+  progress against … and the evaluator judges … from the conversation"*, while the evaluator *"does not call
+  tools."* So the bound is **narrated by the worker and graded from that narration** — by §5A.3 and §5A.9
+  **a pacing hint, not hard stop #1.** A `/goal` loop still needs an external cap.
+- It *does* ship real no-progress detection, keyed on **absence of tool use** — but it *"returns control to
+  you with the goal still set"*, so unattended it **pauses awaiting a human rather than terminating.**
+- Relatedly, the setting Anthropic recommends for unattended loops, `CLAUDE_CODE_RETRY_WATCHDOG`, *"Retries
+  `429` and `529` capacity errors **indefinitely**"* and *"removes the cap of 15"* — **and the thing that
+  still binds it is the spend limit.** Hard stop #3 doing the work again.
+
+### A hyperscaler shipped graduated throttling, and a review tool shipped the counter-example
+
+- **AWS project spend limits** (Sep 16, limited availability) enforce — *"AWS pauses your project and stops
+  all resources"* — and implement the **graduated throttling** AWS's own `AGENTCOST07-BP01` had only
+  *recommended*: ~7 days out *"new resources stop launching"*, ~5 days idle resources pause, ~4 days the
+  top cost drivers pause, from *"EC2, RDS, Lambda, **Bedrock**, and SageMaker"*, explicitly to catch *"a
+  runaway Lambda or unexpected Bedrock spike"* — **so it reaches model spend.** AWS also states this KB's
+  "a ceiling needs a runway" point first-hand. ⚠️ Destructive tail: after 90 days paused, *"AWS permanently
+  deletes your project data."*
+- **roborev v0.71.0** is the counter-example, in the vendor's own words: *"Routing is off by default. The
+  limit is soft, so reviews keep running after spend reaches it."* **The pair settles a standing question:
+  graduated throttling is sound as the *approach* to a hard ceiling and unsound as a *replacement* for one.**
+- ✅ **Azure resolved on a first-party source** (the item's whole point): *"Notifications are triggered when
+  the budget thresholds are exceeded. **Resources aren't affected, and your consumption isn't stopped.**"*
+  ⚠️ **Google Cloud Spend Caps corrected**: **public** preview since Jul 28, not private — and still not GA.
+- **CodeRabbit shipped maker ≠ checker as a setting** (`reviews.allow_author_approval`) — but **the default
+  is `true`**, so out of the box an author can still approve their own PR; its *"branch configuration cannot
+  re-enable it when disabled"* is the same property this repo requires of `self-edit-guard`.
+
+### The finding that most directly indicts this repo's own envelope
+
+- **Per-edit gates do not compose.** arXiv:2609.24130's corpus-level guard caught *"declining performance as
+  individually validated rules accumulate"* — one configuration declined monotonically from **+0.017 to
+  −0.016 (p=0.022)** as active rules grew from **13 to 70**, each having passed its own gate. **Only a
+  corpus-level re-test catches that**, and this repo's envelope is a per-pass ≤10-line cap with **no
+  accumulated re-test.** arXiv:2610.01073 adds that **a stale cached pass is not a pass** and that
+  **default-deny without rollback is not safe-by-default**. All human calls.
+- ⚠️ **And a correction to this KB's own flag:** `arXiv:2608.18744` was recorded here as *"the anti-pattern
+  this repo's doctrine forbids."* Read directly, it **complies** — its oracle is withheld and external
+  (*"hidden unit tests give exact ground truth"*), its operators may **abstain**, maker and checker are
+  different models, and it validates on **428 unseen tasks**. It is published *support* for the doctrine,
+  mis-titled; the hazard is the title inviting miscitation for an *unanchored* self-evolving evaluator.
+
+### A citation rule this knowledge base was violating
+
+- `arXiv:2609.25173` meta-analysed **259 agentic-security papers** — the corpus much of §5A rests on — and
+  found most report no variance estimate or repeated runs, that on a 100-instance benchmark *"the minimum
+  difference in ASR detectable at conventional power is 18.2 percentage points"*, and that *"cross-paper ASR
+  comparison is currently unsupported."* **Adopted in the primer header: trust mechanisms and directions
+  across papers; trust magnitudes only within one paper.** A live instance found the same pass —
+  "SkillsBench" is **89 tasks** in one in-window paper and **509 directions** in another.
+
+### Three new practitioner primaries, and a stale baseline replaced
+
+- **Willison, Oct 3** gives this repo's third hard stop its first named outside voice: *"Soft caps, 'after
+  $X/month, send me a warning email', will not cut it."* and *"hard budget caps need to be the default."*
+  ⚠️ It also **widens the cost surface** to the pay-by-usage services a loop's *code* calls — something
+  `guardrails/` does not cover.
+- **Osmani, Sep 28** states the evidence-independence property directly: *"A test written or controlled by
+  the thing it's testing doesn't prove much"* / *"Real independence comes from a different source of truth."*
+  (Two statistics he cites are uncited upstream and went to the backlog, not the primer.)
+- **Huntley, Oct 2** (two posts, **both readable — the "Sep 27, paywalled" baseline is superseded**) adds two
+  techniques: *"Types are a form of verification. They provide back pressure: compiler errors that the LLM
+  picks up and fixes automatically, every loop"*, and **simulator-first** as a way to *build* the
+  deterministic check.
+- Supporting papers, all in-window: *"only 16-29% of the improvements agents claim are real"* (2610.02588);
+  **92.6% of trials passing every final numerical check still contained another deviation** (2610.01833);
+  *"Reviewer size is not a consistent predictor of quality"* with evidence beating model-swapping
+  (2610.01023 + 2610.01471); and skills' bottleneck moving to **selection**, limited by *"a first-stage
+  recall ceiling"* across *"past 230,000 skills"* (2609.38822).
+
+### Clean negatives, and what did not change
+
+- **The dollar-ceiling mechanism was not touched this window**: zero in-window hits for
+  `--max-budget-usd`/`max_budget_usd`/`modelPricing`; the only `budget` matches are *retry* budgets. Subagent
+  caps (20 / depth 3 / per-session removed in v2.1.224) all re-verified unchanged. `/goal`: zero in-window
+  changelog hits. Nothing released Oct 4–5; newest is **2.1.289**.
+- **No peer harness shipped a hard stop**, re-confirmed across seven tools — so *"ceilings are still not a
+  market norm"* holds through Oct 5. ⚠️ Matrix corrections: **Aider is dormant** (no release since
+  2026-02-12), **Amp is not trackable at release granularity**, and **the KB's Gas City row pointed at the
+  wrong repo** (`gastown`, dormant since June, rather than `gascity`, which shipped **v1.5.0 on Oct 5**).
+- **No new citable primary cost-overrun incident**, and **no analyst data** — the latter with a structural
+  cause worth carrying: **Gartner's Symposium is Oct 19–22**, after this window.
+- ⚠️ **A method correction to this KB's own reasoning.** Previous passes cited *"`fsmonitor` appears ZERO
+  times in the changelog"* as evidence on the GitSpawn `ultrareview` item. The term has **never** appeared in
+  any version, so **its absence carries no information** — changelog grepping cannot resolve that item and
+  should stop being offered as evidence for it. It stays **open and unconfirmed**, which is not the same as
+  *"confirmed unpatched"*.
+- ✅ **Loom resolved on the git object itself** — `git clone --depth 1` works through the proxy: HEAD
+  `7ba5132`, **2026-02-11**, zero tags, dormant. ⚠️ But its README calls it *"an AI-powered coding agent
+  built in Rust"*, so the KB's *"factory orchestrator of ralph loops"* gloss is **unverified**.
+- **AG2 shipped a Critical bypass of its own new guardrail four days after shipping it**
+  (GHSA-42mf-vpmr-gw5r): *"all trivially bypassable via shell metacharacters"* — **an allowlist must be
+  enforced on an argv vector, not a string.**
+- **The primer stayed inside its 750-line budget** (749), which required condensing per-release and
+  per-paper detail into `sources.md` — the first pass to work under `kb-size.yml`.
+
 ## 2026-09-29 — Review of the Sep 7–28 passes: corrections and primer condensed
 
 Reviewer findings, verified against primary sources on 2026-09-29 (the raw changelog — each

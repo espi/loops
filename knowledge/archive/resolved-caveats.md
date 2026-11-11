@@ -9,6 +9,82 @@ not a to-do list.
 Each entry keeps the resolution date and a one-line reason it was archived
 rather than carried forward.
 
+## Archived 2026-10-05
+
+Six items from the standing backlog resolved in the 2026-10-05 pass. Each was
+resolved against a primary source read by the lead, not relayed from a research
+agent.
+
+- **Azure's "no independent hard spend cap" needs a first-party source** *(opened 2026-09-28)*.
+  **Resolved.** The item existed because every other cell in the per-vendor ceiling table rested on
+  vendor documentation while Azure's rested on an **anonymous Microsoft Learn Q&A answer** plus a
+  second AI-generated one. First-party, from
+  `learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets`:
+  *"Notifications are triggered when the budget thresholds are exceeded. **Resources aren't affected,
+  and your consumption isn't stopped.**"* The same page makes the alert's latency explicit — *"Cost and
+  usage data is typically available within 8-24 hours and budgets are evaluated against these costs
+  every 24 hours"*, with notification *"within an hour of the evaluation"*, so up to roughly 25 hours —
+  and confines enforcement to DIY automation: *"you can configure it to call an action group"*, which is
+  *"currently only supported for subscription and resource group scopes."* **Azure Cost Management
+  budgets are an alert, by Microsoft's own documentation.** (`ms.date` 2025-06-26, `updated_at`
+  2025-09-26 — a standing fact, not an in-window change.) A **new** item replaces it in the live
+  backlog: the **AWS Bedrock** cell has the same first-party-source weakness.
+
+- **Gas City 1.4 (Jul 28, 2026) was never recorded** *(opened 2026-09-28 as a pre-window gap in this
+  KB's own coverage)*. **Resolved by backfill.** The post is *"Gas City 1.4: The View From The Factory
+  Floor"* by **Wesley Davidson, July 28, 2026**: a **Pack Registry** (public marketplace at
+  `registry.gascity.com` for reusable config units called "packs"); a rebuilt **supervisor dashboard
+  served directly from the `gc` binary**, runs-centred, showing **token rates and cost burn**; and
+  **Maintainer City** at `factory.gascity.com`, a public dashboard of Gas City's own 24/7 factory. Noted
+  on the way past: the dashboard is cost **monitoring, explicitly not a ceiling.** Chasing this also
+  surfaced a live error now fixed in the backlog — **the KB's Gas City row was keyed to
+  `gastownhall/gastown` (dormant since June) rather than `gastownhall/gascity`**, which is where
+  v1.4.x and v1.5.0 actually ship.
+
+- **"Read next pass, in this order" — the four flagged papers** *(opened 2026-09-28)*. **Resolved: all
+  four read.** One of them produced a **correction to this knowledge base**, which is why the item was
+  worth carrying: `arXiv:2608.18744` was flagged here as *"the anti-pattern this repo's doctrine
+  forbids"*, and reading it shows **the opposite** — its evolved evaluator is anchored to a withheld
+  external oracle (*"a sandbox whose hidden unit tests give exact ground truth"*), its operators may
+  **abstain**, the maker and checker are different models, and it validates on **428 unseen tasks**. It
+  is published *support* for the doctrine, mis-titled; the residual risk is that the title invites
+  miscitation as precedent for an *unanchored* self-evolving evaluator. `arXiv:2609.25173` produced a
+  citation rule now proposed in the live backlog (magnitudes do not cross papers).
+  `arXiv:2609.28564`'s full text supplied the number the KB lacked — telling the judge to *"use only
+  the frames"* still leaves false accepts at **41–63%** — and confirmed its **Medium** transfer rating
+  should **not** be upgraded, since the authors make no transfer claim. `arXiv:2609.24130` produced the
+  per-edit-gates-do-not-compose finding, now its own live backlog item. A replacement reading list is in
+  the live backlog.
+
+- **Huntley's Loom — commit activity unverifiable** *(carried for several passes)*. **Resolved.** The
+  item rested on GitHub access being scoped to `espi/loops`. The method that resolved it is worth more
+  than the answer: **`git clone --depth 1` and `git ls-remote --tags` both work through the agent
+  proxy** and yield data no summarizer can guess. `ghuntley/loom` HEAD is **`7ba5132`, committed
+  `2026-02-11T14:43:02+11:00`**, with **zero tags** — **dormant since Feb 11, 2026.** A narrower
+  question replaces it in the live backlog: the KB's gloss of Loom as *"a 'factory' orchestrator of
+  ralph loops"* is **not supported by the current README**, which calls it *"an AI-powered coding agent
+  built in Rust"* with a REPL interface; because HEAD is February, when the framing changed cannot be
+  dated.
+
+- **"Diamond" no longer exists** *(opened 2026-09-28 at **Medium**, search-level, "verify")*.
+  **Resolved on a Graphite primary**: *"As of 10/08/2025, the Diamond name has been deprecated, and AI
+  code review capabilities now slot under Graphite Agent."* So **Diamond → Graphite Agent, 2025-10-08 —
+  a rename/merge, not a discontinuation.** ⚠️ Recorded here because it must not be re-chased: secondary
+  results additionally claimed Graphite was acquired by Cursor/Anysphere and that Cursor was then
+  acquired by SpaceX in Aug 2026. **No primary was found for either, the second is implausible on its
+  face, and the ownership chain was deliberately kept out of the KB.** The Qodo and Kodus halves of the
+  original item stay open in the live backlog.
+
+- **`/loop` v2.1.72+ and `/goal` v2.1.139+ minimums are no longer citable** *(opened 2026-09-28)*.
+  **Research question answered.** The minimums are not merely unverifiable — **the docs no longer
+  express minimums that way.** They are now **per feature**: *"Check-ins require Claude Code v2.1.234 or
+  later."*, *"Idle check-ins require Claude Code v2.1.236 or later."*, *"Before v2.1.239, Claude Code
+  restored the goal on every route except the `claude --resume` picker."*, *"Before v2.1.246, idle
+  check-ins were uncapped."*, and for scheduled tasks *"...both require Claude Code v2.1.248 or
+  later."* What remains is **not research but a human edit**: `CLAUDE.md`'s "Tooling version notes"
+  still carries the two bare floors. That is `CLAUDE.md`, which this routine never auto-edits, so it is
+  proposed in the PR and tracked in the live backlog rather than archived as done.
+
 ## Archived 2026-09-29
 
 - **Five human calls from the 2026-09-07–28 passes — decided and applied 2026-09-29** (commits 46d7214 and

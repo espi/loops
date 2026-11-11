@@ -35,6 +35,7 @@ MAX_BUDGET_USD=10                 # hard stop #3: dollar ceiling (whole loop)
 STALL_LIMIT=3                     # hard stop #2: bail after N no-progress passes
 MAX_TURNS_PER_ITER=50             # per-call turn cap (claude -p --max-turns)
 ITER_TIMEOUT_SEC=1800             # per-call wall-clock cap
+MAX_FAILED_ITERS=2                # bail after N consecutive failed calls
 MIN_CLAUDE_VERSION="2.1.281"      # first version where --max-turns always holds
 COMPLETION_MARKER="<promise>COMPLETE</promise>"
 SUCCESS_CHECK="${SUCCESS_CHECK:-false}"   # e.g. "pytest -q" / "npm test"
@@ -91,6 +92,7 @@ work_fp() {
 
 iter=0
 stall=0
+failed=0
 spent=0
 protected_start="$(protected_fp)"
 last_work="$(work_fp)"
@@ -121,9 +123,27 @@ while :; do
   [[ "$cost" =~ ^[0-9.eE+-]+$ ]] || die 6 "iteration $iter (exit $rc) returned no readable total_cost_usd; stopping"
   spent="$(awk -v s="$spent" -v c="$cost" 'BEGIN{printf "%.4f", s + c}')"
   output="$(json_get result <<<"$json" 2>/dev/null || true)"
+  subtype="$(json_get subtype <<<"$json" 2>/dev/null || true)"
   echo "$output"
-  printf -- '--- iteration %s: %s, $%.4f, exit %s ---\n' \
-    "$iter" "$(json_get subtype <<<"$json" 2>/dev/null || true)" "$cost" "$rc"
+  printf -- '--- iteration %s: %s, $%.4f, exit %s ---\n' "$iter" "$subtype" "$cost" "$rc"
+
+  # --- call outcome: a non-zero exit means something (refused actions, a lost
+  # transcript, an API error), so don't treat a failed call as an ordinary one.
+  # A call stopped by its own per-call cap is expected and just continues; any
+  # other failure can't declare completion, and repeated ones stop the loop.
+  # (A zero exit is NOT trusted as success either — only SUCCESS_CHECK is.)
+  clean=0
+  if (( rc == 0 )) && [[ "$subtype" == "success" ]]; then
+    clean=1; failed=0
+  elif [[ "$subtype" == "error_max_turns" || "$subtype" == "error_max_budget_usd" ]]; then
+    failed=0
+  else
+    failed=$((failed + 1))
+    echo "iteration $iter failed (exit $rc, subtype '${subtype:-none}') ($failed/$MAX_FAILED_ITERS)"
+    if (( failed >= MAX_FAILED_ITERS )); then
+      die 7 "$MAX_FAILED_ITERS consecutive failed agent calls (last: exit $rc, '${subtype:-none}')"
+    fi
+  fi
 
   # --- instrument integrity: the agent must not edit its own checks ---
   if [[ "$(protected_fp)" != "$protected_start" ]]; then
@@ -131,7 +151,7 @@ while :; do
   fi
 
   # --- completion: agent declares done AND the success check passes ---
-  if grep -qF "$COMPLETION_MARKER" <<<"$output"; then
+  if (( clean )) && grep -qF "$COMPLETION_MARKER" <<<"$output"; then
     if eval "$SUCCESS_CHECK"; then
       echo "DONE: completion marker + success check passed at iteration $iter (\$$spent)"; exit 0
     else

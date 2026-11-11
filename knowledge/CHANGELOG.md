@@ -3,6 +3,20 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-11-11 — Human-directed follow-up: stale claims the merged audit flagged, and `run.sh`'s exit-code gap
+
+Not a research pass; no new sources. After #26–#33 merged, four repo-internal follow-ups they had flagged:
+
+- `templates/ralph/run.sh` no longer ignores a non-zero `rc` (flagged 2026-11-09): a failed call cannot
+  declare completion, and `MAX_FAILED_ITERS` (default 2) consecutive failures stop the loop with exit 7. A call
+  stopped by its own per-call cap (`error_max_turns` / `error_max_budget_usd`) still just continues. Primer
+  §5A's note updated to match.
+- `update-knowledge/SKILL.md` step 8 no longer says the `claude/` prefix means a run "physically can't touch
+  main" — the prefix is a default; a ruleset on `main` is the control (per `runbooks/staying-current.md`).
+- `loop-guardrails/SKILL.md` no longer credits `/goal` with hard stop #1 — it needs an external cap alongside.
+- `guardrails/README.md` receipts: the Uber $1,500 and "$47K / 11 days" figures (both do-not-cite here)
+  replaced with the two citable primaries the KB holds, Mandiant Case study 6 and METR.
+
 ## 2026-11-09 — Seven-day pass (Nov 2–9): the harness's own success signal failed open four times in one week, and a security vendor files caps under a heading reading "Alerts"
 
 Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,

@@ -1,10 +1,10 @@
 name: kb-size
 
-# Keeps knowledge/00-primer.md a briefing, not a log. The update-knowledge
-# routine is told to respect this budget (SKILL.md step 5), but a budget the
-# agent grades itself on is no budget — the same reason a cost alert is not a
-# ceiling — so the limit is checked here. Raising it is a human decision: edit
-# MAX_PRIMER_LINES below in a human-authored PR, with the reason in the commit.
+# Word budgets for every file the routines write (guardrails/BUDGETS.md).
+# A budget the agent grades itself on is no budget, so it is checked here.
+# A line cap on one file held the lines while the words moved to the files
+# beside it (Sep to Nov 2026); so the caps are in words, on every file, and
+# on the folder. Raising a cap is a human-authored change to BUDGETS.md.
 
 on:
   pull_request:
@@ -14,17 +14,21 @@ permissions:
   contents: read
 
 jobs:
-  primer-size:
+  budgets:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check primer length
+        with:
+          fetch-depth: 0
+      - name: Check word budgets against the base branch
+        run: python3 scripts/kb_budget.py --base "origin/${{ github.base_ref }}"
+      - name: Check the pull request body
         env:
-          MAX_PRIMER_LINES: "750"
+          BODY: ${{ github.event.pull_request.body }}
         run: |
-          lines=$(wc -l < knowledge/00-primer.md)
-          echo "knowledge/00-primer.md: $lines lines (limit $MAX_PRIMER_LINES)"
-          if [ "$lines" -gt "$MAX_PRIMER_LINES" ]; then
-            echo "::error file=knowledge/00-primer.md::Primer is $lines lines, over the $MAX_PRIMER_LINES-line budget. Move per-release detail, paper digests and backlog status to knowledge/sources.md or knowledge/archive/ (see update-knowledge SKILL.md step 5)."
+          words=$(printf '%s' "$BODY" | wc -w)
+          echo "pull request body: $words words (limit 600)"
+          if [ "$words" -gt 600 ]; then
+            echo "::error::The pull request body is $words words, over 600. Lead with the decisions needed; put the rest in the diff."
             exit 1
           fi

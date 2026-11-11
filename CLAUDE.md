@@ -55,25 +55,21 @@ self-assessment of correctness.
 
 ## Knowledge base discipline
 
-- `knowledge/00-primer.md` is the canonical briefing — a briefing, not a log,
-  with a **750-line budget** enforced in CI (`.github/workflows/kb-size.yml`).
-  Per-release detail, paper digests and backlog status belong in `sources.md`.
-- `knowledge/sources.md` is the curated link list; every claim carries a source
-  and a confidence level.
-- `knowledge/CHANGELOG.md` records dated updates. The `update-knowledge` skill
-  appends here.
-- When you add a claim, cite a primary source and mark confidence
-  (High / Medium / Low). Flag anything you could not verify against a primary
-  source.
-- `sources.md`'s "Known caveats / things to re-verify" section is a **live
-  backlog**, not an archive — every `update-knowledge` pass must carry every
-  open item forward and surface it in the PR, until it's actually resolved.
-- Resolved caveats, superseded facts, and confirmed-non-useful research move
-  to `knowledge/archive/` rather than lingering in the live files or getting
-  silently deleted — see `knowledge/archive/resolved-caveats.md`. Keeping the
-  live knowledge base lean is as important as keeping it current: an agent
-  landing here should find the *current* state of the practice, not have to
-  wade through a growing pile of resolved history to find it.
+- **Every file a routine writes has a budget in words** in
+  `guardrails/BUDGETS.md`, checked in CI (`scripts/kb_budget.py`). At a cap, a
+  new entry deletes an old one. Nothing is archived: git is the archive.
+- `knowledge/00-primer.md` is the briefing: what a loop author should do, and
+  why. `knowledge/sources.md` is the evidence: one line per claim, with its
+  source and confidence (High / Medium / Low). `knowledge/CHANGELOG.md` is one
+  dated line per pass.
+- Cite a primary source. A claim you could not verify against one is Low and
+  stays out of the primer.
+- The re-verify backlog in `sources.md` holds at most 25 items; an item open
+  for four passes is deleted.
+- **No new pull request while the last one is open.** A routine that finds its
+  previous pull request unmerged stops.
+- A pull request body leads with the decisions needed and stays under 600
+  words.
 
 ## The routine may improve itself — within a fenced envelope
 

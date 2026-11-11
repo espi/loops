@@ -22,36 +22,27 @@ Read `knowledge/00-primer.md`, `knowledge/sources.md`, and the latest entry in
 `knowledge/CHANGELOG.md`. Note the date of the last pass — you only care about
 what changed since then.
 
-**Before starting new research, check whether a prior `update-knowledge` PR is
-already open and unmerged** (via the GitHub MCP tools, or `gh pr list` if
-available — search for open PRs touching `knowledge/`). An open PR from a
-previous pass means the merged-file baseline you just read is stale relative
-to work already in flight. If one exists:
-- Prefer resuming/extending that PR's branch over opening a new one, or
-- If you do start a new pass anyway (e.g. it's materially overdue), expect a
-  merge conflict when that PR eventually lands, and say so explicitly in your
-  own PR description rather than being surprised by it later.
-This step exists because a pass once ran a full 14-day research window
-unaware a 7-day PR was already open, causing exactly that conflict — see the
-2026-07-20 CHANGELOG entry for the full story.
+**Before any research, check for an open `update-knowledge` pull request**
+(GitHub MCP tools or `gh pr list`). If one is open, **stop: open no new pull
+request and start no research.** You may add to the open one by deletions only
+(cuts that bring a file toward its budget). Comment on it with one line: the
+date, "previous pass still open", and its age in days. After two weeks open,
+say in that comment that the routine is paused until a human merges or closes
+it. Seven passes once stacked on one unmerged pull request, about 20,000
+lines; a reader that far behind does not catch up.
 
-### 2. Re-check the standing re-verify backlog
-`sources.md`'s "Known caveats / things to re-verify" section is a **live
-backlog**, not a historical record. Before fanning out new research:
+### 2. Re-check the re-verify backlog
+`sources.md`'s "Known caveats / things to re-verify" section is a short live
+list, capped at **25 items** (`guardrails/BUDGETS.md`). Each item carries the
+date it was opened.
 
-- Read every open item in that section.
-- For each one, see if this pass's research (or a human, earlier in the
-  conversation) resolves it. If so, fold the resolution into `00-primer.md`
-  / `sources.md` and move the item to
-  [`archive/resolved-caveats.md`](../../../knowledge/archive/resolved-caveats.md)
-  with a one-line note on how and when it resolved (or that it was checked
-  and determined not worth tracking further).
-- Carry every still-open item forward unchanged — do not let one silently
-  age out. An item that's been open for many passes with no resolution is
-  still worth a line in the PR, not a reason to drop it.
-- The PR you open (step 8) must list **every currently-open item**, not just
-  ones that are new this pass, so a human sees the standing backlog each
-  time until it's actually resolved.
+- Resolve what this pass can: fold the answer into `sources.md` or the primer
+  and delete the item.
+- **An item open for four passes is deleted**, with one CHANGELOG line saying
+  it was never resolved. An unresolved doubt about a claim belongs on the
+  claim (mark it Low), not in a queue.
+- A new item at the cap replaces the oldest.
+- The pull request lists only the items opened or closed this pass.
 
 ### 3. Fan-out research
 Launch parallel research agents (Task tool, `general-purpose`) across these
@@ -111,35 +102,21 @@ write a dated `CHANGELOG.md` entry (newest first, above the marker line)
 summarizing what changed and why. Do not churn wording for its own sake — only
 substantive changes. Preserve existing corrections/caveats.
 
-**The primer is a briefing, not a log — it has a size budget.** Touch
-`00-primer.md` only when a finding changes the *state of the practice* or the
-guidance that follows from it (a stop mechanism breaks or ships, a correction
-to something the primer asserts, a shift in what a loop author should do).
-Per-release changelog items, paper-by-paper digests, quotes, and backlog status
-go in `sources.md`; the primer gets at most a sentence of synthesis and a
-pointer. Prefer replacing a primer passage over appending to it. The primer must
-stay **≤ 750 lines** — `.github/workflows/kb-size.yml` fails the PR otherwise —
-so if a pass needs room, condense or move older primer detail to `sources.md`
-or `knowledge/archive/` in the same PR. (Context: the primer grew from 559 to
-3,303 lines in ten weekly passes before this rule; it was condensed back to a
-briefing on 2026-09-29.)
+**Every file has a budget in words** (`guardrails/BUDGETS.md`); CI fails the
+pull request when a path over its cap has grown. Run
+`python3 scripts/kb_budget.py --base origin/main` before you commit. Touch the
+primer only when a finding changes what a loop author should do; per-release
+items and paper digests get one line in `sources.md`. A pass that touches a
+path over its cap leaves it smaller than it found it. A CHANGELOG entry is one
+dated line.
 
-### 6. Prune — archive, don't accumulate
-The knowledge base's whole value is being *current*, not exhaustive. Before
-opening the PR, check whether anything in `sources.md` or the primer is now
-stale, superseded by a newer fact, or was a dead-end investigation that never
-went anywhere — and move it to `knowledge/archive/` rather than deleting it or
-leaving it in the live files:
-
-- Resolved caveats go to `archive/resolved-caveats.md` (per step 2).
-- A fact superseded by a newer version (e.g., an old version number, a
-  renamed release, a corrected attribution) should have the old text removed
-  from the live file, not left alongside the correction — the archive, or the
-  CHANGELOG's existing dated entry, is where the "what it used to say" record
-  lives, not a lingering parenthetical in the primer.
-- Don't prune anything still open or still true — pruning is for resolved,
-  superseded, or confirmed-non-useful material only. When unsure, leave it
-  and flag it in the PR rather than guessing.
+### 6. Retire: delete, do not archive
+The knowledge base is worth what it lets an arriving agent do, not what it
+holds. A fact that is superseded, resolved or never used is **deleted**; git
+and the CHANGELOG line are the record. Nothing is moved to `knowledge/archive/`
+(its cap is zero). At a cap, a new entry deletes an old one. Do not delete
+anything still true that an Action in the primer, a template or a guardrail
+rests on.
 
 <!-- self-edit:protected:start:gate -->
 ### 7. Triage improvements to this routine
@@ -215,17 +192,16 @@ remaining checks are your judgment; when in doubt, suggest.
    iteration guard fired, auto-apply is off — suggest everything.
 
 Commit any auto-applied edit as a single `self-edit:` commit, separate from
-knowledge commits, and surface it per step 8. If a prior update-knowledge PR
-is open (step 1), extend its branch rather than fork.
+knowledge commits, and surface it per step 8.
 <!-- self-edit:protected:end:gate -->
 
 ### 8. Open a PR (do not push to main)
 Create a branch `claude/knowledge-update-YYYY-MM-DD`, commit the changes with a
 clear message, and open a PR. Never push to `main` and never direct a push to a
 non-`claude/` branch: the prefix is only the run's *default* push target, not an
-enforced restriction — what actually keeps a run off `main` is a GitHub ruleset
-on `main` that the connected identity cannot bypass (see
-`runbooks/staying-current.md`). The PR body **must lead** with a
+enforced restriction. What keeps a run off `main` is a GitHub ruleset on `main`
+that the connected identity cannot bypass (`runbooks/staying-current.md`); the
+human switches it on, and until then nothing but this sentence does. The PR body **must lead** with a
 `## Routine self-improvements` section (before the knowledge summary, so a
 self-edit is never buried under a large knowledge diff):
 
@@ -237,15 +213,14 @@ self-edit is never buried under a large knowledge diff):
   but not applied: the idea, a one-line rationale, and the exact gate check or
   human-trigger that routed it to a human.
 
-Then summarize the knowledge changes: what's new, what changed, what was
-deprecated, what was archived and why, and — per step 2 — **every currently-
-open re-verify item**, not only ones new this pass. The human reviews and
-merges. Never merge to main automatically.
+Then the knowledge changes, **the whole body under 600 words** (CI checks):
+first `## Decisions needed` (lettered, each with a recommendation; "none" if
+none), then what changes what a loop author should do, then one line each for
+what was added, deleted and why, and the backlog items opened or closed this
+pass. The human reviews and merges. Never merge to main automatically.
 
-If there is nothing substantive to change, append no CHANGELOG entry, make no
-commit, and report "no material changes since <last date>." Still re-check the
-standing backlog (step 2) even on a no-op pass — a caveat can resolve even
-when nothing else changed.
+If nothing changes what a loop author should do and no backlog item moved,
+make no commit and report "no material changes since <last date>".
 
 <!-- self-edit:protected:start:guardrails -->
 ## Guardrails for this skill
@@ -254,16 +229,15 @@ trigger → one fan-out pass → one PR → exit. The three hard stops map to re
 backstops, not just this prose — keep them true:
 
 - **Iteration** — one trigger, one pass; the skill never re-invokes itself, and
-  step 1 (extend an open PR instead of forking) is a de-facto no-duplicate-work
-  guard. Bound the fan-out with the native caps that still exist —
+  step 1 stops the pass when a previous pull request is still open. Bound the fan-out with the native caps that still exist —
   `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` (default 20, concurrency) and
   `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` (default 3, depth) — together with the
   "~5 agents, no recursion" limit below. (The old per-session
   `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` total cap was removed in v2.1.224,
   Aug 7 2026, and can no longer be relied on.) Don't re-run yourself in a tight
   loop; scheduling is the Routine's job.
-- **Budget** — the account subscription usage limit + the Routine daily-run cap
-  *reject* runs when exhausted, which is the real ceiling **only if metered
+- **Budget** — the account subscription usage limit and the Routine's hourly
+  scheduling caps hold runs back when exhausted, which is the real ceiling **only if metered
   overage is off** (else spend spills silently). See
   `runbooks/staying-current.md` → "Budget & caps."
 - **Stall** — N/A for a one-shot; termination is the no-op exit ("no material

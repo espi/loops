@@ -1,84 +1,50 @@
 # loops
 
-The central, living practice hub for **agentic coding loops** — loop
-engineering as a discipline. It exists so that the current state of the
-practice (patterns, guardrails, verification discipline, and what's changed
-in the ecosystem lately) is captured accurately and concretely enough that
-any AI agent or engineer landing here, cold, can pick it up and *practice the
-methodology* immediately — not just read about it.
+The practice hub for **agentic coding loops**. A loop is a small program that prompts a coding agent, reads what it produced, checks whether the goal is met, and re-prompts until a verifiable stop fires. This repo is a toolbox: loops run *from* here against other repos.
 
-A *loop* is a small program that prompts a coding agent, reads what it
-produced, decides whether the goal is met, and re-prompts until a verifiable
-stop condition fires. You stop being the thing inside the loop typing prompts
-and become the author of the loop; the model becomes a subroutine. See
-[`knowledge/00-primer.md`](knowledge/00-primer.md) for the full briefing.
+## If you are an agent arriving here
 
-This repo is a **toolbox / control plane**, not a workspace. Loops run *from*
-here against other repos — that separation is what keeps it clean and
-reusable, for you or for an agent picking it up next.
+You can act from this page. Read further only for the reason named.
 
-**If you're an agent arriving here with no other context**: read
-[`CLAUDE.md`](CLAUDE.md) first for the repo's conventions, then
-[`knowledge/00-primer.md`](knowledge/00-primer.md) for the state of the
-practice. Skills in [`.claude/skills/`](.claude/skills/) are directly
-invocable and templates in [`templates/`](templates/) are directly runnable —
-you don't need to reconstruct the methodology from first principles, it's
-written down and kept current.
+1. **The one rule: never run an uncapped loop.** Every loop carries all three hard stops, enforced from outside the agent:
+   - a maximum iteration count, plus a cap on each call;
+   - no-progress detection: stop when N iterations change nothing;
+   - a token or dollar ceiling in the harness. An alert is not a ceiling, and no stop may read state the agent can write.
+2. **One deterministic success check** (a test, a linter, a typecheck) runs inside the loop. "Done" means the check passed, never the agent's own view.
+3. **Pick the pattern.**
+   - Work a task to completion, unattended: the ralph loop, [`templates/ralph/`](templates/ralph/).
+   - Work inside one session until a stated condition holds: [`templates/goal/`](templates/goal/).
+   - Repeat a maintenance prompt on a schedule: [`templates/loop/`](templates/loop/).
+   - An overnight UI audit: [`templates/ui-audit/`](templates/ui-audit/).
+4. **Scaffold, do not re-derive.** In a Claude Code session here: `/new-loop <task>; done = <check>` writes the files with the stops in place. `/loop-guardrails <path>` audits an existing loop.
+5. **Before the first unattended run**, go through [`guardrails/checklist.md`](guardrails/checklist.md) and set [`guardrails/budget.env`](guardrails/budget.env). Test each ceiling at a low value and see it stop.
+6. **Record that you used this.** In your own project, write one dated line: which template, which commit of this repo, what you changed. Nothing here can see you otherwise.
 
-## What's here
+Read [`knowledge/00-primer.md`](knowledge/00-primer.md) only when you need the reasoning, or a harness other than Claude Code. Read [`CLAUDE.md`](CLAUDE.md) only when you are changing this repo.
+
+Running an engine for a project and a person, not a coding loop? That practice lives in `espi/engine-practice`. This repo stays the home for loops that build code and for the three hard stops.
+
+## What is here
 
 | Path | What it is |
 |------|------------|
-| [`knowledge/`](knowledge/) | Living knowledge base — primer, curated sources, changelog, and an `archive/` for resolved/superseded material. Kept current by the `update-knowledge` skill. |
-| [`.claude/skills/`](.claude/skills/) | Reusable, invocable skills: `new-loop`, `loop-guardrails`, `update-knowledge` (weekly knowledge refresh), `artifact-audit` (monthly drift check on the repo's own artifacts). |
-| [`templates/`](templates/) | Runnable starters — ralph bash loop, `/goal` recipes, `/loop` maintenance prompt, overnight UI-audit kit. |
-| [`guardrails/`](guardrails/) | The three hard stops: budget/iteration defaults + a preflight checklist. |
-| [`runbooks/`](runbooks/) | Step-by-step playbooks for common loops. |
+| [`templates/`](templates/) | Runnable starters. |
+| [`guardrails/`](guardrails/) | The three hard stops as defaults and a preflight checklist; [`BUDGETS.md`](guardrails/BUDGETS.md) for this repo's own files. |
+| [`.claude/skills/`](.claude/skills/) | `new-loop`, `loop-guardrails`, and the two maintenance skills. |
+| [`runbooks/`](runbooks/) | Step-by-step playbooks; start with [`first-loop.md`](runbooks/first-loop.md). |
+| [`knowledge/`](knowledge/) | The primer (what to do and why), the sources (one line per claim), a one-line-per-pass changelog. |
 
-## Quickstart
+## How it stays current
 
-**Build your first loop** (≈15 min): follow [`runbooks/first-loop.md`](runbooks/first-loop.md).
+Two scheduled skills, each opening one pull request a human merges:
 
-**Scaffold a loop for a task** — from a Claude Code session in this repo:
+- [`update-knowledge`](.claude/skills/update-knowledge/SKILL.md), weekly: research, then changes to `knowledge/`.
+- [`artifact-audit`](.claude/skills/artifact-audit/SKILL.md), monthly: checks the templates, guardrails and runbooks against the knowledge.
 
-```
-/new-loop add pagination to the /users endpoint; done = tests in test/users pass and lint is clean
-```
+Three rules keep them readable:
 
-It picks the right pattern (ralph / `/goal` / `/loop`), writes the files, and
-bakes in guardrails.
+- every file they write has a budget in words, checked in CI; at a cap a new entry deletes an old one;
+- neither opens a pull request while its last one is open;
+- a pull request body leads with the decisions needed and stays under 600 words.
 
-**Audit an existing loop for safety:**
-
-```
-/loop-guardrails templates/ralph/run.sh
-```
-
-## The one rule
-
-**Never run an uncapped loop.** Every loop gets all three hard stops — a max
-iteration count, no-progress detection, and a token/dollar budget ceiling.
-Anthropic now ships some real spend enforcement (Enterprise Spend Limits API,
-gateway spend limits, Managed Agents session budgets), but the gateway layer
-fails open by default and none of it reaches a plain Claude Code loop
-automatically — the ceiling still has to live in your harness. See
-[`guardrails/`](guardrails/).
-
-## Staying current
-
-Two maintenance loops keep the repo honest, each a scheduled skill that proposes
-changes as a human-reviewed PR:
-
-- [`update-knowledge`](.claude/skills/update-knowledge/SKILL.md) (**weekly**) —
-  a fan-out research pass on the loops ecosystem → PR against `knowledge/`. It
-  carries forward the standing re-verify backlog and archives what's resolved,
-  so the knowledge base stays both current *and* lean.
-- [`artifact-audit`](.claude/skills/artifact-audit/SKILL.md) (**monthly**) —
-  checks the repo's own skills / templates / guardrails / runbooks for drift
-  against the knowledge base → PR with proposed fixes. The inward-facing
-  complement: `update-knowledge` keeps the *knowledge* current, `artifact-audit`
-  keeps the *runnable artifacts* matching it.
-
-Why two schedules (and not one broad job, or five per-angle ones) is explained
-in [`runbooks/staying-current.md`](runbooks/staying-current.md), which also has
-the cloud-Routine setup for both.
+Setup and the reasons for two schedules: [`runbooks/staying-current.md`](runbooks/staying-current.md).

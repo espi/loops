@@ -3,6 +3,510 @@
 Dated record of substantive changes to `knowledge/`. The `update-knowledge`
 skill appends a new entry here on each research pass. Newest first.
 
+## 2026-10-26 — Seven-day pass (Oct 19–26): the caps disagree with themselves about whether they can be turned off, and a non-window sweep found five native backstops the routine had never recorded
+
+Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails &
+cost, verification & skills); all five returned. **Four prior `update-knowledge` PRs were open and
+unmerged** — #26 (Sep 29, the hard-stops/condense PR), #27 (Sep 28 – Oct 5), #28 (Oct 5–12) and #29
+(Oct 12–19, each stacked on the last) — so per the skill's step 1 this pass branched from **#29's
+head**, not from `main`, which was **10,968 lines stale**; this PR is stacked on #29. (#30, the
+2026-10-25 artifact-audit PR, is also open but touches no `knowledge/` file — no conflict.) The real
+baseline is therefore **Oct 19**, which makes this a normal seven-day window rather than the 28-day
+gap the merged `CHANGELOG` implies. Every load-bearing claim below was **re-fetched and
+verbatim-verified by the lead** rather than relayed: the Claude Code changelog was fetched raw, the
+in-window range (v2.1.304–v2.1.310, Oct 19–23) sliced out and grepped, and **all 22 new arXiv IDs
+machine-verified in one `id_list` call (22/22, HTTP 200)** for ID ↔ exact title ↔ v1 date ↔ primary
+category. **Two backlog items resolved and archived, one resolved in half, several narrowed, many opened.**
+
+### The headline: one env-var table, three different answers to "can this cap be turned off?"
+
+- Within a single Claude Code env-var table: **`CLAUDE_CODE_MAX_TURNS`** — *"A value that is not a
+  positive integer is **rejected at startup with an error** rather than treated as no cap"*;
+  **`CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION`** and **`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`** — *"the
+  cap can be raised but **not turned off**"* / *"adjusted but not removed"*; and
+  **`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`** — *"**Set to `0` to disable the cap.**"* Three polarities, one
+  product, one page. ⚠️ **And the Agent SDK documents its zero-divergence as deliberate**: *"`maxTurns` /
+  `max_turns`: `0` runs the session without a turn limit… `maxBudgetUsd` / `max_budget_usd`: the CLI
+  rejects `0` as an invalid amount at startup."* ➜ **So "zero means no cap" is in places an intentional
+  convention and not only a bug: §6 should state polarity *per tool* rather than treat every `0` as a
+  defect.** The practical rule is unchanged and now better evidenced: **test every ceiling at zero.**
+
+### Five native backstops the weekly window sweep had never seen — found by deliberately *not* scoping to the window
+
+A non-window inventory sweep of the env-var and settings surfaces (prompted by the Oct 19 vindication
+of the "window sweep misses older work" item) found five first-party primitives absent from this KB,
+**four of which bound mechanisms whose failures it had been tracking for weeks**:
+
+- 🔴 **`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` (v2.1.143, 2026-05-15) is the real number behind `/goal`'s
+  stall detector, and it is 8 — with an off switch.** The hooks reference, verbatim: *"Claude Code
+  applies an **8-consecutive-continuation cap**: after stop hooks have continued the turn eight times in
+  a row, Claude Code **overrides the next block and ends the turn**. The count of consecutive
+  continuations **resets each time Claude calls a tool**."* `/goal` is documented as *"a wrapper around a
+  session-scoped prompt-based Stop hook"* and its stall passage links to this very section, so the
+  primer's *"several turns in a row"* is **eight**, configurable, and disableable with `0`.
+  ⚠️ **It is hard stop #2-shaped, not #1** — the reset-on-tool-call means it bounds only unproductive
+  spinning and never bounds a working loop. ⚠️ **Doc inconsistency:** the hooks reference says only
+  *"To raise the cap"*; the off switch appears solely in `env-vars`, so **the page a hook author reads
+  does not disclose that the cap can be turned off.** ⚠️ **And the two-sided reading that matters for
+  `guardrails/`:** a verification gate delivered *as* a Stop hook is overridden on the ninth consecutive
+  block, and Anthropic's mitigation is author-side discipline — *"Check this value or process the
+  transcript to avoid blocking on a condition that will never resolve."* **So the single deterministic
+  check should not be delivered as a Stop hook alone.** Its origin is itself an AutoGPT instance in
+  first-party stop machinery: v2.1.143 *"Fixed stop hooks that block repeatedly **looping forever**"* —
+  four days after `/goal` shipped at v2.1.139 (2026-05-11).
+- 🔴 **`CLAUDE_CODE_RESUME_INTERRUPTED_TURN_MAX_AGE_MS` (v2.1.211, 2026-07-15) is a documented bound on
+  the exact mechanism this KB recorded leaking hard stop #1 three times** (v2.1.285, .296, .299) — and it
+  was available the whole time. Verbatim: *"**Unset or `0` sets no bound**, except that some turns resume
+  only within six hours… A positive value bounds every turn, including those; **a negative or
+  non-numeric value applies a one-hour bound.** **Spawn scripts for long-running agents can set this** so
+  a restart against an old transcript doesn't re-run a stale prompt."* ⚠️ **Split polarity inside one
+  variable: the invalid value fails *safe* while the explicit `0` fails *open*.** The doc names this
+  repo's own use case.
+- **`CLAUDE_CODE_SCRIPT_CAPS` (v2.1.98, 2026-04-09)** — a per-session, per-script invocation cap:
+  *"Keys are substrings matched against the command text; values are integer call limits… Matching is
+  substring-based so shell-expansion tricks like `./scripts/deploy.sh $(evil)` still count against the
+  cap. **Runtime fan-out via `xargs` or `find -exec` is not detected; this is a defense-in-depth
+  control.**"* ⚠️ Gated on the unrelated `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` being set — the KB's
+  recurring *"the real ceiling sits behind a non-default flag"* shape — and the vendor self-describes it
+  as defense-in-depth rather than enforcement.
+- **`requiredMinimumVersion` / `requiredMaximumVersion` (v2.1.163, 2026-06-04, Managed scope)** — the
+  first-party enforcement for the primer's own rule that *"a gate has to be tested and **pinned to a
+  version**, not declared"*, which this KB stated for weeks without finding the mechanism:
+  *"When the running version is newer, Claude Code exits at startup."* It is the direct remedy for the
+  `stable`-vs-`latest` operator hazard. ⚠️ *"Scope: Managed. **Claude Code gives no warning when it
+  ignores the key elsewhere.**"* — silently inert in any other scope.
+- ⚠️ **`autoContinueAtUsageLimit` (v2.1.234, 2026-08-17) — Default: `true`.** *"After a claude.ai usage
+  limit stops your session, wait in the open session and continue the task automatically after the
+  reset."* **So the default behaviour at a usage limit is an unbounded wall-clock wait, not an exit** —
+  hard stop #2's wall-clock dimension, failing open by default.
+
+### Hard stop #1 failed a sixth way, and the extension layer is now a two-mechanism class
+
+- **v2.1.304 (Oct 19)**, verbatim: *"Fixed **a plugin** keeping a headless run going past `--max-turns`,
+  Stop, or ended input **by spawning subagents or re-running a finished one**."* This is a **different
+  mechanism** from v2.1.299's mod-submits-a-prompt bypass, in the **next release**. ➜ Last pass's *"one
+  bug, two hard stops"* becomes **a pattern: the extension surface is a recurring bypass channel for the
+  harness's own ceilings, with two independent mechanisms patched five releases apart.** §6's count of
+  hard stop #1's failures goes **five → six**.
+- Adjacent, same window: **v2.1.304** *"Added a transcript line when a plugin that runs first **skips one
+  of your mod's hooks**"* — load order can suppress another mod's guard and the remedy shipped is a log
+  line, not prevention; and **v2.1.304** *"Changed mods' `settings.read` hooks to… **rewrite the merged
+  settings**"*. Read with *"Mods aren't sandboxed"*, the extension layer keeps gaining reach.
+- ⚠️ **A per-session tool cap was being routed around, and the fix is an instruction.** **v2.1.307**:
+  *"Changed the notice Claude gets when the WebSearch budget is used up to also tell it **not to query
+  search engines in a browser or through computer use**."* The 200-call cap meters one tool while
+  equivalent capability stays reachable through two others, and the remedy is self-restraint — *"a cost
+  alert is not enforcement"* inside the vendor's own loop. ✅ The cap itself is good form (*"can be raised
+  but not turned off"*). **Operational note for this routine: *"Searches from the main conversation and
+  from subagents, such as a parallel research fan-out, count against the same limit"* of 200.**
+
+### A hook guard fails open when its interpreter is missing — four fixes, two of them *after* the one this KB marked resolved
+
+**v2.1.299** *"Windows: Fixed PreToolUse and PermissionRequest hooks **that set no shell** failing open
+when Git for Windows isn't installed; a guard that fails now blocks the call"* — which this KB recorded
+with a ✅. Then **v2.1.309** *"…hooks **with `"shell": "powershell"`** failing open when Git for Windows
+isn't installed"* and **v2.1.310** *"…letting a tool call through **when Git Bash is missing and the
+hook's command is only quoted strings**"* (plus v2.1.288 for unserializable input). ➜ **The durable rule:
+a hook-delivered guard's enforcement depends on an interpreter being present, and absence of the
+interpreter has repeatedly meant *allow*.** The ✅ needs qualifying, and `onFailure: "block"` (still
+defaulting to `continue`) is still the only author-side defence.
+
+### Hard stop #3: a documented path from "budgeted session" to "permanently uncapped session"
+
+🔴 **The strongest guardrail finding of the pass**, both halves verbatim from Managed Agents' new
+budgets page: *"If a budgeted session's usage comes to include a model with **no list price**, the budget
+**can no longer measure** the session's spend: the session can pause with a `stop_reason` of
+`budget_reached`, and changing the budget is rejected. **Remove the budget to resume the session.**"*
+and *"**Removing a session's budget is one-way: a session whose budget has been removed cannot be given
+a new one.**"* ➜ **The only documented way to recover from the ceiling's own failure mode is to destroy
+the ceiling, irreversibly — triggered by model composition rather than by any operator decision about
+risk.** A human call for `guardrails/`.
+
+✅ **And the vendor confirms this KB's open "enforce inside an attempt, not between attempts" item — as a
+no:** *"The cap is enforced **between model requests, not mid-request**… The request that carried the
+total past the cap was admitted while the session was still under it and runs to completion"*, with
+overshoot *"at most the cost of one model request for **each thread**"* — **per-thread, so it scales with
+fan-out**, which the KB's cell lacked — and *"Treat the budget as a bound on new work rather than an
+exact stopping point."* Also metered into the cap: *"Web searches, at $10 USD per 1,000 searches"* and
+*"Session running time, at $0.08 USD per hour"*, **so a session that stalls while alive still accrues.**
+
+### A vendor *designed away* an iteration cap: Goose, in-window
+
+🔴 Verified by reading the docs at both tags from git. `GOOSE_SUBAGENT_MAX_TURNS` default: **v1.55.0
+*"Integer (e.g., 25) | 25"* → v1.56.0 (tag 2026-10-22) *"Positive integer (e.g., 25) | **Falls back to
+`GOOSE_MAX_TURNS`, then 1000**"***. And the recipe cascade was **removed**: v1.55.0 `max_turns` *"applies
+to that recipe's execution **and any subagents or subrecipes it creates (unless they specify their own
+value)**"* → v1.56.0 *"applies to that recipe's execution."* ➜ **On Goose ≥1.56.0 a subagent's default
+iteration cap went 25 → 1000 (40×) and a parent recipe's cap no longer bounds the subagents it spawns.**
+**Nothing failed here — the cap was deliberately widened**, which is a different and arguably worse shape
+than a bug, and a correction to the primer's Goose row (which recorded only the global cap and never knew
+the subagent layer had its own).
+
+### Verification: "the verifier must not see the maker's trace" now has a controlled measurement
+
+- **`arXiv:2610.29609`** (v1 2026-10-21, cs.SE, Zhu, Yu, Li, Chen) isolates it with an A/B: *"A
+  controlled aware/blind intervention reveals **self-report leakage: the agent's own self-report changes
+  how completion is judged**. The same judge reads the same task and trace; only that self-report is
+  included or withheld."* Effect: *"**Withholding it improves trace-only dangerous-misreport recall by
+  43.4 percentage points**"* (Qwen3.5-35B-A3B; 13.3pp on DeepSeek-284B-A13B). Their remedy is
+  **architectural, not a prompt**: *"The report records what the agent claims, but **it must not influence
+  the trace-state judgment**."* ⚠️ Cite the apparatus, not the ceiling — their auditor reaches only
+  *"F1 0.75--0.78"* at *"45--56% inspection load"*, and the domain is GUI agents.
+- 🔴 **`arXiv:2610.27465`** (v1 2026-10-20, cs.AI, De Wang, Peng Qi) describes this repo's envelope and
+  gives it two measurables: **verifier strength σ** and **recoverability**. *"A step should run unattended
+  only if both are adequate… On our platform this rule allows **prompt, tool and skill edits** to run
+  unattended and keeps **weight updates** under human sign-off."* Two findings land directly: *"the
+  platform's LLM judge **sometimes gave the same score no matter what it was shown (9 of 37 settings) and
+  reported no error, so a verifier can look healthy while approving anything**"*; and *"**only changes
+  whose old version is kept can be reversed without a human**"*, plus a residue *"it altered the outcome
+  of 17 percent of tasks beyond normal run-to-run variation, **which no undo repairs**."* **Lead's
+  reading, flagged as such:** the `update-knowledge` self-edit is a *skill edit* and so on their permitted
+  side; git retains the pre-edit file verbatim rather than regenerating it, satisfying recoverability; and
+  because `self-edit-guard.yml` is a deterministic CI diff check rather than an LLM judge, σ is not its
+  failure mode — a point in the envelope's favour. ⚠️ **But the 17% irreversible-while-deployed residue
+  argues the envelope's real protection is the pre-merge human review, not the possibility of revert.**
+- **`arXiv:2610.29029`** (v1 2026-10-21, cs.LG) adds a mechanism distinct from a stale cached pass —
+  **on-policy audit collapse**, with *"the exact point at which the audit can prefer a **worse** component
+  verifier"* — so **a check that looks stable can be decaying while its score stays fresh**; their repair
+  is short enough to adopt: *"audit the component on its own failures, and keep those failures in the
+  refresh distribution."*
+- **`arXiv:2610.31130`** (v1 2026-10-22, cs.AI) states an identifiability limit — *"matched safe and
+  harmful lifecycles that expose **identical verifier-visible evidence**"* — and gives ABSTAIN a concrete
+  four-valued form (*"deploy, hold, cannot determine, or unsupported"*). ⚠️ Its second clause is what the
+  verification non-negotiable lacks: test *"both calculation validity **and whether the available
+  evidence supports the deployment decision**"* — **a check can be correctly computed and still not
+  entitled to its verdict.**
+- 🔴 **`arXiv:2610.31895`** (v1 2026-10-22, cs.SE) is the most actionable: across *"eight frontier models
+  and 19,371 trajectories"*, *"**nearly every run that needs outside help collects sufficient evidence,
+  yet a third still exhaust their budget, and every unsafe request we detect comes after that point**"* —
+  the **evidence-action gap**. And the fix is measured: *"the tool cuts budget exhaustion from **34.0% to
+  6.7%**, and the monitor nearly triples task success after environment restoration."* ⚠️ *"a fired
+  escalation is not yet a useful handoff: tickets reliably name the blocker but often **omit the agent's
+  own progress and verification status**"* — which is "record which stop fired," one layer out.
+- **`arXiv:2610.30491`** (v1 2026-10-21, cs.AI) bears on this repo's caps directly: *"**Execution limits
+  also change the reported result**"* (21/30 → 27/30 across budgets), so **a max-iteration guardrail is a
+  confound in the check it protects**; their rule is that a label should ship with *"whether the run was
+  cut off by an execution limit."* Human agreement was 67/67 for correctness but *"only 67/81 for
+  verification"* — **the verification label is the least trustworthy label.**
+
+### Vacuity gets four more instances — including a shipped tool whose whole job is finding it
+
+- 🔴 **roborev 0.73.0 (2026-10-23)**: *"**Find tests that protect no behavior the repository owns** with
+  `roborev review --type test-value`. This opt-in review **recommends removing low-value tests and never
+  asks for more tests**."* — `arXiv:2609.27871`'s vacuity as a runnable review type, and the first tool
+  seen here that inverts the usual incentive. ✅ Same release fixed the other direction: *"**Read-only
+  Claude reviews and panel synthesis no longer get write, shell, web, subagent, or MCP tools or skills,
+  even when Claude settings bypass permissions.** Reviews fail if the Claude CLI lacks `--tools`"* — so
+  until 0.73.0 a "read-only" reviewer could be handed write/shell/MCP tools, and **the fix fails closed.**
+- ⚠️ **roborev's budget is still soft, and its meter is not monotonic**: *"**The cap never stops jobs**"*,
+  and *"Unpriced jobs are **unknown rather than free**… Rerunning, retrying, or failing over a job
+  replaces its previous attempt telemetry and **can reduce measured spend**. This is an **approximate
+  routing budget, not an accounting ledger**."* **A retry can lower the meter** — sharper than "soft."
+- **v2.1.305**: *"Changed Code Review re-reviews so they **no longer open with LGTM while earlier
+  blocking findings are still open**"* — self-attestation at the gate, fixed in-window; with
+  *"Fixed Code Review sometimes not reviewing the newest commit when several pushes landed…"*, i.e. a
+  verdict could describe a revision other than the one in front of you. **v2.1.304** also fixed PRs
+  *"being silently **skipped**"* just after an admin enabled review.
+- **Anthropic Code Review's exhaustion is now partly machine-visible** — *"Code Review skips the review
+  and Claude posts a comment… that begins with "⚠️ Code review skipped". **In some of these cases** a
+  check run titled **Code review declined** also appears"* — a real improvement, but ⚠️ the hedge *"in
+  some of these cases"* means **a gate requiring that check would be unreliable, so a correctly-configured
+  hard ceiling can still produce an unreviewed merge.** The KB's standing claim stands; its *"always…
+  neutral conclusion"* quote should be replaced with the current wording.
+- ✅ **`ellipsis.dev` is still the existence proof, and stronger than recorded**: *"A reviewer that fails
+  or runs out of budget contributes nothing; the review still posts…, **never as an approval**, and that
+  reviewer **covers the same commits again on the next push**"*; *"When no reviewer finishes, nothing is
+  posted and **nothing is marked reviewed**"*; and 🔴 the property the others lack — *"`permissions.github`
+  can add read scopes and repositories, **never write**, because the platform posts the review"* —
+  **"the check must observe state the agent cannot write", enforced by token scope rather than
+  instruction.**
+
+### `allowed-tools` is confirmed inert by the vendor — and a `-p` loop honours an untrusted repo's grants
+
+🔴 **This is the pass's most actionable finding for how this repo operates.** The skills doc, verbatim:
+*"[`allowed-tools`] **does not restrict which tools are available: every tool remains callable**"* —
+**first-party confirmation of `arXiv:2610.19264`**, so that finding moves from author claim to vendor
+documentation. And the part not previously recorded here: ⚠️ *"**Workspace trust doesn't gate this field.
+Claude Code applies a project skill's `allowed-tools` even in a `-p` run in a folder you've never
+trusted.** A skill can grant itself broad tool access, so review the `allowed-tools` of skills checked
+into a repository before you run Claude Code there."* ➜ **`CLAUDE.md` says loops are "run from here
+against other repositories" — which is exactly the exposed configuration: a headless loop pointed at a
+third-party repo honours that repo's own skill pre-approvals.** A human call for `guardrails/`.
+✅ **Half of the Oct 19 backlog item resolves cleanly:** this repo's four skills were checked and **none
+declares `allowed-tools`**, so nothing here reads it as a restriction. ✅ **And an adoptable primitive
+exists** — `disallowed-tools` *does* restrict reach, with a documented loop use case: *"Tools removed
+from Claude's available pool while this skill is active. **Use for autonomous skills that should never
+call certain tools, such as `AskUserQuestion` for a background loop.**"* (⚠️ *"The restriction clears when
+you send your next message."*) **`guardrails/` should prefer `disallowed-tools` plus deny rules over any
+reading of `allowed-tools` as a restriction.**
+
+### The human-review gate, measured in the field — and it was indistinguishable, not bypassed
+
+🔴 **`arXiv:2610.28683`** (v1 2026-10-19, cs.SE, Adam Manji, single author, single site): *"every non-bot
+merge into our main branch passed a non-author review gate, yet **71 of those 263 merges (27%) rested
+only on an approval that a coding agent had submitted through the technical lead's GitHub account**, and
+the platform recorded each one as an ordinary approval by the lead"*; *"**the records cannot show who
+decided any of them**."* ➜ **The empirical form of the standing Loopjacking human call**: `CLAUDE.md`
+rests this repo's whole self-improvement envelope on *"a human reviews and merges every PR"*, and at
+Manji's site that control was enforced and satisfied by an agent typing as a human. **The control was not
+bypassed; it was indistinguishable.** 🔴 **And one of his four recomputed gate defeats names this repo's
+own live exposure** — *"an agent **collapsing a stack of pull requests through unprotected branches**"* —
+which is independent external support for closing the stacked-PR route on 2026-09-29 **and** a sharp
+escalation of the top standing item, since `main` here is unprotected *and* this pass is itself a stacked
+PR. His three lessons: *"**recording decision authority separately from account identity, keeping agents'
+credentials away from the controls they operate under, and checking evidence at the branch and revision
+where integration happens**."* ⚠️ One site, one author, self-reported, no control group — **the
+mechanisms are the finding; do not state 27% as a rate.** ✅ A nuance in the agents' favour, in the
+engineers' own words: review mattered when it *"tested a change against something outside the diff."*
+
+⚠️ **And a warning against measuring this repo's own output:** **`arXiv:2610.29143`** (v1 2026-10-21,
+cs.SE) built an instrument for exactly that over *"1,454 matched pairs"* and **disqualified it**:
+*"**The instrument did not meet its preregistered calibration criterion: agreement with adjudicated
+labels was 4% to 60% against a required 80%, and inter-rater agreement was weak (kappa = 0.154).**"*
+Their conclusion: *"a process measure judged by a language model partly reflects **how a pull request is
+presented** rather than the verification work behind it."* **Cite the failed calibration; do not cite
+their odds ratios, which their own calibration failure voids.**
+
+### Skills compose into unsafe chains that per-skill scanning cannot see
+
+**`arXiv:2610.32155`** (v1 2026-10-23, cs.CR): *"**multiple individually clean skills can compose into
+safety-violation chains**… The risk arises not from any single skill, but from the agent's **runtime
+orchestration**, and thus cannot be captured by existing malicious skill detection methods."* From 13,598
+clean skills they find 612 insecure compositions, of which *"**13.7% of the detected chains consist
+entirely of skills labeled safe by a single-skill scanner**."* ➜ **The skills analogue of
+`arXiv:2609.24130`'s "per-edit gates do not compose", landing on the same open question: this repo's
+self-edit envelope is a per-pass cap with no corpus-level re-test. Two independent literatures now say
+the composition, not the increment, is where the failure lives.** ⚠️ Carry the 13.7% blind spot, not
+their detector's exploitation-rate improvement.
+
+### Agent Skills went to the Linux Foundation after all — a live caveat reversed
+
+✅ **Correction to this KB**, first-party and in-window (anthropic.com, *"Published Oct 22, 2026"*): the
+standing backlog item recorded, at Medium and secondary-only, that MCP, goose and `AGENTS.md` went to the
+AAIF *"and Agent Skills did not."* **That is now false.** Verbatim: *"Today, we are donating the standard
+to the **Agentic AI Foundation (AAIF)** under the Linux Foundation, which we co-founded with Block and
+OpenAI last year, and to which we donated the Model Context Protocol (MCP)"*; *"We are donating the Agent
+Skills **name and logo, the GitHub organization, and the agentskills.io domain**"*; *"Engineers from
+Anthropic, Google, OpenAI, and other companies will maintain the standard as individuals, with **David
+Soria Parra and Mahesh Murag as Lead Maintainers**."* ⚠️ **The governance half of that caveat stays
+open:** the roadmap — *"**versioned releases**, a formal proposal process, and **security guidance** for
+people who write and install skills"* — is *"proposed"*, so there is still no version to test a skill
+against, and the security guidance has no detail, so it does not touch `2610.19264`. **The KB's
+"portable-with-testing, not drop-in" conclusion stands.** ⚠️ A first-party adoption figure now exists but
+is **undated in the post and carries no method**: *"So far, 1 million skills have been published and
+nearly 280 million installed"* — so the peer-reviewed **2,193,119 dated adoptions** (`2610.11169`)
+remains the citable denominator.
+
+### Gartner's Symposium produced material, and the predicted economics number was not in it
+
+- ⚠️ `gartner.com` **403s reconfirmed** on both in-window press-release paths, so everything here is
+  **Medium** via syndication, per the standing rule.
+- The predicted keynote release exists and is in-window (*"Gartner Says AI Risk is Rising Faster Than AI
+  Value"*, Orlando, 19 Oct 2026, **Plummer and Moyer**, to *"over 7,500 CIOs and IT executives"*) — but
+  ⚠️ **it contains no AI cost or spend figure at all.** Its numbers are governance: **71%** expect to
+  deploy agentic AI within 12 months against only **21%** with *"agentic AI governance capabilities in
+  place"* (Q2 2026, *n* > 2,000); 25% of CIOs align technology and business risk (Q3 2026, *n* = 303);
+  58% of leaders see *"some positive value"*. ⚠️ **Wording drift to avoid:** CIO Dive rendered that last
+  one as *"positive ROI"* — a different claim; **cite the "some positive value" form.**
+- The one new in-window cost datum, analyst **Nate Suda**, Day 3 release (Oct 21): *"Gartner research
+  examining **1,010 non-technology companies in the S&P1200** found that just **4%** reported AI-enabled
+  cost reduction or related financial change material enough for company-level disclosure in the first
+  half of 2026."* **Medium**, single-sourced, no independent corroboration.
+- ⚠️ **Two dating traps, both recorded as method notes because both circulate undated:** (a) Gartner's
+  three big "AI cost control" predictions — the **80% "cost exhaustion attack"** by 2030, 60% AI FinOps at
+  inference by 2028, 60% with a cost-to-value function by 2029 — are from the **September 15, 2026**
+  release (Gold Coast), merely *recapped* at Orlando; **do not re-date them to October.** (b) *"40% of
+  agentic AI projects will be canceled by end of 2027"* is from **June 25, 2025** (the date is in the URL
+  slug) — over 16 months old, and it circulated inside this window as if current.
+- CLEAN NEGATIVE: **no new Hype Cycle artifact in-window** — the Oct 20 Orlando *session* presented a
+  report published ~April 15 2026 — and no "AI Value and Cost Management" track output found.
+
+### Clean negatives, and one streak broken
+
+- Established by grepping the sliced in-window range: **nothing** touched `--max-budget-usd`/`max_budget`,
+  `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `onFailure`, permission
+  modes, or stall detection. ⭐ **And after three consecutive windows of
+  `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` defeats, this window had none — the streak broke.**
+- ✅ **Operator hazard largely resolved:** npm `dist-tags.stable` has moved **2.1.292 → 2.1.308** against
+  `latest` **2.1.310**, so the gap is 2 rather than 11 and **`stable` now carries the v2.1.304 plugin
+  cap-bypass fix.**
+- **Stall detection remains the weakest of the three stops across every harness checked** — zero
+  in-window changes in Claude Code, opencode, Goose, Codex or Gemini CLI.
+- Key voices: **Huntley** one in-window post (Oct 20, *"patch the planet"*, nothing on-angle) and
+  ⚠️ **the ghuntley byline/RSS one-day skew reproduced exactly**; **Ronacher** nothing in-window (newest
+  Oct 6) and ⚠️ **the feed-header trap reproduced for a third pass**; **Osmani** nothing new (newest
+  *"Agentic Verification"*, Oct 14, pre-window and already recorded), with the `.com` lag **widened ~30 →
+  ~42 days**; **Yegge** quiet since Sep 15; **Willison** 12 in-window entries, **none on-angle**, so hard
+  stop #3's only outside voice remains his Oct 3 post for a third window; **Cherny** and **Steinberger**
+  per their standing permanent wording; ⚠️ **"Jev" not advanced.**
+- **No new cost-overrun incident with a named, documented primary.** The search space returned only
+  already-blacklisted items, so the blacklist is doing its job — carry it forward verbatim.
+
+### New, on-angle, and worth tracking
+
+- ⭐ **`arXiv:2610.28914`** (v1 2026-10-20, cs.AI) is the strongest in-window support for the
+  skills-as-durable-asset thesis: distilling a teacher into *"an interpretable natural-language skill"*
+  *"**closes 75%-95% of the teacher-student gap without touching model weights**"* at *"5.7x-8.3x lower
+  inference cost per task."* ⚠️ Three benchmarks, none a coding-agent benchmark, and the skill is built
+  *"entirely offline from fixed trajectories"*, so it says nothing about a skill improved inside a live loop.
+- **Factory has productised ralph's fixed-prompt file, and warns against the loop editing it**:
+  *"A scheduled automation's instructions live in the body of its `HEARTBEAT.md` file, which can be up to
+  **256 KiB**… **Runs are told not to edit `HEARTBEAT.md` unless its instructions say to, because anything
+  written there becomes an instruction for every later run.**"* ➜ **The same hazard this repo fences with
+  `self-edit-guard`, arrived at independently in a product.** Runs are also **serialised per automation**.
+- **CodeRabbit (2026-10-23)** moved findings from claim to executed evidence — *"Runtime Analysis… **runs
+  the guide in a CodeRabbit coding environment, keeping the evidence for you to inspect**"* — the
+  review-side analogue of a deterministic in-loop check. **Kodus (2026-10-22)** now builds reviewers from
+  repo skills (*"import an existing skill from your repository and turn it into a reviewer"*), all
+  **default-disabled**, in an *"isolated sandbox"*, with a no-post dry run — but ⚠️ **still BYOK, so still
+  no budget stop, and now there can be several of them.**
+- Two new usable primitives: **`claude_code.safety_event`** (v2.1.307) *"for each tool call a permission
+  rule, auto mode, a safety check, a hook or the sandbox stopped, prompted or sent back"* — a first
+  external meter for guard firings, which ⚠️ **narrows but does not resolve** `2610.21098`'s "record which
+  stop fired", since it covers permission events and not iteration or budget stops; and **`decider:
+  "person"`** (v2.1.304) *"refused with the mod's reason **where nobody can be asked**"* — the
+  ellipsis.dev shape, first-party and fail-closed. Also **`CLAUDE_CODE_DISABLE_CRON=1`**, a repo-level
+  kill switch for `/loop` and scheduled tasks the KB did not record.
+- **Haiku 5.5's cliff cannot be dodged by caching**, which closes the one escape hatch on the standing
+  `/goal`-evaluator cost item: *"A request's prompt length counts **all** of its input tokens, **including
+  cache reads and cache writes**… a request over the threshold pays the higher prices **even when part of
+  its prompt is a cache hit**."* The 5× numbers re-verified unchanged. **The `/goal` consequence is still
+  the lead's inference rather than a measurement — but it no longer has a plausible mitigation against it.**
+- Method fix: **track opencode by git tag, not npm** — it left the v2.0.x line in-window (v2.1.0 Oct 20 →
+  v2.1.4 Oct 23, a schema break with **no new loop primitives**) while npm `opencode-ai` `latest` is still
+  **1.19.4** with no 2.x at all, which explains last pass's "invisible v2.0.x line". **Amp** publishes ~8×
+  in two days, so **a version bump there is not a change signal**. **Aider is dormant** — PyPI 0.86.2,
+  uploaded 2026-02-12, nothing in ~8 months.
+
+### 🔴 Gas City made no-progress detection a default — and the KB's two claims about it need rewriting
+
+The most active loop orchestrator in this space changed the mechanism out from under the KB's cell.
+Verified verbatim on `main`'s `docs/reference/config.md`:
+
+- *"`session_reconciler` … **Unset (default) runs the keyed "v2" reconciler when the city can run it**, and
+  falls back to "legacy", the tick reconciler, with a warning naming why when it cannot."*
+- *"`progress_stall_timeout` … **Unset/zero disables it. Legacy only: deprecated and ignored under the v2
+  reconciler, whose work ladder replaces it.**"* — and identically for `claim_holder_stall_timeout`.
+- ✅ A good-form detail worth copying: *"values below 5m are **clamped** to 5m"* — a *minimum* clamp, so a
+  dangerously small value cannot be configured. (The other half stays a zero-disables instance.)
+
+➜ **The KB's claim "Gas City ships no-progress detection disabled by default" is now forked, not false.**
+Under **v2 — the new default wherever the city can run it** — the old opt-in stall settings are accepted
+and ignored and the **work ladder** replaces them, with concrete non-zero pacing defaults (grace 90s; base
+3m doubling to a 60m cap then hourly; thresholds trigger 3 / continuation 6). Under **legacy** — where a
+city cannot meet the store conditions — the old disabled-by-default behaviour persists, and the project's
+own note is that *"in practice most existing OSS cities keep running legacy."* ⚠️ **And the v2-by-default
+change is on `main` under `[Unreleased]`: the in-window tag v1.5.1 (2026-10-24) does not carry it**, so
+this is shipped-on-main, not yet released. Watch for the release that tags it.
+
+🔴 **And the new default detector has already fired on healthy work** — which upgrades the Oct 19 item
+about false positives from "the KB only tracks the opposite direction" to a dated incident in a shipped
+tool. `CHANGELOG` on `main`, verbatim: *"**The work ladder and the execution backstop read a rig seat's
+started graph steps as started.** … The ladder then **treated the seat's started claim as unstarted and
+nudged it as claimed**… and the backstop missed the record."* ➜ **A no-progress detector that misreads
+in-progress work as parked interrupts the work it was added to protect.** Hard stop #2's guidance needs
+the false-positive side stated, not just the false-negative one.
+
+### LiteLLM's zero-budget bug survived another full window, in every shipped artifact
+
+⚠️ **Still live on `main` today**, read from source by the lead rather than from the tracker:
+lines **289** (provider), **304** (deployment) and **319** (tag) all remain
+`if config.max_budget and current_spend >= config.max_budget:`. Note line 280 guards `None`
+(*"if config.max_budget is None: continue"*) — **so `None` is handled and `0.0` still falls through the
+truthiness test and reads as unlimited**, which makes the omission specifically about zero rather than
+about missing config. **v1.107.0 never released**: PyPI stable is **1.106.4 (2026-10-25)**, with only
+`1.107.0rc2` (2026-10-20) in-window, and the bug is present at both tags. **PR #44259 is still open and
+unmerged** (title: *"fix(router): enforce a router budget of 0 and stop dropping providers with no cap"*).
+⚠️ Issue **#43214** and PR **#43292** states remain unconfirmed — GitHub API access in this session is
+scoped to `espi/loops`, so PR/issue *state* is not readable while source is. **Carry forward unresolved.**
+
+✅ **And ralph-tui's `0` turns out to be uncapped *by design*, which strengthens rather than softens the
+KB's warning:** the gate is unchanged (`maxIterations > 0`, file untouched since 2026-08-28), and the
+schema accepts it (`z.number().int().min(0)`) while the logger renders it as **`'∞'`** — so a
+schema-valid, documented value silently removes hard stop #1 and the UI says so in a symbol.
+
+⚠️ **A mirror-image failure worth carrying as the second worked example**: CrewAI `de0a167` (2026-10-23)
+fixed a tool budget that **over**-enforced because it never reset — *"nothing reset `current_usage_count`
+at the kickoff boundary. **A `max_usage_count` budget exhausted in an earlier kickoff therefore made every
+later kickoff of the same flow object fail**."* ➜ **With LiteLLM's under-enforcement at zero, the pair
+makes the general point: a ceiling needs a correct *lifecycle*, not just a correct number** — it can fail
+by never firing or by never resetting.
+
+### Name correction: "Huntley's Loom" is now Overalls, and it launches just past the next window
+
+⚠️ **The primer's §2 reference needs updating.** `ghuntley/loom` now resolves to **`ghuntley/overalls`**;
+the `loom` branch itself is dormant (tip 2026-02-11). README verbatim: *"**Overalls** — An AI-first
+developer platform that you own. > **Research preview.** Not for consumption. **Overalls launches on 3
+November 2026.**"* It is a much broader product than a ralph-loop orchestrator — *"a self-hosted platform
+for development machines and the AI agents that work on them"*, on persistent Firecracker microVMs — and
+two of its claims land squarely on this KB's axes: *"**it keeps working after you close your laptop**"*
+and *"**every token accounted for**"*. **Flag for the next pass: launch is 2026-11-03.**
+
+### MCP: no spec movement, but the durable-async venue was formed
+
+CLEAN NEGATIVE on the surface the KB tracks: **no in-window spec release** (latest version tags remain
+`2026-07-28` / `-RC`) and **zero in-window commits touching `schema`**, so the tool-metadata surface did
+not move. What did land (authored 2026-10-16, merged in-window 2026-10-20) is governance: the **Tasks and
+Events Working Group** was formed and the Agents WG converted to an Interest Group. Its charter is on-angle:
+*"continue the development of Tasks, MCP's existing foundation for **durable asynchronous execution**… a
+standardized callback mechanism—webhooks or similar—that lets servers push notifications when new data is
+available, with **defined ordering guarantees that hold across all transports**"*, in scope *"promotion
+into the core MCP protocol."* Leads span AWS, Anthropic and Microsoft. A `skills-over-mcp` WG also exists
+and is worth reading next pass. ⚠️ **Both portability specs look dormant at the repo level**:
+`agentskills/agentskills` has had **no commits since 2026-08-09** and `openai/agents.md` **none since
+2026-09-10** — notable read against the Oct 22 donation, which hands over *"the GitHub organization"* of a
+repo that has not moved in ten weeks.
+
+### Smaller ecosystem negatives, all verified from tags/registries rather than rendered pages
+
+**AgentGuard47** no in-window release (PyPI 2.0.0, 2026-10-06), though a docs correction reveals an
+unreleased, much larger CLI surface and `LoopGuard` moved to its own module — treat as on-main.
+**agentgateway**'s correct `used >= budget.limit.amount` form is intact with **zero in-window commits to
+its budget crate** (and the repo is otherwise busy, so it is a real negative). **Gas City's
+`withDefaults`** is unchanged and dates to 2026-10-18, one day *before* the window. **ralph-orchestrator**
+(PyPI 1.2.3, 2026-01-12), **LoopGain** (0.6.5, 2026-09-30), **`umputun/ralphex`** (v1.7.0, 2026-09-07 — a
+ralph derivative worth adding as tracked) and **A2A** (v1.0.1, 2026-05-28) all had no in-window release.
+**OpenHands** shipped v1.32.0/v1.33.0 with nothing on caps (⚠️ **do not date OpenHands from PyPI** —
+`openhands-ai` still reads 1.11.0). **Google ADK** 2.13.0, nothing loop-relevant. **LangGraph** 1.2.17
+shipped but was **not inspected** — a declared gap. ⚠️ **Two unverified leads deliberately not added**:
+**MartinLoop** (described in secondary sources as capping spend, enforcing policy, verifying output and
+rolling back failures — on its face the closest external analogue to this repo's three stops, repo not
+located) and **LoopTroop**. Both **Low**, to chase next pass.
+
+⚠️ **Method, and it earned its keep twice this pass:** a `--shallow-since` clone of ralph-tui collapsed to
+one commit and would have dated `src/engine/index.ts` to 2026-10-24 instead of its true **2026-08-28**;
+the same graft artifact appeared in the Overalls clone. **A shallow clone's boundary commit is not a
+file's date — use a full-history blobless clone before dating a path.** And two search results again
+quoted GitHub **topic-page** "updated" strings as release dates (ralph-orchestrator "October 15", ralphex
+"October 20"), both contradicted by registry JSON — **that caveat stays live.**
+
+### Routine self-improvements
+
+**Applied (auto-gated): none this pass.** No repo-internal, non-semantic defect (stale cross-reference,
+broken path, typo) was found in `SKILL.md` while running it. The gate is default-deny, so nothing was
+applied.
+
+**Suggested (needs your confirm):**
+1. ⭐ **Add a periodic non-window inventory sweep to step 3.** This pass's second-largest finding came from
+   deliberately *ignoring* the window and reading the whole env-var and settings surface, which turned up
+   **five native backstops** (two of them bounding mechanisms the KB had been tracking as unbounded for
+   weeks, one dating to v2.1.98 in April). Combined with the Oct 19 vindication — a `--max-budget-usd`
+   defect available for three months and invisible to a weekly window-scoped fan-out — the weekly window
+   has a demonstrated, repeated blind spot. **Routed to a human because it adds a step and changes what
+   step 3 does — semantic, and "adding / removing / reordering / splitting steps" is an always-suggest
+   trigger.**
+2. **Record in the skill that GitHub API access is scoped to this repo.** Two agents independently lost
+   budget discovering that `mcp__github__*` and `gh` are restricted to `espi/loops` while
+   `raw.githubusercontent.com` and `git ls-remote` work fine — so PR/issue *state* for a third-party
+   project is not readable this way, though source always is. Three carry-forward items (LiteLLM #43214
+   and #43292) are blocked on exactly this. **Routed to a human because it is a change to method guidance,
+   not a stale cross-reference — semantic, so always-suggest.**
+3. **Consider whether step 2's "carry every open item forward" is still affordable.** The live backlog is
+   now roughly 100 open items and the PR body is required to list every one of them. Nothing was dropped
+   this pass, but the instruction is reaching the point where the surfacing requirement competes with
+   legibility. **Routed to a human because it changes step 2's control flow.** (No action taken; every
+   open item is carried forward below as the skill requires.)
+
 ## 2026-10-19 — Seven-day pass (Oct 12–19): hard stop #3's own enforcement has failed open, the extension surface is the vector, and the failure this repo kept rediscovering turns out to have a name
 
 Five parallel research agents (tooling & versions, ecosystem & techniques, key voices, guardrails & cost,
